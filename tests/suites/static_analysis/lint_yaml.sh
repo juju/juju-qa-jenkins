@@ -38,10 +38,9 @@ files:
     - .github/workflows/local-deployment.yml
 jobs:
   ignore:
-    - apt-update-slaves
-    - CI-BuildJuju
-    - CI-GatingTests
-    - CI-ProvingGroundsTests
+    - ci-build-juju
+    - ci-gating-tests
+    - ci-proving-ground-tests
     - clean-lxd-environments
     - clean-maas-environments
     - clean-workspaces
@@ -55,7 +54,6 @@ jobs:
     - sync-ntp
     - z-clean-azure
     - z-clean-microk8s
-    - z-clean-prodstack
     - z-clean-resources-aws
     - z-clean-resources-gce
     - z-clean-resources-gke
@@ -112,23 +110,18 @@ jobs:
   ignore:
     # TODO (stickupkid): Clean these commands up and simplify the following jobs
     # so that they don't require a multi-job for no reason.
-    - RunFunctionalTests-arm64:FunctionalTestsarm64
-    - RunFunctionalTests-ppc64el:FunctionalTestsarm64
-    - RunFunctionalTests-s390x:FunctionalTestss390x
-    - SimpleStreams:GenerateSimpleStreams
-    - ci-run:building
+    - ci-build-juju:Packaging
+    - gating-functional-tests-arm64:FunctionalTestsarm64
+    - gating-functional-tests-ppc64el:FunctionalTestsarm64
+    - gating-functional-tests-s390x:FunctionalTestss390x
+    - simplestreams:GenerateSimpleStreams
     - github-mgo-check-jobs:github-mgo-check-jobs
     - github-mgo-merge-jobs:github-mgo-merge-jobs
     - github-juju-merge-jobs:github-juju-merge-jobs
     - github-juju-pylibjuju-jobs:github-juju-pylibjuju-jobs
-    - integration-tests:IntegrationTests
-    - Gating-RunFunctionalTests-arm64:FunctionalTestsarm64
-    - Gating-RunFunctionalTests-ppc64el:FunctionalTestsarm64
-    - Gating-RunFunctionalTests-s390x:FunctionalTestss390x
+    - github-juju-experimental-check-jobs:github-juju-check-jobs
     - test-cli-multijob:IntegrationTests-cli
     - test-bootstrap-multijob:IntegrationTests-bootstrap
-    - github-juju-experimental-check-jobs:github-juju-check-jobs
-    - CI-BuildJuju:Packaging
     - test-caasadmission-multijob:IntegrationTests-caasadmission
     - test-upgrade-multijob:IntegrationTests-upgrade
     - test-ck-multijob:IntegrationTests-ck

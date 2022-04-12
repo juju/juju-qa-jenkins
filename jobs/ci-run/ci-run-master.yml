@@ -1,5 +1,5 @@
 - job:
-    name: "CI-BuildJuju"
+    name: "ci-build-juju"
     disabled: false
     concurrent: false
     description: |
@@ -85,7 +85,7 @@
           name: "Packaging"
           condition: SUCCESSFUL
           projects:
-            - name: "PackageJujuSource"
+            - name: "package-juju-source"
               current-parameters: true
               predefined-parameters: |-
                 GITHUB_BRANCH_HEAD_SHA=${GITHUB_BRANCH_HEAD_SHA}
@@ -107,53 +107,31 @@
           condition: SUCCESSFUL
           execution-type: SEQUENTIALLY
           projects:
-            - name: "build-juju-ubuntu"
+            - name: build-juju-ubuntu
               current-parameters: true
-              # Not sure why the current-params don't include these params.
-              predefined-parameters: |-
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
-            - name: "build-juju-other"
+            - name: build-juju-other
               current-parameters: true
-              # Not sure why the current-params don't include these params.
-              predefined-parameters: |-
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
             - name: build-caas-jujud-operator
               current-parameters: true
-              # Not sure why the current-params don't include these params.
-              predefined-parameters: |-
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
-            - name: SimpleStreams
-              # Not sure why the current-params don't include these params.
+            - name: simplestreams
               current-parameters: true
-              predefined-parameters: |-
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
     publishers:
       - trigger-parameterized-builds:
-          - project: "CI-GatingTests"
+          - project: "ci-gating-tests"
             condition: SUCCESS
-            # Not sure why the current-params don't include these params.
             current-parameters: true
             predefined-parameters: |-
-              SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
               series=${series}
               BOOTSTRAP_SERIES=${series}
-              GOVERSION=${GOVERSION}
-          - project: "CI-ProvingGroundsTests"
+          - project: "ci-proving-ground-tests"
             condition: SUCCESS
-            # Not sure why the current-params don't include these params.
             current-parameters: true
             predefined-parameters: |-
-              SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
               series=${series}
               BOOTSTRAP_SERIES=${series}
-              GOVERSION=${GOVERSION}
 
 - job:
-    name: "CI-GatingTests"
+    name: "ci-gating-tests"
     disabled: false
     concurrent: false
     description: |
@@ -196,7 +174,7 @@
           name: "Testing"
           condition: SUCCESSFUL
           projects:
-            - name: "Unit Tests"
+            - name: "unit-tests"
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
@@ -210,7 +188,7 @@
                 BOOTSTRAP_SERIES=${BOOTSTRAP_SERIES}
 
 - job:
-    name: "PackageJujuSource"
+    name: "package-juju-source"
     node: ephemeral-focal-small-amd64
     project-type: "multijob"
     condition: SUCCESSFUL

@@ -3,7 +3,7 @@
 # report.
 
 - job:
-    name: 'Unit Tests'
+    name: 'unit-tests'
     project-type: 'multijob'
     description: 'Run unit tests for a Juju commit'
     condition: SUCCESSFUL

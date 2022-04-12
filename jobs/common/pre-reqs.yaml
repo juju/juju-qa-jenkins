@@ -50,6 +50,16 @@
         echo Using s3cmd "$(command -v s3cmd)"
 
 - builder:
+    name: 'install-simplestreams'
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+
+          sudo DEBIAN_FRONTEND=noninteractive apt update;
+          sudo DEBIAN_FRONTEND=noninteractive apt install -y simplestreams
+
+- builder:
     name: 'install-azure-libs'
     builders:
     - shell: |-
@@ -205,5 +215,5 @@
 
         cd ${WORKSPACE}
         if [ ! -d "${WORKSPACE}/scripts" ]; then
-            git clone git@github.com:juju/juju-qa-jenkins.git --no-checkout --depth 1 scripts'
+            git clone git@github.com:juju/juju-qa-jenkins.git --no-checkout --depth 1 scripts
         fi

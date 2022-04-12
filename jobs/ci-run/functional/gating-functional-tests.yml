@@ -4,7 +4,7 @@
 #   but keep the ability to run them in parallel
 
 - job:
-    name: "Gating-RunFunctionalTests-amd64"
+    name: "gating-functional-tests-amd64"
     project-type: "multijob"
     description: |-
       Run functional tests for amd64 arch
@@ -107,7 +107,7 @@
 
 
 - job:
-    name: "Gating-RunFunctionalTests-s390x"
+    name: "gating-functional-tests-s390x"
     project-type: "multijob"
     description: |-
       Run functional tests for s390x arch
@@ -134,7 +134,7 @@
               current-parameters: true
 
 - job:
-    name: "Gating-RunFunctionalTests-arm64"
+    name: "gating-functional-tests-arm64"
     project-type: "multijob"
     description: |-
       Run functional tests for arm64 arch
@@ -161,7 +161,7 @@
               current-parameters: true
 
 - job:
-    name: "Gating-RunFunctionalTests-ppc64el"
+    name: "gating-functional-tests-ppc64el"
     project-type: "multijob"
     concurrent: true
     description: |-
