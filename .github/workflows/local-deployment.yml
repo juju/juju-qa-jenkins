@@ -1,0 +1,61 @@
+name: "Local Deployment"
+on: [push, pull_request]
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        set -euxo pipefail
+        sudo apt-get remove lxd lxd-client
+        sudo snap install lxd
+        sudo lxd waitready
+        sudo lxd init --auto
+        sudo snap install juju --classic --channel=latest/stable
+        sudo snap install juju-wait --classic --channel=latest/stable
+        sudo chmod a+wr /var/snap/lxd/common/lxd/unix.socket
+        echo "/snap/bin" >> $GITHUB_PATH
+        lxc network set lxdbr0 ipv6.address none
+
+    - name: Bootstrap Juju lxd controller
+      shell: bash
+      run: |
+        set -euxo pipefail
+        juju bootstrap localhost test
+
+    - name: Deploy a Jenkins master to Juju
+      shell: bash
+      run: |
+        set -euxo pipefail
+        juju deploy ch:jenkins --config password=password --config plugins=jenkins-multijob-plugin
+        juju wait-for application jenkins --query 'status=="active"'
+
+    - name: Deploy juju-qa-jenkins to Jenkins
+      run: |
+        set -euxo pipefail
+        LOCAL_JENKINS_IP=$(juju status --format=json | jq -r '.applications.jenkins.units[]["public-address"]')
+        export LOCAL_JJB_CONF=$(mktemp)
+
+        cat >$LOCAL_JJB_CONF <<EOF
+        [job_builder]
+        ignore_cache=True
+        keep_descriptions=False
+        include_path=.:scripts:~/git/
+        recursive=False
+        exclude=.*:manual:./development
+        allow_duplicates=False
+
+        [jenkins]
+        user=admin
+        password=password
+        url=http://${LOCAL_JENKINS_IP}:8080
+        query_plugins_info=True
+        EOF
+
+        STATIC_ANALYSIS_JOB=test_static_analysis_shell PUSH_TARGET="jobs" make push-local

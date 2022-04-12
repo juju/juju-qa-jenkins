@@ -1,0 +1,148 @@
+- job:
+    name: nw-deploy-bionic-microk8s
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test bootstrap and deploy to microk8s.
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: amd64
+          description: "Arch to build for."
+          name: BUILD_ARCH
+      - string:
+          default: MICROK8S
+          description: "Specify K8s cloud provider to use."
+          name: CAAS_PROVIDER
+      - string:
+          default: jujuqabot
+          description: "Operator docker image account name."
+          name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - prepare-ephemeral-node-for-k8s-py-tests:
+          channel: "latest/stable"
+      - shell: |-
+          ENV=microk8s
+          timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
+          $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \
+          --caas-provider=${CAAS_PROVIDER} --k8s-controller --enable-rbac
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+- job:
+    name: nw-deploy-bionic-gke
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test bootstrap and deploy to gke.
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: amd64
+          description: "Arch to build for."
+          name: BUILD_ARCH
+      - string:
+          default: GKE
+          description: "Specify K8s cloud provider to use."
+          name: CAAS_PROVIDER
+      - string:
+          default: jujuqabot
+          description: "Operator docker image account name."
+          name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - prepare-ephemeral-node-for-k8s-py-tests:
+          channel: latest/stable
+      - shell: |-
+          ENV=gke
+          timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
+          $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \
+          --caas-provider=${CAAS_PROVIDER} --k8s-controller --enable-rbac
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+- job:
+    name: nw-deploy-bionic-aks
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test bootstrap and deploy to aks.
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: amd64
+          description: "Arch to build for."
+          name: BUILD_ARCH
+      - string:
+          default: AKS
+          description: "Specify K8s cloud provider to use."
+          name: CAAS_PROVIDER
+      - string:
+          default: jujuqabot
+          description: "Operator docker image account name."
+          name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - prepare-ephemeral-node-for-k8s-py-tests:
+          channel: latest/stable
+      - shell: |-
+          ENV=aks
+          timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
+          $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \
+          --caas-provider=${CAAS_PROVIDER} --k8s-controller --enable-rbac
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+
+- job:
+    name: nw-deploy-bionic-eks
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test bootstrap and deploy to EKS cluster.
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: amd64
+          description: "Arch to build for."
+          name: BUILD_ARCH
+      - string:
+          default: EKS
+          description: "Specify K8s cloud provider to use."
+          name: CAAS_PROVIDER
+      - string:
+          default: jujuqabot
+          description: "Operator docker image account name."
+          name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - prepare-ephemeral-node-for-k8s-py-tests:
+          channel: latest/stable
+      - shell: |-
+          ENV=eks
+          timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
+          $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \
+          --caas-provider=${CAAS_PROVIDER} --k8s-controller --enable-rbac
+    publishers:
+      - artifact-results
+      - log-panic-check

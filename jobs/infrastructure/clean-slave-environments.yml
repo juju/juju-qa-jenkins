@@ -1,0 +1,135 @@
+- project:
+    name: "clean-lxd-environments"
+    server:
+      - arm64-slave: {}
+      - arm64-ci-build:
+          server_name: arm64-slave
+          prefix: ci-build
+          timeout: 6
+      - s390x-slave: {}
+      - s390x-ci-build:
+          server_name: s390x-slave
+          prefix: ci-build
+          timeout: 6
+      - borbein: {}
+      - borbein-ci-build:  # borbein = ppc64el-slave
+          server_name: borbein
+          prefix: ci-build
+          timeout: 6
+    jobs:
+      - 'clean-lxd-environment-{server}'
+
+- job-template:
+    name: 'clean-lxd-environment-{server}'
+    project-type: freestyle
+    node: infrastructure
+    description: Clean stale LXD containers
+    concurrent: true
+    server_name: ""
+    prefix: ""
+    timeout: ""
+    builders:
+      - get-lxd-cleanup-scripts
+      - shell: |-
+          #!/bin/bash
+          set -eux
+
+          env_name={server_name}
+          if [ -z "$env_name" ]; then
+            env_name={server}
+          fi
+
+          if [ ! -z "{prefix}" ] && [ ! -z "{timeout}" ]; then
+            ssh $env_name python3 < $SCRIPTS_DIR/clean_lxd.py - --name_prefix {prefix} --hours {timeout}
+          elif [ ! -z "{prefix}" ]; then
+            ssh $env_name python3 < $SCRIPTS_DIR/clean_lxd.py - --name_prefix {prefix}
+          else
+            ssh $env_name python3 < $SCRIPTS_DIR/clean_lxd.py
+          fi
+    publishers:
+    - email-ext:
+        # outbound traffic is only allowed from Kabuto(10.125.0.203) to smtp.internal,
+        # if Kabuto has been rebuilt or got ip changed, ask IS to reconfig the firewall.
+        # Note: single email address as this is in a testing phase of reporting.
+        recipients: juju-qa-aws@canonical.com
+        content-type: html
+        attach-build-log: false
+        fixed-unhealthy: true
+        first-failure: false
+        second-failure: true
+        body: |
+          This job has repeatedly failed which indicates that one of the machines is sick (and may need a reboot etc.).
+          <br/>
+          <br/>
+          <strong>Suggestions:</strong>
+            <ol>
+            <li>Check the console log in jenkins job see why 'clean-lxd-environment-{server}' is failing to be cleaned up</li>
+            <li>LXD cleanup issue? ssh into '{server_name}' and run the script manually, that usually helps</li>
+            <li>Connectivity issue? uh oh, determine why we can't ssh in (firewall, the machine is down?, #is and #is-outage can be useful)</li>
+            </ol>
+
+          <br/>
+          $DEFAULT_CONTENT
+    triggers:
+    - timed: H * * * *
+    wrappers:
+    - timeout:
+        fail: true
+        timeout: 120
+        type: absolute
+
+- project:
+    name: "clean-maas-environments"
+    server:
+      - finfolk: {}
+    jobs:
+      - 'clean-maas-environment-{server}'
+
+- job-template:
+    name: 'clean-maas-environment-{server}'
+    project-type: freestyle
+    node: infrastructure
+    description: Prepare substrates for testing
+    concurrent: true
+    builders:
+      - get-maas-cleanup-scripts
+      - get-juju-cloud-creds
+      - shell: |-
+          #!/bin/bash
+          set -eux
+
+          ssh {server} env 'JUJU_HOME=$JUJU_DATA' \
+            'PYTHONPATH=$SCRIPTS_DIR/clean_maas/' \
+            python3 < $SCRIPTS_DIR/clean_maas.py - {server}-vmaas --hours=2
+    publishers:
+    - email-ext:
+        # outbound traffic is only allowed from Kabuto(10.125.0.203) to smtp.internal,
+        # if Kabuto has been rebuilt or got ip changed, ask IS to reconfig the firewall.
+        # Note: single email address as this is in a testing phase of reporting.
+        recipients: juju-qa-aws@canonical.com
+        content-type: html
+        attach-build-log: false
+        fixed-unhealthy: true
+        first-failure: false
+        second-failure: true
+        body: |
+          This job has repeatedly failed which indicates that one of the machines is sick (and may need a reboot etc.).
+          <br/>
+          <br/>
+          <strong>Suggestions:</strong>
+            <ol>
+            <li>Check the console log in jenkins job see why 'clean-maas-environment-{server}' is failing to be cleaned up</li>
+            <li>MAAS cleanup issue? ssh into '{server}' and run the script manually, that usually helps</li>
+            <li>Connectivity issue? uh oh, determine why we can't ssh in (firewall, the machine is down?, #is and #is-outage can be useful)</li>
+            </ol>
+
+          <br/>
+          $DEFAULT_CONTENT
+    triggers:
+    - timed: H * * * *
+    wrappers:
+    - timeout:
+        fail: true
+        timeout: 120
+        type: absolute
+

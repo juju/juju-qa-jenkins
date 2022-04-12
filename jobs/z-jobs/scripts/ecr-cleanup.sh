@@ -1,0 +1,1 @@
+../../ci-run/scripts/ecr-cleanup.sh

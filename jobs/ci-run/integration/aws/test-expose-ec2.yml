@@ -1,0 +1,35 @@
+- job:
+    name: 'test-expose-ec2'
+    node: integration-tests
+    description: |-
+      Test Expose on EC2 Suite
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: ''
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+    wrappers:
+      - default-integration-test-wrapper
+    builders:
+      - get-build-details
+      - set-test-description
+      - get-s3-build-payload:
+            SHORT_GIT_COMMIT: ${SHORT_GIT_COMMIT}
+            BUILD_ARCH: ${BUILD_ARCH}
+      - get-s3-source-payload
+      - shell: |-
+          #!/bin/bash
+          echo "BOOTSTRAP_PROVIDER=aws" > build.properties
+          echo "BOOTSTRAP_CLOUD=aws" >> build.properties
+      - inject:
+          properties-file: build.properties
+      - integration-test-runner:
+            test_name: 'expose_ec2'
+            task_name: ''
+            skip_tasks: ''
+    publishers:
+      - integration-artifacts

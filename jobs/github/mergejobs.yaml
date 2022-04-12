@@ -1,0 +1,352 @@
+- job:   # github-juju-check-jobs
+    name: 'github-juju-check-jobs'
+    project-type: 'multijob'
+    description: 'Run the various checks for landing from GitHub PRs'
+    concurrent: true
+    node: noop-parent-jobs
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+          timeout: 60
+          fail: true
+          type: absolute
+    parameters:
+    - string:
+         default: ''
+         description: 'Enable sub job to be run individually.'
+         name: SHORT_GIT_COMMIT
+    properties:
+      - github:
+          url: https://github.com/juju/juju/
+      - authorization:
+          anonymous:
+            - job-read
+    triggers:
+      - github-pull-request:
+          github-hooks: true
+          trigger-phrase: '.*!!.*!!.*'
+          status-context: "check-multi-juju"
+          only-trigger-phrase: false
+          auto-close-on-fail: false
+          cancel-builds-on-update: true  # Cancel existing builds if PR updated/re-run.
+          cron: 'H/5 * * * *'
+          org-list:
+            - juju
+            - CanonicalLtd
+          allow-whitelist-orgs-as-admins: true
+          black-list-labels:
+            - "no-test-run"
+          black-list-target-branches:
+            - master
+            - staging
+            - jucy-lucy
+            - feature-.*
+    builders:
+      - detect-merge-go-version
+      - multijob:
+            name: github-juju-check-jobs
+            projects:
+              - name: github-make-check-juju
+                current-parameters: true
+                predefined-parameters: GOVERSION=${GOVERSION}
+              - name: github-unit-tests-win2012
+                current-parameters: true
+                predefined-parameters: GOVERSION=${GOVERSION}
+
+
+- job:   # github-juju-merge-jobs
+    name: 'github-juju-merge-jobs'
+    project-type: 'multijob'
+    description: 'Run the checks and merge the PR if it passes'
+    concurrent: false
+    node: noop-parent-jobs # job does nothing
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+          timeout: 60
+          fail: true
+          type: absolute
+    parameters:
+    - string:
+         default: ''
+         description: 'Enable sub job to be run individually.'
+         name: SHORT_GIT_COMMIT
+    properties:
+      - github:
+          url: https://github.com/juju/juju/
+      - authorization:
+          anonymous:
+            - job-read
+    triggers:
+      - github-pull-request:
+          github-hooks: true
+          trigger-phrase: '.*\$\$merge\$\$.*'
+          status-context: "merge-multi-juju"
+          only-trigger-phrase: true
+          auto-close-on-fail: false
+          cron: 'H/5 * * * *'
+          org-list:
+            - juju
+            - CanonicalLtd
+          allow-whitelist-orgs-as-admins: true
+          black-list-target-branches:
+            - master
+            - staging
+            - jucy-lucy
+            - feature-.*
+    builders:
+      - shell: |-
+          #!/bin/bash
+          # Install GitHub CLI
+          sudo apt install gh
+          # Sanatise the PR description for merge commit message.
+          cat >prdesc <<EOT
+              pr_descr=$(echo ${ghprbPullLongDescription} | sed $"s/\\\r//g")
+          EOT
+      - inject:
+          properties-file: ${WORKSPACE}/prdesc
+      - detect-merge-go-version
+      - multijob:
+          name: github-juju-merge-jobs
+          projects:
+            - name: github-make-check-juju
+              current-parameters: true
+              predefined-parameters: GOVERSION=${GOVERSION}
+            #- name: github-unit-tests-win2012
+            #  current-parameters: true
+      - get-github-token
+      - github-merge:
+          merge_comment: |-
+            $ghprbPullLink
+
+            $pr_descr
+    publishers:
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+
+
+- publisher:
+    name: 'github-artifacts'
+    publishers:
+        - archive:
+            artifacts: "artifacts/output.tar.gz"
+            allow-empty: true
+            only-if-success: false
+            fingerprint: false
+            default-excludes: true
+            case-sensitive: true
+
+
+- job:
+    name: github-make-check-juju
+    description: |-
+      Run make check against PR
+    concurrent: true
+    parameters:
+    - string:
+        default: ''
+        description: 'Specific git SHA to build (used to overwrite triggered runs).'
+        name: GITHUB_BRANCH_HEAD_SHA
+    - string:
+        default: ''
+        description: 'Go version used for build.'
+        name: GOVERSION
+    properties:
+      - github-ephemeral-node:
+          arch: amd64
+      - authorization:
+         anonymous:
+             - job-read
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+           timeout: 60
+           fail: true
+           type: absolute
+    builders:
+      - description-setter:
+          description: '<a href="${ghprbPullLink}">PR #${ghprbPullId}</a>'
+      - shell: |-
+          #!/bin/bash
+          GOOS="linux"
+          GOARCH="amd64"
+          GOVERSION="${GOVERSION}"
+          cat >goversion <<EOT
+               GOOS=$(echo ${GOOS})
+               GOARCH=$(echo ${GOARCH})
+               GOVERSION=$(echo ${GOVERSION})
+          EOT
+      - inject:
+          properties-file: ${WORKSPACE}/goversion
+      - inject:
+          properties-content: |-
+            PROJECT_DIR="github.com/juju/juju"
+      - run-build-check-raw:
+          build_env: ""
+          setup_steps: ""
+          src_command:
+              !include-raw: "./scripts/snippet_build_check-juju-juju.sh"
+          checkout_command:
+              !include-raw: "./scripts/checkout.sh"
+          test_command:
+              !include-raw: "./scripts/snippet_clean-test-exit.sh"
+    publishers:
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+
+
+- job:
+    name: github-unit-tests-win2012
+    description: |-
+      Run windows unit tests against PR
+    node: builder-lxd # for now we need cloud city
+    concurrent: false
+    parameters:
+    - string:
+        default: ''
+        description: 'Specific git SHA to build (used to overwrite triggered runs).'
+        name: GITHUB_BRANCH_HEAD_SHA
+    - string:
+        default: ''
+        description: 'Go version used for build.'
+        name: GOVERSION
+    properties:
+      - authorization:
+         anonymous:
+             - job-read
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+           timeout: 60
+           fail: true
+           type: absolute
+    builders:
+      - description-setter:
+          description: '<a href="${ghprbPullLink}">PR #${ghprbPullId}</a>'
+      - inject:
+          properties-content: |-
+            PROJECT_DIR="github.com/juju/juju"
+            PR_WINDOWS_TEST=true
+            GOVERSION=${GOVERSION}
+      - shell: |-
+          #!/bin/bash
+          cat >prdate <<EOT
+              PR_WINDOWS_DATE=$(date +%s)
+          EOT
+      - inject:
+          properties-file: /var/lib/jenkins/workspace/github-unit-tests-win2012/prdate
+      - run-build-check-lxd:
+          build_env: ""
+          src_command:
+              !include-raw: "./scripts/snippet_build-windows-tarball.sh"
+          checkout_command:
+              !include-raw: "./scripts/checkout.sh"
+          test_command:
+              !include-raw: "./scripts/snippet_clean-test-exit.sh"
+      - shell:
+          !include-raw: "./scripts/windows-unit-test.sh"
+    publishers:
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+
+############################################################# PYLIBJUJU TESTS ##
+
+- job:   # github-juju-pylibjuju-jobs
+    name: 'github-juju-pylibjuju-jobs'
+    project-type: 'multijob'
+    description: 'Run the pylibjuju checks for the GitHub PR'
+    concurrent: true
+    node: noop-parent-jobs
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+          timeout: 60
+          fail: true
+          type: absolute
+    parameters:
+    - string:
+         default: ''
+         description: 'Enable sub job to be run individually.'
+         name: SHORT_GIT_COMMIT
+    properties:
+      - github:
+          url: https://github.com/juju/juju/
+      - authorization:
+          anonymous:
+            - job-read
+    triggers:
+      - github-pull-request:
+          github-hooks: true
+          trigger-phrase: '.*(jenkins\:.*test.*schema)|(##.*##).*'
+          status-context: "check-multi-pylibjuju-tests"
+          only-trigger-phrase: true
+          auto-close-on-fail: false
+          cancel-builds-on-update: true  # Cancel existing builds if PR updated/re-run.
+          org-list:
+            - juju
+            - CanonicalLtd
+          allow-whitelist-orgs-as-admins: true
+          black-list-labels:
+            - "no-test-run"
+          black-list-target-branches:
+            - master
+            - staging
+            - jucy-lucy
+            - feature-.*
+    builders:
+      - multijob:
+            name: github-juju-pylibjuju-jobs
+            projects:
+              - name: github-schema-tests-pylibjuju
+                current-parameters: true
+
+- job:
+    name: github-schema-tests-pylibjuju
+    description: |-
+      Run schema checks against python libjuju against the PR
+    node: ephemeral-github-16c-64g-amd64
+    concurrent: false
+    parameters:
+    - string:
+        default: ''
+        description: 'Specific git SHA to build (used to overwrite triggered runs).'
+        name: GITHUB_BRANCH_HEAD_SHA
+    properties:
+      - authorization:
+         anonymous:
+             - job-read
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+           timeout: 60
+           fail: true
+           type: absolute
+    builders:
+      - description-setter:
+          description: '<a href="${ghprbPullLink}">PR #${ghprbPullId}</a>'
+      - inject:
+          properties-content: |-
+            PROJECT_DIR="github.com/juju/juju"
+      - run-build-check-lxd:
+          build_env: ""
+          checkout_command:
+              !include-raw: "./scripts/checkout.sh"
+          src_command:
+              !include-raw: "./scripts/snippet_clean-test-exit.sh"
+          test_command:
+              !include-raw: "./scripts/pylibjuju-schema-test.sh"

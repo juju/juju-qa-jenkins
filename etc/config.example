@@ -1,0 +1,9 @@
+[job_builder]
+ignore_cache=True
+keep_descriptions=False
+include_path=.:bin:~/bin:.:scripts:~/git
+allow_duplicates=False
+
+[jenkins]
+url=http://10.219.125.104:8080/
+query_plugins_info=True

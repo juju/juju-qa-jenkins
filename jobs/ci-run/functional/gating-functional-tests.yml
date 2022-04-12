@@ -1,0 +1,196 @@
+# Break these down into many jobs.
+# Note: Phases are run in serial, but jobs are done in parallel (or can be serial)
+#   this is why we have many sub jobs, an easy way to visually break them up
+#   but keep the ability to run them in parallel
+
+- job:
+    name: "Gating-RunFunctionalTests-amd64"
+    project-type: "multijob"
+    description: |-
+      Run functional tests for amd64 arch
+    node: noop-parent-jobs
+    concurrent: true
+    wrappers:
+      - default-functional-test-wrapper
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: ""
+          description: "Series to use as default-series in juju bootstrap and model-config in the functional tests."
+          name: series
+    builders:
+      - get-build-details
+      - set-test-description
+      - multijob:
+          name: GatingFunctionalTestsAmd64
+          projects:
+            # These projects are currently in alphabetical order.
+            # Please keep it that way!
+            - name: nw-add-cloud-many
+              current-parameters: true
+            - name: nw-add-credentials-aws
+              current-parameters: true
+            - name: nw-assess-persistent-storage
+              current-parameters: true
+            - name: nw-block-commands
+              current-parameters: true
+            - name: nw-deploy-bionic-gke
+              current-parameters: true
+            - name: nw-deploy-bionic-aks
+              current-parameters: true
+            - name: nw-deploy-bionic-eks
+              current-parameters: true
+            - name: nw-deploy-client-centos9
+              current-parameters: true
+            - name: nw-charm-storage
+              current-parameters: true
+            - name: nw-clouds-display
+              current-parameters: true
+            - name: nw-constraints-aws
+              current-parameters: true
+            - name: nw-container-networking-maas-2-9
+              current-parameters: true
+            - name: nw-cross-model-relations
+              current-parameters: true
+            - name: nw-deploy-bionic-amd64-lxd
+              current-parameters: true
+            - name: nw-deploy-client-windows
+              current-parameters: true
+            - name: nw-deploy-bionic-amd64-maas-2-9
+              current-parameters: true
+            - name: nw-deploy-bionic-amd64-equinix
+              current-parameters: true
+              enable-condition: '!["2.8"].contains("${JUJU_VERSION_MAJOR_MINOR}")' # Provider support is only available on 2.9+
+            - name: nw-deploy-bionic-vsphere
+              current-parameters: true
+            - name: nw-destroy-model-aws
+              current-parameters: true
+            - name: nw-destroy-model-lxd
+              current-parameters: true
+            - name: nw-grant-revoke
+              current-parameters: true
+            - name: nw-model-migration-amd64-aws
+              current-parameters: true
+            - name: nw-model-migration-versions-aws
+              current-parameters: true
+            - name: nw-model-migration-amd64-lxd
+              current-parameters: true
+            - name: nw-model-migration-amd64-gce
+              current-parameters: true
+            - name: nw-model-migration-amd64-vsphere
+              current-parameters: true
+            - name: nw-network-health-aws
+              current-parameters: true
+            - name: nw-network-health-azure
+              current-parameters: true
+            - name: nw-network-health-gce
+              current-parameters: true
+            - name: nw-network-health-maas-2-9
+              current-parameters: true
+            - name: nw-network-spaces-aws
+              current-parameters: true
+            - name: nw-upgradeseries-amd64-lxd
+              current-parameters: true
+            - name: nw-unregister-controller
+              current-parameters: true
+            - name: nw-deploy-kubeflow
+              alias: nw-kubeflow-microk8s-lite-rbac
+              current-parameters: true
+              predefined-parameters: |-
+                CAAS_PROVIDER=MICROK8S
+                BUNDLE_VERSION=lite
+                BUILD_CHARMS=false
+                ENABLE_RBAC=true
+
+
+- job:
+    name: "Gating-RunFunctionalTests-s390x"
+    project-type: "multijob"
+    description: |-
+      Run functional tests for s390x arch
+    node: noop-parent-jobs
+    concurrent: true
+    wrappers:
+      - default-functional-test-wrapper
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: ""
+          description: "Series to use as default-series in juju bootstrap and model-config in the functional tests."
+          name: series
+    builders:
+      - get-build-details
+      - set-test-description
+      - multijob:
+          name: FunctionalTestss390x
+          projects:
+            - name: nw-deploy-xenial-s390x-lxd
+              current-parameters: true
+
+- job:
+    name: "Gating-RunFunctionalTests-arm64"
+    project-type: "multijob"
+    description: |-
+      Run functional tests for arm64 arch
+    node: noop-parent-jobs
+    concurrent: true
+    wrappers:
+      - default-functional-test-wrapper
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: ""
+          description: "Series to use as default-series in juju bootstrap and model-config in the functional tests."
+          name: series
+    builders:
+      - get-build-details
+      - set-test-description
+      - multijob:
+          name: FunctionalTestsarm64
+          projects:
+            - name: nw-deploy-xenial-arm64-lxd
+              current-parameters: true
+
+- job:
+    name: "Gating-RunFunctionalTests-ppc64el"
+    project-type: "multijob"
+    concurrent: true
+    description: |-
+      Run functional tests for ppc64el arch
+    node: noop-parent-jobs
+    wrappers:
+      - default-functional-test-wrapper
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: ""
+          description: "Series to use as default-series in juju bootstrap and model-config in the functional tests."
+          name: series
+    builders:
+      - get-build-details
+      - set-test-description
+      - multijob:
+          name: FunctionalTestsarm64
+          projects:
+            - name: nw-deploy-xenial-ppc64el-lxd
+              current-parameters: true
+
+- wrapper:
+    name: default-functional-test-wrapper
+    wrappers:
+      - ansicolor
+      - timestamps
+      - workspace-cleanup
+      - cirun-test-stuck-timeout

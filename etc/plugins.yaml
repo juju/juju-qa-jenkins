@@ -1,0 +1,219 @@
+- longName: Folders Plugin
+  shortName: cloudbees-folder
+  version: '6.14'
+- longName: SSH Build Agents plugin
+  shortName: ssh-slaves
+  version: 1.31.2
+- longName: Plain Credentials Plugin
+  shortName: plain-credentials
+  version: '1.7'
+- longName: Jenkins JSch dependency plugin
+  shortName: jsch
+  version: 0.1.55.2
+- longName: Jenkins Subversion Plug-in
+  shortName: subversion
+  version: 2.13.1
+- longName: Ant Plugin
+  shortName: ant
+  version: '1.11'
+- longName: Command Agent Launcher Plugin
+  shortName: command-launcher
+  version: '1.4'
+- longName: Jenkins Git client plugin
+  shortName: git-client
+  version: 3.3.0
+- longName: JUnit Plugin
+  shortName: junit
+  version: '1.29'
+- longName: Script Security Plugin
+  shortName: script-security
+  version: '1.73'
+- longName: 'Pipeline: Declarative Extension Points API'
+  shortName: pipeline-model-extensions
+  version: 1.7.0
+- longName: bouncycastle API Plugin
+  shortName: bouncycastle-api
+  version: '2.18'
+- longName: Build Timeout
+  shortName: build-timeout
+  version: '1.20'
+- longName: Timestamper
+  shortName: timestamper
+  version: 1.11.3
+- longName: Branch API Plugin
+  shortName: branch-api
+  version: 2.5.6
+- longName: Structs Plugin
+  shortName: structs
+  version: '1.20'
+- longName: Durable Task Plugin
+  shortName: durable-task
+  version: '1.34'
+- longName: Pipeline Graph Analysis Plugin
+  shortName: pipeline-graph-analysis
+  version: '1.10'
+- longName: 'Pipeline: Shared Groovy Libraries'
+  shortName: workflow-cps-global-lib
+  version: '2.16'
+- longName: GitHub plugin
+  shortName: github
+  version: 1.30.0
+- longName: 'JavaScript GUI Lib: Moment.js bundle plugin'
+  shortName: momentjs
+  version: 1.1.1
+- longName: 'Pipeline: Build Step'
+  shortName: pipeline-build-step
+  version: '2.12'
+- longName: GitHub Branch Source Plugin
+  shortName: github-branch-source
+  version: 2.8.2
+- longName: 'Pipeline: Multibranch'
+  shortName: workflow-multibranch
+  version: '2.21'
+- longName: Credentials Binding Plugin
+  shortName: credentials-binding
+  version: '1.23'
+- longName: 'Pipeline: Stage Tags Metadata'
+  shortName: pipeline-stage-tags-metadata
+  version: 1.7.0
+- longName: JAXB plugin
+  shortName: jaxb
+  version: 2.3.0.1
+- longName: 'Pipeline: REST API Plugin'
+  shortName: pipeline-rest-api
+  version: '2.13'
+- longName: Jenkins Workspace Cleanup Plugin
+  shortName: ws-cleanup
+  version: '0.38'
+- longName: 'Pipeline: Input Step'
+  shortName: pipeline-input-step
+  version: '2.11'
+- longName: Gradle Plugin
+  shortName: gradle
+  version: '1.36'
+- longName: OWASP Markup Formatter Plugin
+  shortName: antisamy-markup-formatter
+  version: '2.0'
+- longName: 'Pipeline: Basic Steps'
+  shortName: workflow-basic-steps
+  version: '2.20'
+- longName: Trilead API Plugin
+  shortName: trilead-api
+  version: 1.0.8
+- longName: 'Pipeline: GitHub Groovy Libraries'
+  shortName: pipeline-github-lib
+  version: '1.0'
+- longName: 'Pipeline: Milestone Step'
+  shortName: pipeline-milestone-step
+  version: 1.3.1
+- longName: PAM Authentication plugin
+  shortName: pam-auth
+  version: '1.6'
+- longName: GitHub API Plugin
+  shortName: github-api
+  version: 1.114.3
+- longName: 'Pipeline: Stage View Plugin'
+  shortName: pipeline-stage-view
+  version: '2.13'
+- longName: 'JavaScript GUI Lib: ACE Editor bundle plugin'
+  shortName: ace-editor
+  version: '1.1'
+- longName: Credentials Plugin
+  shortName: credentials
+  version: 2.3.9
+- longName: OkHttp Plugin
+  shortName: okhttp-api
+  version: 3.14.9
+- longName: SCM API Plugin
+  shortName: scm-api
+  version: 2.6.3
+- longName: Naginator
+  shortName: naginator
+  version: '1.18'
+- longName: 'Pipeline: Stage Step'
+  shortName: pipeline-stage-step
+  version: '2.3'
+- longName: Jackson 2 API Plugin
+  shortName: jackson2-api
+  version: 2.11.0
+- longName: MapDB API Plugin
+  shortName: mapdb-api
+  version: 1.0.9.0
+- longName: Matrix Authorization Strategy Plugin
+  shortName: matrix-auth
+  version: 2.6.1
+- longName: 'JavaScript GUI Lib: Handlebars bundle plugin'
+  shortName: handlebars
+  version: 1.1.1
+- longName: Resource Disposer Plugin
+  shortName: resource-disposer
+  version: '0.14'
+- longName: 'Pipeline: Job'
+  shortName: workflow-job
+  version: '2.39'
+- longName: 'Pipeline: SCM Step'
+  shortName: workflow-scm-step
+  version: '2.11'
+- longName: LDAP Plugin
+  shortName: ldap
+  version: '1.24'
+- longName: 'Pipeline: Step API'
+  shortName: workflow-step-api
+  version: '2.22'
+- longName: 'Pipeline: API'
+  shortName: workflow-api
+  version: '2.40'
+- longName: SSH Credentials Plugin
+  shortName: ssh-credentials
+  version: 1.18.1
+- longName: Email Extension Plugin
+  shortName: email-ext
+  version: '2.69'
+- longName: 'Pipeline: Model API'
+  shortName: pipeline-model-api
+  version: 1.7.0
+- longName: Oracle Java SE Development Kit Installer Plugin
+  shortName: jdk-tool
+  version: '1.4'
+- longName: Display URL API
+  shortName: display-url-api
+  version: 2.3.2
+- longName: Jenkins Apache HttpComponents Client 4.x API Plugin
+  shortName: apache-httpcomponents-client-4-api
+  version: 4.5.10-2.0
+- longName: Jenkins GIT server Plugin
+  shortName: git-server
+  version: '1.9'
+- longName: Jenkins Git plugin
+  shortName: git
+  version: 4.3.0
+- longName: 'Pipeline: Declarative'
+  shortName: pipeline-model-definition
+  version: 1.7.0
+- longName: Pipeline
+  shortName: workflow-aggregator
+  version: '2.6'
+- longName: Lockable Resources plugin
+  shortName: lockable-resources
+  version: '2.8'
+- longName: 'JavaScript GUI Lib: jQuery bundles (jQuery and jQuery UI) plugin'
+  shortName: jquery-detached
+  version: 1.2.1
+- longName: Token Macro Plugin
+  shortName: token-macro
+  version: '2.12'
+- longName: 'Pipeline: Supporting APIs'
+  shortName: workflow-support
+  version: '3.5'
+- longName: Jenkins Mailer Plugin
+  shortName: mailer
+  version: '1.32'
+- longName: 'Pipeline: Groovy'
+  shortName: workflow-cps
+  version: '2.80'
+- longName: Matrix Project Plugin
+  shortName: matrix-project
+  version: '1.16'
+- longName: 'Pipeline: Nodes and Processes'
+  shortName: workflow-durable-task-step
+  version: '2.35'

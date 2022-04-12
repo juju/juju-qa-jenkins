@@ -1,0 +1,25 @@
+- job:  # nw-container-networking-maas-2-9
+    name: nw-container-networking-maas-2-9
+    node: maas
+    description: |-
+      Container networking test: MAAS 2.9
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-finfolk-vmaas
+          timeout -s INT 45m ${TESTS_DIR}/assess_container_networking.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
+            --series bionic --machine-type=lxd --space-constraint=space1
+    publishers:
+      - artifact-results
+      - log-panic-check

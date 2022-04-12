@@ -1,0 +1,57 @@
+
+- project:
+    name: "clean-workspaces"
+    server:
+      - arm64-slave: {}
+      - s390x-slave: {}
+      - borbein: {}
+    jobs:
+      - 'clean-workspace-{server}'
+
+- job-template:
+    name: 'clean-workspace-{server}'
+    project-type: freestyle
+    node: noop-parent-jobs
+    description: Prepare substrates for testing
+    concurrent: true
+    # TODO - if this is not run on infrastructure node, get ssh_config first
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -eux
+
+          ssh {server} << EOF
+            sudo su
+            find /var/lib/jenkins/workspace/ -maxdepth 1 -name *ws-cleanup* | xargs rm -rf
+          EOF
+    publishers:
+    - email-ext:
+        # outbound traffic is only allowed from Kabuto(10.125.0.203) to smtp.internal,
+        # if Kabuto has been rebuilt or got ip changed, ask IS to reconfig the firewall.
+        # Note: single email address as this is in a testing phase of reporting.
+        recipients: juju-qa-aws@canonical.com
+        content-type: html
+        attach-build-log: false
+        fixed-unhealthy: true
+        first-failure: false
+        second-failure: true
+        body: |
+          This job has repeatedly failed which indicates that one of the machines is sick (and may need a reboot etc.).
+          <br/>
+          <br/>
+          <strong>Suggestions:</strong>
+            <ol>
+            <li>Check the console log in jenkins job see why 'clean-workspace-{server}' is failing to be cleaned up</li>
+            <li>Workspace cleanup issue? ssh into '{server}' and run the script manually, that usually helps</li>
+            <li>Connectivity issue? uh oh, determine why we can't ssh in (firewall, the machine is down?, #is and #is-outage can be useful)</li>
+            </ol>
+
+          <br/>
+          $DEFAULT_CONTENT
+    triggers:
+    - timed: H * * * *
+    wrappers:
+    - timeout:
+        fail: true
+        timeout: 120
+        type: absolute

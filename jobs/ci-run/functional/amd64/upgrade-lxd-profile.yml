@@ -1,0 +1,28 @@
+- job:
+    name: nw-upgrade-lxd-profile-lxd
+    node: ephemeral-focal-4c-16g-amd64
+    description: |-
+      Test deployment of lxd profile, then upgrade one of the charms with
+      lxd profiles to ensure that we can upgrade on lxd.
+    parameters:
+    - string:
+        default: ''
+        description: 'Short GIT commit to use for running individually. Parameter passed from parent job.'
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+            ENV=parallel-lxd
+            timeout -s INT 50m ${TESTS_DIR}/assess_upgrade_lxd_profile.py \
+                $ENV $JUJU_BIN \
+                $WORKSPACE/artifacts \
+                $JOB_NAME
+    publishers:
+      - artifact-results
+      - log-panic-check

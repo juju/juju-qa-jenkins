@@ -1,0 +1,71 @@
+- job:
+    name: nw-caas-deploy-charms-microk8s-iaas-controller
+    node: k8s
+    disabled: true
+    description: |-
+      Test deploying caas workloads - mariadb and mediawiki.
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: amd64
+          description: "Arch to build for."
+          name: BUILD_ARCH
+      - string:
+          default: MICROK8S
+          description: "Specify K8s cloud provider to use."
+          name: CAAS_PROVIDER
+      - string:
+          default: jujuqabot
+          description: "Operator docker image account name."
+          name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-lxd
+          timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
+          $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \
+          --caas-provider=${CAAS_PROVIDER}
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+- job:
+    name: nw-caas-deploy-charms-kubernetes-core-iaas-controller
+    node: k8s
+    disabled: true
+    description: |-
+      Test deploying caas workloads - mariadb and mediawiki.
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: "amd64"
+          description: "Arch to build for."
+          name: BUILD_ARCH
+      - string:
+          default: "K8S_CORE"
+          description: "Specify K8s cloud provider to use."
+          name: CAAS_PROVIDER
+      - string:
+          default: "jujuqabot"
+          description: "Operator docker image account name."
+          name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-lxd
+          timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
+          $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \
+          --caas-provider=${CAAS_PROVIDER}
+    publishers:
+      - artifact-results
+      - log-panic-check

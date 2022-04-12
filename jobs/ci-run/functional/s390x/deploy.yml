@@ -1,0 +1,35 @@
+- job:  # nw-deploy-xenial-s390x-lxd
+    name: nw-deploy-xenial-s390x-lxd
+    node: s390x
+    description: |-
+      Deploy lxd on xenial+s390x using xenial apps.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 's390x'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          #!/bin/bash
+
+          CHECK=$(${TESTS_DIR}/deploy_job.py -h | grep "\-\-arch" || echo "NOT FOUND")
+          if [ "${CHECK}" = "NOT FOUND" ]; then
+            timeout -s INT 60m ${TESTS_DIR}/deploy_job.py \
+              --series xenial \
+              parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
+          else
+            timeout -s INT 60m ${TESTS_DIR}/deploy_job.py \
+              --series xenial --arch ${BUILD_ARCH} \
+              parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
+          fi
+    publishers:
+      - artifact-results
+      - log-panic-check
+

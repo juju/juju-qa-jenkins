@@ -1,0 +1,34 @@
+- job:
+    name: "z-clean-resources-equinix"
+    description: Clean up stale equinix nodes.
+    builders:
+    - get-equinix-cleanup-scripts
+    - get-juju-cloud-creds
+    - shell: |-
+        #!/bin/bash
+        set -x
+        chmod +x $SCRIPTS_DIR/clean_equinix.py
+        $SCRIPTS_DIR/clean_equinix.py am --hours=2
+    node: ephemeral-focal-small-amd64
+    publishers:
+    - email-ext:
+        recipients: juju-qa-aws@canonical.com
+        content-type: html
+        attach-build-log: false
+        fixed-unhealthy: true
+        first-failure: false
+        second-failure: true
+        body: |
+          <h1>Infrastructure failure: equinix</h1>
+          The following job has repeatedly failed.
+          <br />
+          Please login to the equinix metal admin <a href="https://console.equinix.com">panel</a> and manually release the machines.
+          <br />
+          $DEFAULT_CONTENT
+    triggers:
+    - timed: H * * * *
+    wrappers:
+    - timeout:
+        fail: true
+        timeout: 30  # 30 mins should be enough for destroying all equinix machines.
+        type: absolute

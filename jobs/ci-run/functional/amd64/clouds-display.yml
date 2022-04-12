@@ -1,0 +1,39 @@
+- job:
+    name: nw-clouds-display
+    node: ephemeral-focal-4c-16g-amd64
+    description: |-
+      Test example-clouds.yaml is interoperable with "clouds" and "show-cloud" commands
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          (
+          cat << EOF
+          clouds:
+            finfolk-vmaas:
+              type: maas
+              auth-types: [oauth1]
+              endpoint: http://10.125.0.10:5240/MAAS/
+            vsphere:
+              type: vsphere
+              auth-types: [userpass]
+              endpoint: 10.247.0.3
+              regions:
+                QA:
+                  endpoint: 10.247.0.3
+          EOF
+          ) > $JUJU_HOME/example-clouds.yaml
+
+          timeout -s INT 5m ${TESTS_DIR}/assess_cloud_display.py $JUJU_HOME/example-clouds.yaml $JUJU_BIN
+    publishers:
+      - log-panic-check

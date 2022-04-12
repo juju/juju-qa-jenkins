@@ -1,0 +1,56 @@
+- job:
+    name: test-ck-aws
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test ck suite on aws
+    condition: SUCCESSFUL
+    concurrent: true
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'aws'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+    builders:
+      - prepare-integration-test
+      - get-s3-build-payload:
+          SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
+          BUILD_ARCH: "${{BUILD_ARCH}}"
+      - prepare-ephemeral-node-for-docker
+      - ensure-aws-credentials
+      - integration-test-runner-ephemeral:
+          pre_test_steps:
+                !include-raw: "../../scripts/registry-setup.sh"
+          test_name: "ck"
+          task_name: ""
+          skip_tasks: ""
+          setup_steps: ""
+    publishers:
+      - integration-artifacts

@@ -1,0 +1,50 @@
+- job:
+    name: 'z-clean-resources-gce'
+    description: Clean up old instances and firewall rules.
+    builders:
+    - get-gce-creds
+    - get-gce-cleanup-scripts
+    - shell: |-
+        #!/bin/bash
+        set -eu
+
+        # Display instances' regions
+        python $SCRIPTS_DIR/gce.py -v list-instances juju-*
+
+        python $SCRIPTS_DIR/gce.py -v delete-instances -o 2 juju-*
+
+        #gcloud auth login
+        gcloud config set project gothic-list-89514
+        gcloud compute firewall-rules list
+        # On every job run, remove any rules that still exist from last run
+        # generate gce rules with
+        # gcloud compute firewall-rules list | awk {'print $1'} | grep juju > ~/gcerules
+        gcloud compute firewall-rules list | awk {'print $1'} | grep juju | sort -u > newrules
+        # destroy all rules still found
+        comm -1 -2  ~/gcerules newrules | xargs  -I % gcloud compute firewall-rules delete % --quiet
+        # set new rules
+        mv newrules ~/gcerules
+    node: ephemeral-focal-small-amd64
+    publishers:
+    - email-ext:
+        recipients: juju-qa-aws@canonical.com
+        content-type: html
+        attach-build-log: false
+        fixed-unhealthy: true
+        first-failure: false
+        second-failure: true
+        body: |
+          <h1>Infrastructure failure: gce</h1>
+          The following job has repeatedly failed.
+          <br />
+          Please login to jenkins job <pre>`z-clean-resources-gce`</pre> to find out why
+          it is failing.
+          <br />
+          $DEFAULT_CONTENT
+    triggers:
+    - timed: H */2 * * *
+    wrappers:
+    - timeout:
+        fail: true
+        timeout: 10
+        type: absolute

@@ -1,0 +1,43 @@
+- job:
+    name: nw-add-cloud-many
+    node: ephemeral-focal-4c-16g-amd64
+    description: |
+      Test add-cloud interactive command.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell:
+          !include-raw: ../../scripts/add-cloud-many.sh
+    publishers:
+      - postbuildscript:
+          builders:
+            - role: SLAVE
+              build-on:
+                - SUCCESS
+                - FAILURE
+                - UNSTABLE
+                - ABORTED
+              build-steps:
+              - shell: |
+                  set -ex	
+                  # NOTE(achilleasa): the cleanup code for the test has been 
+                  # moved into a post-build script to ensure that we always
+                  # clean up even if the job gets manually aborted. Please do
+                  # not delete this block.
+                  echo "Ensure that all resources have been cleaned up."	
+                  clouds_file="/tmp/cloud-list-${SHORT_GIT_COMMIT}.yaml"
+                  [ -f "${clouds_file}" ] && rm -f "${clouds_file}" || true
+                  [ -f sshuttle.pid ] && kill -INT $(cat sshuttle.pid) || true
+                  [ -f sshuttle-vsphere.pid ] && kill -INT $(cat sshuttle-vsphere.pid) || true
+                  lxc list | grep -E "add-cloud-.*-${SHORT_GIT_COMMIT}" | awk '{print $2}' | xargs lxc delete --force 2>/dev/null || true
+      - log-panic-check

@@ -1,0 +1,45 @@
+- job:
+    name: "ProvingGrounds-RunFunctionalTests-amd64"
+    project-type: "multijob"
+    description: |-
+      Build juju snap and binaries for amd64.
+    node: noop-parent-jobs
+    concurrent: true
+    wrappers:
+      - default-functional-test-wrapper
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: ""
+          description: "Series to use as default-series in juju bootstrap and model-config in the functional tests."
+          name: series
+    builders:
+      - get-build-details
+      - set-test-description
+      - multijob:
+          name: ProvingGroundsFunctionalTestsAmd64
+          projects:
+            - name: nw-bootstrap-constraints-maas-2-9
+              current-parameters: true
+            - name: nw-deploy-client-macos
+              current-parameters: true
+            - name: nw-deploy-bionic-microk8s
+              disabled: true # nameserver fix required on microk8s
+              current-parameters: true
+            - name: nw-model-migration-amd64-azure-arm
+              current-parameters: true
+            - name: nw-model-migration-versions-lxd
+              current-parameters: true
+            - name: nw-network-health-oci
+              current-parameters: true
+              predefined-parameters: |-
+                series=xenial
+            - name: nw-network-health-vsphere
+              current-parameters: true
+            - name: nw-resolve
+              current-parameters: true
+            - name: nw-upgrade-juju-beta
+              current-parameters: true

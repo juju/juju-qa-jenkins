@@ -1,0 +1,180 @@
+- job:
+    name: 'github-mgo-check-jobs'
+    project-type: 'multijob'
+    description: 'Run the various checks for landing from GitHub PRs'
+    concurrent: false
+    node: master
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+          timeout: 60
+          fail: true
+          type: absolute
+    parameters:
+    - string:
+         default: ''
+         description: 'Enable sub job to be run individually.'
+         name: SHORT_GIT_COMMIT
+    properties:
+      - github:
+          url: https://github.com/juju/mgo/
+      - authorization:
+          anonymous:
+            - job-read
+    triggers:
+      - github-pull-request:
+          github-hooks: true
+          trigger-phrase: '.*!!.*!!.*'
+          status-context: "check-multi-mgo"
+          only-trigger-phrase: false
+          auto-close-on-fail: false
+          cancel-builds-on-update: true  # Cancel existing builds if PR updated/re-run.
+          cron: 'H/5 * * * *'
+          org-list:
+            - juju
+            - CanonicalLtd
+          allow-whitelist-orgs-as-admins: true
+          black-list-labels:
+            - "no-test-run"
+          black-list-target-branches:
+            - feature-.*
+    builders:
+      - multijob:
+            name: github-mgo-check-jobs
+            projects:
+              - name: github-make-check-mgo
+                job-alias: 'bionic'
+                current-parameters: true
+                predefined-parameters: |-
+                    CONTAINER_SERIES=bionic
+#              - name: 'github-make-check-mgo'
+#                job-alias: 'xenial'
+#                current-parameters: true
+#                predefined-parameters: |-
+#                    CONTAINER_SERIES=xenial
+
+- job:
+    name: github-make-check-mgo
+    description: |-
+      Run test suite against PR
+    node: silcoon
+    concurrent: true
+    parameters:
+    - string:
+        default: ''
+        description: 'Specific git SHA to build (used to overwrite triggered runs).'
+        name: GITHUB_BRANCH_HEAD_SHA
+    - string:
+        default: ''
+        description: 'Specify the OS Series to run on'
+        name: CONTAINER_SERIES
+    - string:
+        default: 'apt'
+        description: 'Whether we get mongod from "apt" or "snap"'
+        name: MONGOD_SOURCE
+    properties:
+      - authorization:
+         anonymous:
+             - job-read
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+           timeout: 60
+           fail: true
+           type: absolute
+    builders:
+      - description-setter:
+          description: '<a href="${ghprbPullLink}">PR #${ghprbPullId}</a>'
+      - inject:
+          properties-content: |-
+            PROJECT_DIR="github.com/juju/mgo/v2"
+      - run-build-check-lxd:
+          build_env: ""
+          src_command:
+              !include-raw: "./scripts/snippet_build_check-juju-mgo.sh"
+          checkout_command:
+              !include-raw: "./scripts/checkout.sh"
+          test_command:
+              !include-raw: "./scripts/snippet_clean-test-exit.sh"
+    publishers:
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+
+###########################################
+- job:
+    name: 'github-mgo-merge-jobs'
+    project-type: 'multijob'
+    description: 'On request, run pre-commit checks, and then merge changes for mgo merge jobs'
+    concurrent: true
+    node: master
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+          timeout: 60
+          fail: true
+          type: absolute
+    parameters:
+    - string:
+         default: ''
+         description: 'Enable sub job to be run individually.'
+         name: SHORT_GIT_COMMIT
+    properties:
+      - github:
+          url: https://github.com/juju/mgo/
+      - authorization:
+          anonymous:
+            - job-read
+    triggers:
+      - github-pull-request:
+          github-hooks: true
+          trigger-phrase: '.*\$\$merge\$\$.*'
+          status-context: "merge-multi-mgo"
+          only-trigger-phrase: true
+          auto-close-on-fail: false
+          cron: 'H/5 * * * *'
+          org-list:
+            - juju
+            - CanonicalLtd
+          allow-whitelist-orgs-as-admins: true
+          black-list-target-branches:
+            - feature-.*
+    builders:
+      - shell: |-
+          #!/bin/bash
+          # Sanatise the PR description for merge commit message.
+          cat >prdesc <<EOT
+              pr_descr=$(echo ${ghprbPullLongDescription} | sed $'s/\\r\\n/ \\\\\\n/g')
+          EOT
+      - inject:
+          properties-file: ${WORKSPACE}/prdesc
+      - multijob:
+            name: github-mgo-merge-jobs
+            projects:
+              - name: github-make-check-mgo
+                job-alias: 'bionic'
+                current-parameters: true
+                predefined-parameters: |-
+                    CONTAINER_SERIES=bionic
+#              - name: 'github-make-check-mgo'
+#                job-alias: 'xenial'
+#                current-parameters: true
+#                predefined-parameters: |-
+#                    CONTAINER_SERIES=xenial
+    publishers:
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+      - github-pull-request-merge:
+          only-admins-merge: true
+          fail-on-non-merge: true
+          merge-comment: |-
+              $ghprbPullLink
+
+              $pr_descr

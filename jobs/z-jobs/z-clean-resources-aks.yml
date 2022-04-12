@@ -1,0 +1,34 @@
+- job:
+    name: 'z-clean-resources-aks'
+    description: Clean up aks clusters.
+    builders:
+    - get-aks-cleanup-scripts
+    - shell: |-
+        #!/bin/bash
+        set -x
+        $SCRIPTS_DIR/aks_cleanup.py
+
+    node: ephemeral-focal-small-amd64
+    publishers:
+    - email-ext:
+        recipients: juju-qa-aws@canonical.com
+        content-type: html
+        attach-build-log: false
+        fixed-unhealthy: true
+        first-failure: false
+        second-failure: true
+        body: |
+          <h1>Infrastructure failure: aks</h1>
+          The following job has repeatedly failed.
+          <br />
+          Please login to jenkins job <pre>`z-clean-resources-aks`</pre> to find out why
+          it is failing.
+          <br />
+          $DEFAULT_CONTENT
+    triggers:
+    - timed: H */2 * * *
+    wrappers:
+    - timeout:
+        fail: true
+        timeout: 30  # 30 mins should be enough for destroying all the clusters.
+        type: absolute

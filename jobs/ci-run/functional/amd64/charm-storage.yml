@@ -1,0 +1,30 @@
+- job:
+    name: nw-charm-storage
+    node: ephemeral-focal-4c-16g-amd64
+    description: |-
+      Test the storage juju features.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    - string:
+        default: ap-northeast-1
+        description: Which region in aws to run on.
+        name: region
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-aws
+          timeout -s INT 50m ${TESTS_DIR}/assess_storage.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
+           --series bionic \
+           --region $region
+    publishers:
+      - artifact-results
+      - log-panic-check

@@ -1,0 +1,31 @@
+- job:
+    name: 'z-clean-resources-ecr'
+    description: Clean up ecr registries.
+    builders:
+    - get-ec2-creds
+    - shell:
+        !include-raw: scripts/ecr-cleanup.sh
+    node: ephemeral-focal-small-amd64
+    publishers:
+    - email-ext:
+        recipients: juju-qa-aws@canonical.com
+        content-type: html
+        attach-build-log: false
+        fixed-unhealthy: true
+        first-failure: false
+        second-failure: true
+        body: |
+          <h1>Infrastructure failure: ecr</h1>
+          The following job has repeatedly failed.
+          <br />
+          Please login to jenkins job <pre>`z-clean-resources-ecr`</pre> to find out why
+          it is failing.
+          <br />
+          $DEFAULT_CONTENT
+    triggers:
+    - timed: H */2 * * *
+    wrappers:
+    - timeout:
+        fail: true
+        timeout: 30  # 30 mins should be enough for destroying all the clusters.
+        type: absolute

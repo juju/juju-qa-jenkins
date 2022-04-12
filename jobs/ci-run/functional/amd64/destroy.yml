@@ -1,0 +1,67 @@
+- job:
+    name: nw-destroy-model-lxd
+    description: |-
+     Use the assess-destroy-model script to test if Juju properly handles the list-models command during a timing hole.
+    node: ephemeral-focal-4c-16g-amd64
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-lxd
+          series=xenial
+          timeout -s INT 30m ${TESTS_DIR}/assess_destroy_model.py \
+            $ENV \
+            $JUJU_BIN \
+            $WORKSPACE/artifacts \
+            $JOB_NAME \
+           --series $series
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+
+- job:
+    name: nw-destroy-model-aws
+    description: |-
+     Use the assess-destroy-model script to test if Juju properly handles the list-models command during a timing hole.
+    node: ephemeral-focal-4c-16g-amd64
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    - string:
+        name: region
+        description: Which aws region to run on
+        default: ca-central-1
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-aws
+          series=xenial
+          timeout -s INT 30m ${TESTS_DIR}/assess_destroy_model.py \
+            $ENV \
+            $JUJU_BIN \
+            $WORKSPACE/artifacts \
+            $JOB_NAME \
+           --series $series \
+           --region $region
+    publishers:
+      - artifact-results
+      - log-panic-check

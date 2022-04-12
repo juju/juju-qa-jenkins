@@ -1,0 +1,46 @@
+- job:
+    name: 'z-clean-resources-gke'
+    description: Clean up gke clusters.
+    builders:
+    - get-gce-creds
+    - get-gce-cleanup-scripts
+    - shell: |-
+        #!/bin/bash
+        set -eu
+        max_age_of_cluster="3H"
+
+        # Get GKE which were created more than 3 hours ago.
+        clusters_to_delete=$(gcloud container clusters list --filter="createTime<-PT$max_age_of_cluster" --format=json)
+        echo -e "clusters created more than $max_age_of_cluster -> \n$clusters_to_delete"
+
+        for c in $(echo $clusters_to_delete | jq -r '.[] | @base64'); do
+            c=$(echo $c| base64 --decode)
+            name=$(echo $c | jq -r '.name')
+            zone=$(echo $c | jq -r '.zone')
+            echo "deleting cluster -> $name $zone"
+            gcloud container clusters delete $name --zone=$zone --quiet
+        done
+    node: ephemeral-focal-small-amd64
+    publishers:
+    - email-ext:
+        recipients: juju-qa-aws@canonical.com
+        content-type: html
+        attach-build-log: false
+        fixed-unhealthy: true
+        first-failure: false
+        second-failure: true
+        body: |
+          <h1>Infrastructure failure: gke</h1>
+          The following job has repeatedly failed.
+          <br />
+          Please login to jenkins job <pre>`z-clean-resources-gke`</pre> to find out why
+          it is failing.
+          <br />
+          $DEFAULT_CONTENT
+    triggers:
+    - timed: H */2 * * *
+    wrappers:
+    - timeout:
+        fail: true
+        timeout: 30  # 30 mins should be enough for destroying all the clusters.
+        type: absolute

@@ -1,0 +1,70 @@
+- job:
+    name: "Gating Tests"
+    project-type: "multijob"
+    description: "Run gating tests for a Juju commit"
+    condition: SUCCESSFUL
+    node: noop-parent-jobs
+    concurrent: true
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+          timeout: 300
+          fail: true
+          type: absolute
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to test
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+      - string:
+          default: ""
+          description: "Series to use with charms in the functional tests"
+          name: series
+      - string:
+          default: ''
+          description: 'Ubuntu series to use when bootstrapping Juju'
+          name: BOOTSTRAP_SERIES
+    publishers:
+      - email-ext:
+          recipients: juju-crew@lists.canonical.com
+          content-type: html
+          attach-build-log: true
+          first-failure: true
+          fixed-unhealthy: true
+          subject: "STOP THE LINE! ${DEFAULT_SUBJECT}"
+          body: |
+            <h1>Gating-RunFunctionalTests-amd64 test failure</h1>
+            These tests must pass. Diagnose the problem and assign to a member of the team today!
+            <br>
+            $DEFAULT_CONTENT
+    builders:
+      - get-build-details
+      - set-test-description
+      - multijob:
+          name: GatingTests
+          # Defining BUILD_ARCH ensures the right binaries are pulled down.
+          projects:
+            - name: Gating-RunFunctionalTests-amd64
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: Gating-RunFunctionalTests-s390x
+              current-parameters: true
+              predefined-parameters: |- 
+                BUILD_ARCH=s390x
+            - name: Gating-RunFunctionalTests-arm64
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=arm64
+            - name: Gating-RunFunctionalTests-ppc64el
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=ppc64el
+            - name: Gating-IntegrationTests-amd64
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+                BOOTSTRAP_SERIES=${BOOTSTRAP_SERIES}

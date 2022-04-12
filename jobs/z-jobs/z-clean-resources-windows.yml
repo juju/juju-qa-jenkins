@@ -1,0 +1,60 @@
+- job:
+    name: 'z-clean-resources-windows'
+    builders:
+    - shell: |-
+        #!/bin/bash
+        #This is needed to ensure commands are passed properly
+        IFS='%'
+        drive="D:"
+        ts=$(date +%s)
+        runcmd() {
+            host=$1
+            echo "Running on $host as payload $ts"
+            #Create working directory
+            ssh $host "mkdir $drive\\payloads\\$ts"
+            #Copy file if given
+            if [[ $# -eq 3 ]] ; then
+                scp $3 $host:$drive\\payloads\\$ts\\$3
+            fi
+            #Make payload to run
+            payload="cleanup-$ts.bat"
+            echo "$drive" > $payload
+            echo "cd $drive\\payloads\\$ts" >> $payload
+            echo "$2" >> $payload
+            #Ensure the error is returned if the command fails
+            echo "if errorlevel 1 (" >> $payload
+            echo "   exit /b %errorlevel%" >> $payload
+            echo ")" >> $payload
+            scp $payload $host:$drive\\payloads\\
+            #Run test command via ssh
+            ssh $host $drive\\payloads\\$payload
+        }
+
+        cmd='powershell.exe "Get-ChildItem -Path \"D:\payloads\" -Recurse | Where CreationTime -lt (Get-Date).AddDays(-1) | Remove-Item -Force -Recurse"'
+        runcmd developer-win-unit-tester $cmd
+        runcmd cijujucharmscom-windows $cmd
+    description: 'Clean-up payload scripts and files from windows slaves'
+    node: infrastructure
+    publishers:
+    - email-ext:
+        recipients: juju-qa-aws@canonical.com
+        content-type: html
+        attach-build-log: false
+        fixed-unhealthy: true
+        first-failure: false
+        second-failure: true
+        body: |
+          <h1>Infrastructure failure: windows</h1>
+          The following job has repeatedly failed.
+          <br />
+          Please login to jenkins job <pre>`z-clean-resources-windows`</pre> to find out why
+          it is failing.
+          <br />
+          $DEFAULT_CONTENT
+    triggers:
+    - timed: H 0 * * *
+    wrappers:
+    - timeout:
+        fail: true
+        timeout: 10
+        type: absolute

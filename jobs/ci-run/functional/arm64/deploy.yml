@@ -1,0 +1,34 @@
+- job:  # nw-deploy-xenial-arm64-lxd
+    name: nw-deploy-xenial-arm64-lxd
+    node: arm64-slave
+    description: |-
+      Deploy lxd on xenial+arm64 using xenial apps.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'arm64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          #!/bin/bash
+
+          CHECK=$(${TESTS_DIR}/deploy_job.py -h | grep "\-\-arch" || echo "NOT FOUND")
+          if [ "${CHECK}" = "NOT FOUND" ]; then
+            timeout -s INT 60m ${TESTS_DIR}/deploy_job.py \
+              --series xenial \
+              parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
+          else
+            timeout -s INT 60m ${TESTS_DIR}/deploy_job.py \
+              --series xenial --arch ${BUILD_ARCH} \
+              parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
+          fi
+    publishers:
+      - artifact-results
+      - log-panic-check

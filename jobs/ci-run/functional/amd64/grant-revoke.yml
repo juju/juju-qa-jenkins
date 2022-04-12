@@ -1,0 +1,31 @@
+- job:
+    name: nw-grant-revoke
+    node: ephemeral-focal-4c-16g-amd64
+    description: |-
+      Test user permission in juju via grant and revoke commands
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    - string:
+        default: bionic
+        description: ''
+        name: series
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-lxd
+          export GOCOOKIES=$WORKSPACE/go-cookies
+          timeout -s INT 30m ${TESTS_DIR}/assess_user_grant_revoke.py $ENV $JUJU_BIN \
+           $WORKSPACE/artifacts $JOB_NAME \
+           --series $series
+    publishers:
+      - artifact-results
+      - log-panic-check

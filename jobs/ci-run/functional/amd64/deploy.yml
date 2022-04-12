@@ -1,0 +1,233 @@
+- job:
+    name: nw-deploy-focal-amd64-lxd
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Deploy local lxd on focal+amd64 using focal apps.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+            timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series focal \
+                parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME --debug \
+                --agent-url https://ci-run-streams.s3.amazonaws.com/builds/build-${SHORT_GIT_COMMIT}/ --agent-stream build-${SHORT_GIT_COMMIT}
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+- job:
+    name: nw-deploy-bionic-amd64-lxd
+    node: ephemeral-bionic-4c-16g
+    description: |-
+      Deploy local lxd on bionic+amd64 using bionic apps.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+            timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
+                parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME --debug \
+                --agent-url https://ci-run-streams.s3.amazonaws.com/builds/build-${SHORT_GIT_COMMIT}/ --agent-stream build-${SHORT_GIT_COMMIT}
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+
+- job:
+    name: nw-deploy-client-centos9
+    node: ephemeral-centos9-8c-32g-amd64
+    description: |-
+      Deploy local aws on centos9+amd64 using bionic apps.
+    parameters:
+    - validating-string:
+        description: The git short hash for the commit you wish to test
+        name: SHORT_GIT_COMMIT
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    - string:
+        default: us-west-2
+        description: Which region in aws to run on.
+        name: region
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-ephemeral-functional-test-exotic:
+          platform: centos
+      - shell: |-
+          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
+                --region $region \
+                parallel-aws $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME --debug \
+                --agent-url https://ci-run-streams.s3.amazonaws.com/builds/build-${SHORT_GIT_COMMIT}/ --agent-stream build-${SHORT_GIT_COMMIT}
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+
+- job:
+    name: nw-deploy-bionic-amd64-maas-2-9
+    node: maas
+    description: |-
+      Deploy local maas-2-9 on bionic+amd64 using bionic apps.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          #!/bin/bash
+          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
+             parallel-finfolk-vmaas $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+- job:
+    name: nw-deploy-bionic-amd64-equinix
+    node: ephemeral-bionic-4c-16g
+    description: |-
+      Deploy to equinix cloud bionic+amd64 using bionic apps.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          #!/bin/bash
+          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
+             parallel-equinix $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+- job:
+    name: nw-deploy-bionic-vsphere
+    node: vsphere
+    description: |-
+      Deploy on vsphere using bionic apps.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          #!/bin/bash
+
+          # A bit gross, need to handle the no_proxy parts for munna better.
+          export no_proxy=$no_proxy,$(echo 10.247.4.{1..100} | tr ' ' ',')
+          # Boston vsphere and its disks.
+          export no_proxy=$no_proxy,10.246.152.100,azalea.internal,domino.internal,fludd.internal,eyerok.internal,chrom.internal,barnacle.internal
+          # Matches the VLAN used for vsphere juju-qa config
+          export no_proxy=$no_proxy,10.246.157.0/24
+          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
+             parallel-vsphere-boston $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+
+- job:
+    name: nw-deploy-client-macos
+    node: mac
+    description: |-
+      Deploy on MacOS using xenial apps.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    - string:
+        default: europe-west1
+        description: Which region in gce to run on.
+        name: region
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test-exotic:
+            platform: osx
+      - shell: |-
+            ${TESTS_DIR}/deploy_job.py parallel-gce ${JUJU_BIN} artifacts testing-osx-client1 \
+            --region $region \
+            --series xenial \
+            --agent-url https://ci-run-streams.s3.amazonaws.com/builds/build-${SHORT_GIT_COMMIT} --agent-stream build-${SHORT_GIT_COMMIT}
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+
+- job:
+    name: nw-deploy-client-windows
+    node: ephemeral-focal-4c-16g-amd64
+    wrappers:
+        - timeout:
+            timeout: 30
+            fail: true
+            type: absolute
+        - cirun-test-stuck-timeout
+    description: |-
+      Deploy on Windows using xenial apps.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    builders:
+      - prepare-functional-test-exotic:
+            platform: windows
+      - shell:
+          !include-raw: ../../scripts/deploy-client-windows.sh
+    publishers:
+      - log-panic-check

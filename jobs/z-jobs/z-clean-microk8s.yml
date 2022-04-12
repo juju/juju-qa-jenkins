@@ -1,0 +1,21 @@
+- job:
+    name: "z-clean-microk8s"
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -x
+
+          if [[ $(snap list | grep microk8s) ]]; then
+            sudo snap remove microk8s
+          fi
+
+    description: |-
+      Uninstall microk8s.
+    node: goodra
+    triggers:
+      - timed: H H * * *
+    wrappers:
+      - timeout:
+          fail: true
+          timeout: 10
+          type: absolute

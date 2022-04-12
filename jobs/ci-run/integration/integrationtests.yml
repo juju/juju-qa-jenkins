@@ -1,0 +1,337 @@
+- job:
+    name: "integration-tests"
+    project-type: "multijob"
+    description: "Run integration tests"
+    condition: SUCCESSFUL
+    node: noop-parent-jobs
+    concurrent: true
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+          timeout: 300
+          fail: true
+          type: absolute
+    views:
+      - 'integration-view'
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: ""
+          description: "Series to use with charms in the integration tests"
+          name: series
+      - string:
+          default: ''
+          description: 'Ubuntu series to use when bootstrapping Juju'
+          name: BOOTSTRAP_SERIES
+    builders:
+      - get-build-details
+      - set-test-description
+      - multijob:
+          name: IntegrationTests
+          projects:
+          - name: 'Gating-IntegrationTests-amd64'
+            current-parameters: true
+          - name: 'ProvingGrounds-IntegrationTests-amd64'
+            current-parameters: true
+
+
+- view:
+    name: 'integration-view'
+    view-type: list
+    # include jobs with integration tests in the name, but not the github merge ones.
+    regex: '(?!github)(?i).*integration(-?)tests.*'
+
+
+- job:
+    name: "Gating-IntegrationTests-amd64"
+    project-type: "multijob"
+    description: |-
+      intergration-amd64 runs the new shell integration tests.
+    node: noop-parent-jobs
+    concurrent: true
+    wrappers:
+      - default-integration-test-wrapper
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: ""
+          description: "Series to use with charms in the integration tests"
+          name: series
+      - string:
+          default: ''
+          description: 'Ubuntu series to use when bootstrapping Juju'
+          name: BOOTSTRAP_SERIES
+    views:
+      - 'integration-view'
+    builders:
+      - get-build-details
+      - set-test-description
+      - shell: |-
+          echo "BUILD_ARCH=amd64" > build.properties
+      - inject:
+          properties-file: build.properties
+      - multijob:
+          name: 'gating-integration-tests-amd64'
+          projects:
+            # ------------------------------------------- integration tests -- #
+            - name: 'test-appdata-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-backup-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-branches-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-caasadmission-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-charmhub-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-ck-aws'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-cli-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-controller-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-deploy-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-expose-ec2'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-hooks-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-hooktools-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-machine-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-resources-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-sidecar-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-smoke-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-unit-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-upgrade-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+
+
+- job:
+    name: "ProvingGrounds-IntegrationTests-amd64"
+    project-type: "multijob"
+    description: |-
+      intergration-amd64 runs the new shell integration tests.
+    node: noop-parent-jobs
+    concurrent: true
+    wrappers:
+      - default-integration-test-wrapper
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: ""
+          description: "Series to use with charms in the integration tests"
+          name: series
+      - string:
+          default: ''
+          description: 'Ubuntu series to use when bootstrapping Juju'
+          name: BOOTSTRAP_SERIES
+    views:
+      - 'integration-view'
+    builders:
+      - get-build-details
+      - set-test-description
+      - shell: |-
+          echo "BUILD_ARCH=amd64" > build.properties
+      - inject:
+          properties-file: build.properties
+      - multijob:
+          name: 'ProvingGrounds-IntegrationTests-amd64'
+          projects:
+            # ------------------------------------------- integration tests -- #
+            - name: 'test-agents-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-bootstrap-multijob'
+              current-parameters: true
+              enable-condition: '!["2.8"].contains("${JUJU_VERSION_MAJOR_MINOR}")'
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-deploy-unstable-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-model-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-network-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-relations-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            # EC2-only special cases:
+            - name: 'test-spaces-ec2'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-network-health-ec2'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-manual-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+
+
+
+# Trial for timeout, 2h is too short, the tests do not start to run until
+# 1h40 or so.  Try 5h as a long pole, and adjust back.
+- wrapper:
+    name: 'integration-test-stuck-timeout'
+    wrappers:
+      - timeout:
+          timeout: 300
+          fail: true
+          type: absolute
+
+- wrapper:
+    name: default-integration-test-wrapper
+    wrappers:
+      - ansicolor
+      - timestamps
+      - workspace-cleanup
+      - integration-test-stuck-timeout
+
+- publisher:
+    name: 'integration-artifacts'
+    publishers:
+        - archive:
+            artifacts: "artifacts/output.tar.gz"
+            allow-empty: true
+            only-if-success: false
+            fingerprint: false
+            default-excludes: true
+            case-sensitive: true
+
+- builder:
+    name: 'integration-test-runner'
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+
+          touch build.properties
+          [[ ! -z "${{BOOTSTRAP_SERIES}}" ]] && echo "BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}" >> build.properties
+          [[ ! -z "${{BOOTSTRAP_PROVIDER}}" ]] && echo "BOOTSTRAP_PROVIDER=${{BOOTSTRAP_PROVIDER}}" >> build.properties
+          [[ ! -z "${{BOOTSTRAP_CLOUD}}" ]] && echo "BOOTSTRAP_CLOUD=${{BOOTSTRAP_CLOUD}}" >> build.properties
+          [[ ! -z "${{BOOTSTRAP_REUSE_LOCAL}}" ]] && echo "BOOTSTRAP_REUSE_LOCAL=${{BOOTSTRAP_REUSE_LOCAL}}" >> build.properties
+          echo "BUILD_ARCH=amd64" >> build.properties
+          echo "TEST_RUNNER_NAME={test_name}" >> build.properties
+          echo "TEST_TASK_NAME={task_name}" >> build.properties
+          echo "TEST_SKIP_TASKS={skip_tasks}" >> build.properties
+      - inject:
+          properties-file: build.properties
+      - lxd-src-command-bionic-base:
+          src_command:
+            !include-raw: "common/test-runner.sh"
+          env_file: "build.properties"
+          setup_steps: ""
+
+- builder:
+    name: 'integration-test-runner-focal'
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+
+          touch build.properties
+          [[ ! -z "${{BOOTSTRAP_SERIES}}" ]] && echo "BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}" >> build.properties
+          [[ ! -z "${{BOOTSTRAP_PROVIDER}}" ]] && echo "BOOTSTRAP_PROVIDER=${{BOOTSTRAP_PROVIDER}}" >> build.properties
+          [[ ! -z "${{BOOTSTRAP_CLOUD}}" ]] && echo "BOOTSTRAP_CLOUD=${{BOOTSTRAP_CLOUD}}" >> build.properties
+          [[ ! -z "${{BOOTSTRAP_REUSE_LOCAL}}" ]] && echo "BOOTSTRAP_REUSE_LOCAL=${{BOOTSTRAP_REUSE_LOCAL}}" >> build.properties
+          echo "BUILD_ARCH=amd64" >> build.properties
+          echo "TEST_RUNNER_NAME={test_name}" >> build.properties
+          echo "TEST_TASK_NAME={task_name}" >> build.properties
+          echo "TEST_SKIP_TASKS={skip_tasks}" >> build.properties
+      - inject:
+          properties-file: build.properties
+      - lxd-src-command-focal-base:
+          src_command:
+            !include-raw: "common/test-runner.sh"
+          env_file: "build.properties"
+          setup_steps: "{setup_steps}"
+          pre_test_steps: ""
+
+- builder:
+    name: 'integration-test-runner-ephemeral'
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+
+          touch build.properties
+          [[ ! -z "${{BOOTSTRAP_SERIES}}" ]] && echo "BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}" >> build.properties
+          [[ ! -z "${{BOOTSTRAP_PROVIDER}}" ]] && echo "BOOTSTRAP_PROVIDER=${{BOOTSTRAP_PROVIDER}}" >> build.properties
+          [[ ! -z "${{BOOTSTRAP_CLOUD}}" ]] && echo "BOOTSTRAP_CLOUD=${{BOOTSTRAP_CLOUD}}" >> build.properties
+          [[ ! -z "${{BOOTSTRAP_REUSE_LOCAL}}" ]] && echo "BOOTSTRAP_REUSE_LOCAL=${{BOOTSTRAP_REUSE_LOCAL}}" >> build.properties
+          echo "BUILD_ARCH=amd64" >> build.properties
+          echo "TEST_RUNNER_NAME={test_name}" >> build.properties
+          echo "TEST_TASK_NAME={task_name}" >> build.properties
+          echo "TEST_SKIP_TASKS={skip_tasks}" >> build.properties
+      - inject:
+          properties-file: build.properties
+      - get-juju-cloud-creds
+      - host-src-command-base:
+          src_command:
+            !include-raw: "common/test-runner-ephemeral.sh"
+          env_file: "build.properties"
+          pre_test_steps: "{pre_test_steps}"
+          setup_steps: "{setup_steps}"

@@ -1,0 +1,78 @@
+- project:
+    name: github-integration-tests-pylibjuju
+    project_name:
+      - edge:
+          PYTHON_VERSION: "3"
+          JUJU_CHANNEL: "2.9/edge"
+      - python3.9:
+          PYTHON_VERSION: "3.9"
+          JUJU_CHANNEL: "stable"
+      - python3.8:
+          PYTHON_VERSION: "3.8"
+          JUJU_CHANNEL: "stable"
+      - python3.7:
+          PYTHON_VERSION: "3.7"
+          JUJU_CHANNEL: "stable"
+      - python3.6:
+          PYTHON_VERSION: "3.6"
+          JUJU_CHANNEL: "stable"
+      - python3.5:
+          PYTHON_VERSION: "3.5"
+          JUJU_CHANNEL: "stable"
+    jobs:
+      - 'github-integration-tests-pylibjuju-{project_name}'
+
+- job-template:
+    name: github-integration-tests-pylibjuju-{project_name}
+    description: |-
+      Run python libjuju integration tests
+    node: ephemeral-github-16c-64g-amd64
+    concurrent: false
+    parameters:
+    - string:
+        default: ''
+        description: 'Specific git SHA to build (used to overwrite triggered runs).'
+        name: GITHUB_BRANCH_HEAD_SHA
+    properties:
+      - github:
+          url: https://github.com/juju/python-libjuju/
+      - authorization:
+         anonymous:
+             - job-read
+    triggers:
+      - github-pull-request:
+          github-hooks: true
+          trigger-phrase: '.*!!.*!!.*'
+          status-context: "github-integration-tests-pylibjuju-{project_name}"
+          only-trigger-phrase: false
+          auto-close-on-fail: false
+          cancel-builds-on-update: true  # Cancel existing builds if PR updated/re-run.
+          cron: 'H/5 * * * *'
+          black-list-labels:
+            - "no-test-run"
+          org-list:
+            - juju
+            - CanonicalLtd
+          allow-whitelist-orgs-as-admins: true
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+           timeout: 120
+           fail: true
+           type: absolute
+    builders:
+      - inject:
+          properties-content: |-
+            PROJECT_DIR="github.com/juju/python-libjuju"
+      - run-build-check-lxd:
+          build_env: |-
+              PYTHON_VERSION={PYTHON_VERSION}
+              JUJU_CHANNEL={JUJU_CHANNEL}
+          src_command:
+              !include-raw-escape: "./scripts/pylibjuju-integration-test.sh"
+          checkout_command:
+              !include-raw: "./scripts/checkout.sh"
+          test_command:
+              !include-raw: "./scripts/snippet_clean-test-exit.sh"

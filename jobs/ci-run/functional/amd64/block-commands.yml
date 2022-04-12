@@ -1,0 +1,34 @@
+- job:
+    name: nw-block-commands
+    node: ephemeral-focal-4c-16g-amd64
+    description: |-
+      Test the block and unblock juju commands.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    - string:
+        default: bionic
+        description: ''
+        name: series
+    - string:
+        default: us-east1
+        description: Which region in gce to run on.
+        name: region
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+            ENV=parallel-gce
+            timeout -s INT 40m ${TESTS_DIR}/assess_block.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
+                --region $region \
+                --series $series
+    publishers:
+      - artifact-results
+      - log-panic-check

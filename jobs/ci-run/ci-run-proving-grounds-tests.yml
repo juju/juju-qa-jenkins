@@ -1,0 +1,38 @@
+- job:
+    name: "CI-ProvingGroundsTests"
+    project-type: "multijob"
+    description: "Run proving ground tests for a Juju commit"
+    condition: SUCCESSFUL
+    node: noop-parent-jobs
+    concurrent: false
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+          timeout: 300
+          fail: true
+          type: absolute
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to test
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+      - string:
+          default: ""
+          description: "Series to use with charms in the functional tests"
+          name: series
+    builders:
+      - get-build-details
+      - set-test-description
+      - multijob:
+          name: CI ProvingGrounds Tests
+          # Defining BUILD_ARCH ensures the right binaries are pulled down.
+          projects:
+            - name: ProvingGrounds-RunFunctionalTests-amd64
+              current-parameters: true
+              predefined-parameters: BUILD_ARCH=amd64
+            - name: ProvingGrounds-IntegrationTests-amd64
+              current-parameters: true
+              predefined-parameters: BUILD_ARCH=arm64

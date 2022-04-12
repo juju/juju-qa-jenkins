@@ -1,0 +1,25 @@
+- job:
+    name: nw-unregister-controller
+    node: ephemeral-focal-4c-16g-amd64
+    description: |-
+      Test unregister command
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-lxd
+          timeout -s INT 50m ${TESTS_DIR}/assess_unregister.py $ENV $JUJU_BIN \
+          $WORKSPACE/artifacts $JOB_NAME
+    publishers:
+      - artifact-results
+      - log-panic-check

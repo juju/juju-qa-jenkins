@@ -1,0 +1,60 @@
+- builder:
+    # Runs the command snippet supplied by the arg `src_command`.
+    # The contents pf `src_command` is injected into the LXD build script at a
+    # point where the machine is running and everything is set up ready to go.
+    # Uses the arg `checkout_command` to checkout the required code.
+    #
+    # Note: Any deps need to be installed by the supplied snippet
+    #
+    # Note: To generate a xunit report the snippet must create the file
+    # "${WORKSPACE}/go-unittest.out" with the verbose test output (i.e. from "go
+    # test -v")
+    #
+    # Note: To inject the contents of a file use:
+    # - run-build-check-lxd:
+    #    src_command: "<path/to/file>"
+    # Otherwise you can just supply the commands:
+    # - run-build-check-lxd:
+    #    src_command: |-
+    #        make install
+    #        echo "done"
+    name: 'run-build-check-lxd'
+    builders:
+    - shell:
+        !include-raw: "scripts/run-snippet-lxd.sh"
+
+
+- builder:
+    # Compatible with run-build-check-lxd.
+    name: 'run-build-check-raw'
+    builders:
+    - shell:
+        !include-raw: "scripts/run-snippet-compat.sh"
+
+
+- builder:
+    name: 'detect-merge-go-version'
+    builders:
+    - shell:
+        !include-raw: "scripts/goversion.sh"
+    - inject:
+          properties-file: ${WORKSPACE}/goversion
+
+- property:
+    name: github-ephemeral-node
+    properties:
+    - raw:
+        xml: |
+            <jp.ikedam.jenkins.plugins.groovy__label__assignment.GroovyLabelAssignmentProperty plugin="groovy-label-assignment@1.2.0">
+                <secureGroovyScript plugin="script-security@1.74">
+                <script>def goVersion = GOVERSION.replace(&apos;.&apos;, &apos;-&apos;);
+            return String.format(&quot;ephemeral-github-{arch}-go%s&quot;, goVersion);</script>
+                <sandbox>true</sandbox>
+                </secureGroovyScript>
+            </jp.ikedam.jenkins.plugins.groovy__label__assignment.GroovyLabelAssignmentProperty>
+
+- builder:
+    name: github-merge
+    builders:
+    - shell:
+        !include-raw: "scripts/github-merge.sh"

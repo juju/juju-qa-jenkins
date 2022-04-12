@@ -1,0 +1,78 @@
+- job:
+    name: 'nw-deploy-kubeflow'
+    node: ephemeral-focal-8c-32g-amd64
+    description: "Test bootstrap to k8s cluster then deploy to kubeflow."
+    concurrent: true
+    properties:
+    - throttle:
+        max-per-node: 1
+        max-total: 10
+        option: project
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: amd64
+        description: "Arch to build for."
+        name: BUILD_ARCH
+    - string:
+        default: MICROK8S
+        description: "Specify K8s cloud provider to use."
+        name: CAAS_PROVIDER
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    - string:
+        default: full
+        description: "Specify the kubeflow bundle version to deploy."
+        name: BUNDLE_VERSION
+    - bool:
+        name: BUILD_CHARMS
+        default: true
+        description: "Build local kubeflow charms and deploy local bundle or deploy bundle in charm store."
+    - bool:
+        name: ENABLE_RBAC
+        default: false
+        description: "Deploy kubeflow with RBAC enabled."
+    wrappers:
+    - cirun-test-stuck-timeout
+    builders:
+    - description-setter:
+        description: "${CAAS_PROVIDER}|bundle:${BUNDLE_VERSION}|build:${BUILD_CHARMS}|rbac:${ENABLE_RBAC}|${OPERATOR_IMAGE_ACCOUNT}"
+    - prepare-functional-test
+    - prepare-ephemeral-node-for-k8s-py-tests:
+        channel: "1.21/stable"  # https://github.com/canonical/bundle-kubeflow/issues/419#issuecomment-1008732052
+    - shell: |-
+        #!/bin/bash
+        set -ex
+
+        test -d $HOME/.local/bin || mkdir -p $HOME/.local/bin
+        export PATH=$PATH:$HOME/.local/bin
+
+        # bundle-kubeflow/tests/run.sh requires `juju` in the $PATH.
+        export PATH=$PATH:$BIN_DIR
+        unset JUJU_VERSION
+
+        sudo apt update
+        sudo apt install -y python3-pip firefox-geckodriver
+        pip3 install pip --upgrade
+        sudo snap install charmcraft --stable --classic
+        sudo snap install juju-wait --classic
+
+        ENV=$(echo "$CAAS_PROVIDER" | sed -e 's/\(.*\)/\L\1/')
+        declare -a params
+        if [ "$BUILD_CHARMS" = true ] ; then
+            params+=( '--build' )
+        fi
+        if [ "$ENABLE_RBAC" = true ] ; then
+            params+=( '--enable-rbac' )
+        fi
+        timeout -s INT 90m $TESTS_DIR/assess_caas_deploy_kubeflow.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
+        $JOB_NAME --caas-image-repo=$OPERATOR_IMAGE_ACCOUNT \
+        --caas-provider=$CAAS_PROVIDER --k8s-controller --bundle=$BUNDLE_VERSION ${params[@]}
+    publishers:
+    - artifact-results
+    - log-panic-check

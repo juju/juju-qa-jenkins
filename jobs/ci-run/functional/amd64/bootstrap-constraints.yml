@@ -1,0 +1,32 @@
+- job:  # nw-bootstrap-constraints-maas-2-9
+    name: nw-bootstrap-constraints-maas-2-9
+    node: maas
+    disabled: false
+    description: |-
+      Bootstrap with maas and the to argument.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          export ENV=parallel-finfolk-vmaas
+          set -eux
+
+          # The 'maas env29 machines read' takes a while to complete.
+          # Extract the first 'Ready' host from the list of available.
+          HOSTNAME=$(maas env29 machines read | jq -r '[ .[] | select(.status_name=="Ready")] | .[0] | .hostname')
+
+          timeout -s INT 25m ${TESTS_DIR}/assess_bootstrap.py to $ENV $JUJU_BIN $WORKSPACE/artifacts \
+           $JOB_NAME --series xenial --to $HOSTNAME --debug
+    publishers:
+      - artifact-results
+      - log-panic-check

@@ -1,0 +1,277 @@
+- project:
+    name: github-prs
+    # If the default snippet "scripts/snippet_build_basic-make-check.sh" does
+    # not suit for the project you're adding here you will need to make a custom
+    # script and point 'build_script' at is (as per 'python-libjuju' below.)
+    project_name:
+      - ansiterm:
+          project_dir: "github.com/juju/ansiterm"
+      - charm:
+          project_dir: "github.com/juju/charm"
+          extra_packages: "zip"
+      - charmrepo:
+          project_dir: "github.com/juju/charmrepo"
+          extra_packages: "zip"
+      - clock:
+          project_dir: "github.com/juju/clock"
+      - cmd:
+          project_dir: "github.com/juju/cmd"
+      - collections:
+          project_dir: "github.com/juju/collections"
+      - description:
+          project_dir: "github.com/juju/description"
+      - environschema:
+          project_dir: "github.com/juju/environschema"
+      - errors:
+          project_dir: "github.com/juju/errors"
+      - terms-client:
+          project_dir: "github.com/juju/terms-client"
+      - gomaasapi:
+          project_dir: "github.com/juju/gomaasapi"
+      - http:
+          project_dir: "github.com/juju/http"
+      - loggo:
+          project_dir: "github.com/juju/loggo"
+      - lru:
+          project_dir: "github.com/juju/lru"
+      - mutex:
+          project_dir: "github.com/juju/mutex"
+      - names:
+          project_dir: "github.com/juju/names"
+      - os:
+          project_dir: "github.com/juju/os"
+      - packaging:
+          project_dir: "github.com/juju/packaging"
+      - proxy:
+          project_dir: "github.com/juju/proxy"
+      - pubsub:
+          project_dir: "github.com/juju/pubsub"
+      - rfc:
+          project_dir: "github.com/juju/rfc"
+      - romulus:
+          project_dir: "github.com/juju/romulus"
+      - schema:
+          project_dir: "github.com/juju/schema"
+      - utils:
+          project_dir: "github.com/juju/utils"
+          extra_packages: "zip"
+          needs_mgo: true
+      - worker:
+          project_dir: "github.com/juju/worker"
+      - python-libjuju:
+          project_dir: "github.com/juju/python-libjuju"
+          build_script: "scripts/snippet_build_check-juju-python-libjuju.sh"
+      - schemagen:
+          project_dir: "github.com/juju/schemagen"
+      - ratelimit:
+          project_dir: "github.com/juju/ratelimit"
+      - jsonschema-gen:
+          project_dir: "github.com/juju/jsonschema-gen"
+          extra_script: "curl -sS --tlsv1.2 https://raw.githubusercontent.com/golang/dep/master/install.sh | sh"
+      - version:
+          project_dir: "github.com/juju/version"
+      - retry:
+          project_dir: "github.com/juju/retry"
+      - replicaset:
+          project_dir: "github.com/juju/replicaset"
+          needs_mgo: true
+      - testing:
+          project_dir: "github.com/juju/testing"
+          needs_mgo: true
+      - txn:
+          project_dir: "github.com/juju/txn"
+          needs_mgo: true
+      - juju-restore:
+          project_dir: "github.com/juju/juju-restore"
+          needs_mgo: true
+
+    jobs:
+      - 'github-check-merge-juju-{project_name}'
+      - 'github-merge-juju-{project_name}'
+
+
+# Job template that is populated via the project github-check-merge.
+- job-template:
+    name: github-check-merge-juju-{project_name}
+    project-type: freestyle
+    node: ephemeral-focal-small-amd64
+    concurrent: true
+    # black_list is a comma separated list of branch names to ignore (i.e. fail
+    # straight away if a merge/check is started for any of these branches."
+    # Override this in the project above for your PR.
+    black_list: ""
+    # Default to using the basic make check scripts
+    build_script: "scripts/snippet_build_basic-make-check.sh"
+    # Default to not installing mongo.
+    needs_mgo: false
+    # Default to not needing any extra packages.
+    extra_packages: ""
+    # Default to not needing any bespoke, extra script.
+    extra_script: ""
+    properties:
+      - github:
+          url: https://github.com/juju/{project_name}/
+      - authorization:
+          anonymous:
+            - job-read
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+          timeout: 60
+          fail: true
+          type: absolute
+    triggers:
+      - github-pull-request:
+          github-hooks: true
+          trigger-phrase: '.*!!.*!!.*'
+          status-context: "github-check-merge-juju-{project_name}"
+          only-trigger-phrase: false
+          auto-close-on-fail: false
+          cancel-builds-on-update: true  # Cancel existing builds if PR updated/re-run.
+          cron: 'H/5 * * * *'
+          black-list-labels:
+            - "no-test-run"
+          org-list:
+            - juju
+            - CanonicalLtd
+          allow-whitelist-orgs-as-admins: true
+    builders:
+      - shell: |-
+          # Workaround not being able to black list branchs as a job argument
+          # (cannot pass a list of strings as a job-template param).
+          for b in $(echo "{black_list}" | tr "," "\n"); do
+              if [ "${{b}}" = "${{ghprbTargetBranch}}" ]; then
+                  echo "Branch '${{ghprbTargetBranch}}' not suitable for merging."
+                  exit 1
+              fi
+          done
+      - shell: |-
+          echo `date --rfc-3339=seconds` building branch
+      - shell: |-
+          #!/bin/bash
+          # Setup the PR Properties
+          echo "Setting PROJECT_DIR"
+          PROJECT_DIR={project_dir}
+          NEEDS_MGO={needs_mgo}
+          EXTRA_PACKAGES={extra_packages}
+          EXTRA_SCRIPT={extra_script}
+          cat >pr_props <<EOT
+               PROJECT_DIR=$(echo ${{PROJECT_DIR}})
+               NEEDS_MGO=$(echo ${{NEEDS_MGO}})
+               EXTRA_PACKAGES=$(echo ${{EXTRA_PACKAGES}})
+               EXTRA_SCRIPT="$(echo ${{EXTRA_SCRIPT}})"
+          EOT
+          echo "PROJECT_DIR: ${{PROJECT_DIR}}"
+      - inject:
+          properties-file: ${{WORKSPACE}}/pr_props
+      - run-build-check-raw:
+          build_env: ""
+          setup_steps: ""
+          src_command:
+            !include-raw: "{build_script}"
+          checkout_command:
+            !include-raw: "./scripts/checkout.sh"
+          test_command:
+            !include-raw: "./scripts/snippet_clean-test-exit.sh"
+    publishers:
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+
+
+# # Job template that is populated via the project github-check-merge.
+- job-template:
+    name: github-merge-juju-{project_name}
+    project-type: freestyle
+    node: ephemeral-focal-small-amd64
+    concurrent: false
+    # black_list is a comma separated list of branch names to ignore (i.e. fail
+    # straight away if a merge/check is started for any of these branches."
+    # Override this in the project above for your PR.
+    black_list: ""
+    # Default to using the basic make check scripts
+    build_script: "scripts/snippet_build_basic-make-check.sh"
+    # Default to not installing mongo.
+    needs_mgo: false
+    # Default to not needing any extra packages.
+    extra_packages: ""
+    # Default to not needing any bespoke, extra script.
+    extra_script: ""
+    properties:
+      - github:
+          url: https://github.com/juju/{project_name}/
+      - authorization:
+          anonymous:
+            - job-read
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+          timeout: 60
+          fail: true
+          type: absolute
+    triggers:
+      - github-pull-request:
+          github-hooks: true
+          trigger-phrase: '.*\$\$merge\$\$.*'
+          status-context: "github-merge-juju-{project_name}"
+          only-trigger-phrase: true
+          auto-close-on-fail: false
+          cron: 'H/5 * * * *'
+          org-list:
+            - juju
+            - CanonicalLtd
+          allow-whitelist-orgs-as-admins: true
+    builders:
+      - shell: |-
+          # Workaround not being able to black list branches as a job argument
+          # (cannot pass a list of strings as a job-template param).
+          for b in $(echo "{black_list}" | tr "," "\n"); do
+              if [ "${{b}}" = "${{ghprbTargetBranch}}" ]; then
+                  echo "Branch '${{ghprbTargetBranch}}' not suitable for merging."
+                  exit 1
+              fi
+          done
+      - shell: |-
+          #!/bin/bash
+          # Setup the PR Properties
+          echo "Setting PROJECT_DIR and description"
+          PROJECT_DIR={project_dir}
+          NEEDS_MGO={needs_mgo}
+          EXTRA_PACKAGES={extra_packages}
+          EXTRA_SCRIPT=\"{extra_script}\"
+          cat >pr_props <<EOT
+               pr_descr=$(echo ${{ghprbPullLongDescription}} | sed "s/\\\r//g")
+               PROJECT_DIR=$(echo ${{PROJECT_DIR}})
+               NEEDS_MGO=$(echo ${{NEEDS_MGO}})
+               EXTRA_PACKAGES=$(echo ${{EXTRA_PACKAGES}})
+               EXTRA_SCRIPT="$(echo ${{EXTRA_SCRIPT}})"
+          EOT
+          echo "PROJECT_DIR: ${{PROJECT_DIR}}"
+      - inject:
+          properties-file: ${{WORKSPACE}}/pr_props
+      - shell: |-
+          echo `date --rfc-3339=seconds` building branch
+      - run-build-check-raw:
+          build_env: ""
+          setup_steps: ""
+          src_command:
+            !include-raw: "{build_script}"
+          checkout_command:
+            !include-raw: "./scripts/checkout.sh"
+          test_command:
+            !include-raw: "./scripts/snippet_clean-test-exit.sh"
+    publishers:
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+      - github-pull-request-merge:
+          only-admins-merge: true
+          fail-on-non-merge: true
+          merge-comment: |-
+              ${{ghprbPullLink}}
+
+              ${{pr_descr}}

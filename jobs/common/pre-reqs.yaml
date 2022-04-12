@@ -1,0 +1,209 @@
+# host-install-docker will install and setup docker on a ubuntu machine.
+# It will also enable cross compilation support and add the current user to the
+# Docker group.
+- builder:
+    name: 'host-install-docker'
+    builders:
+      - shell:
+          !include-raw: scripts/setup_steps-install-docker.sh
+
+# docker-login will run the login steps for connecting this host's docker daemon
+# to the Juju docker hub account.
+- builder:
+    name: 'docker-login'
+    builders:
+      - get-docker-creds
+      - host-src-command-docker:
+          src_command: |-
+            set -eu
+            set +x
+
+            echo "Logging into Dockerhub with username ${DOCKERHUB_U}"
+            echo "$DOCKERHUB_P" | docker login -u "$DOCKERHUB_U" --password-stdin
+
+# install-common-tools installs the common set of tools needed between 99% of
+# jobs in this repo. This builder assumes the install target is Ubuntu.
+- builder:
+    name: 'install-common-tools'
+    builders:
+      - shell:
+          #!/bin/bash
+          set -ex
+
+          echo "Installing common tools"
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            make
+
+- builder:
+    name: 'install-s3cmd'
+    builders:
+    - shell:
+        #!/bin/bash
+        set -xe
+
+        if [ -z "$(command -v s3cmd)" ]; then
+          sudo DEBIAN_FRONTEND=noninteractive apt update;
+          sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
+          sudo pip3 install s3cmd;
+        fi
+
+        echo Using s3cmd "$(command -v s3cmd)"
+
+- builder:
+    name: 'install-azure-libs'
+    builders:
+    - shell: |-
+        #!/bin/bash
+        set -xe
+
+        sudo DEBIAN_FRONTEND=noninteractive apt update;
+        sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
+        # TODO - need to pin since BlockBlobService replaced by BlockBlocCLient
+        sudo pip3 install azure-mgmt-resource;
+        sudo pip3 install azure-mgmt-compute;
+        sudo pip3 install azure-mgmt-storage;
+        sudo pip3 install azure-mgmt-network;
+        sudo pip3 install azure-identity;
+
+- builder:
+    name: 'install-azure-s3-libs'
+    builders:
+    - shell: |-
+        #!/bin/bash
+        set -xe
+
+        sudo DEBIAN_FRONTEND=noninteractive apt update;
+        sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
+        # TODO - need to pin since BlockBlobService replaced by BlockBlocCLient
+        sudo pip3 install azure-storage-blob==2.1.0;
+
+- builder:
+    name: 'get-azure-cleanup-scripts'
+    builders:
+    - install-azure-libs
+    - checkout-qa-repo
+    - shell: |-
+        #!/bin/bash
+        set -eux
+
+        cd scripts
+        git checkout origin/main -- jobs/z-jobs/scripts/winazurearm.py
+    - inject:
+        properties-content: |-
+            SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
+
+- builder:
+    name: 'get-azure-publish-script'
+    builders:
+    - install-azure-s3-libs
+    - checkout-qa-repo
+    - shell: |-
+        #!/bin/bash
+        set -eux
+
+        cd scripts
+        git checkout origin/main -- tools/scripts/azure_publish_tools.py
+    - inject:
+        properties-content: |-
+            SCRIPTS_DIR=${WORKSPACE}/scripts/tools/scripts/
+
+- builder:
+    name: 'get-lxd-cleanup-scripts'
+    builders:
+    - checkout-qa-repo
+    - shell: |-
+        #!/bin/bash
+        set -eux
+
+        cd scripts
+        git checkout origin/main -- jobs/z-jobs/scripts/clean_lxd.py
+    - inject:
+        properties-content: |-
+            SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
+
+- builder:
+    name: 'get-aks-cleanup-scripts'
+    builders:
+    - checkout-qa-repo
+    - shell: |-
+        #!/bin/bash
+        set -eux
+
+        sudo pip3 install backports-datetime-fromisoformat
+
+        cd scripts
+        git checkout origin/main -- jobs/z-jobs/scripts/aks_cleanup.py
+    - inject:
+        properties-content: |-
+            SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
+
+- builder:
+    name: 'get-aws-cleanup-scripts'
+    builders:
+    - checkout-qa-repo
+    - shell: |-
+        #!/bin/bash
+        set -eux
+
+        cd scripts
+        git checkout origin/main -- jobs/z-jobs/scripts/aws.py
+    - inject:
+        properties-content: |-
+            SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
+
+
+- builder:
+    name: 'get-gce-cleanup-scripts'
+    builders:
+    - checkout-qa-repo
+    - shell: |-
+        #!/bin/bash
+        set -eux
+
+        sudo snap install google-cloud-cli --classic || true
+
+        cd scripts
+        git checkout origin/main -- jobs/z-jobs/scripts/gce.py
+    - inject:
+        properties-content: |-
+            SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
+
+- builder:
+    name: 'get-maas-cleanup-scripts'
+    builders:
+    - checkout-qa-repo
+    - shell: |-
+        #!/bin/bash
+        set -eux
+
+        cd scripts
+        git checkout origin/main -- jobs/z-jobs/scripts/clean_maas
+    - inject:
+        properties-content: |-
+            SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/clean_maas
+
+- builder:
+    name: 'get-equinix-cleanup-scripts'
+    builders:
+    - checkout-qa-repo
+    - shell: |-
+        #!/bin/bash
+        set -eux
+
+        cd scripts
+        git checkout origin/main -- jobs/z-jobs/scripts/clean_equinix.py
+    - inject:
+        properties-content: |-
+            SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
+
+- builder:
+    name: 'checkout-qa-repo'
+    builders:
+    - shell: |-
+        #!/bin/bash
+        set -eux
+
+        cd ${WORKSPACE}
+        if [ ! -d "${WORKSPACE}/scripts" ]; then
+            git clone git@github.com:juju/juju-qa-jenkins.git --no-checkout --depth 1 scripts'
+        fi

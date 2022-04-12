@@ -1,0 +1,251 @@
+- job:
+    name: "CI-BuildJuju"
+    disabled: false
+    concurrent: false
+    description: |
+      Build Juju for subsequent CI run jobs to use.
+      <br/>
+      The rough outline of a build stage is:
+        <ul>
+            <li>Checkout the code that triggered the change (a build run uses the commit hash as the ID.)</li>
+            <li>Create a tarball of the source that also contains the dependencies</li>
+            <li>Build the code and upload the resulting binaries and buildvars to s3</li>
+            <li>Package the resulting jujud as an agent and upload that too for later processing</li>
+            <li>Generate streams for this builds version (and only this version, no historic stream data) and upload results to testing stream servers</li>
+            <li>
+                for phase in [unit-tests, functional-tests]:
+                <ul>
+                    <li>Pull down the binaries (or source) for this build and run the test using it.</li>
+                </ul>
+            </li>
+        </ul>
+    project-type: "multijob"
+    node: noop-parent-jobs
+    # Any changes to the refspec for branches watched must be updated in the
+    # 'generate-testing-streams' job otherwise they will never persist in
+    # streams.
+    #
+    properties:
+      - github:
+          url: https://github.com/juju/juju/
+    triggers:
+      # There isn't any jjb wrappers for the Github Branch Trigger part. Use
+      # raw xml extracted from a job I created for this purpose.
+      - raw:
+          xml: |
+            <com.github.kostyasha.github.integration.branch.GitHubBranchTrigger plugin="github-pullrequest@0.1.0-rc26">
+              <spec>H/5 * * * *</spec>
+              <triggerMode>CRON</triggerMode>
+              <cancelQueued>false</cancelQueued>
+              <abortRunning>false</abortRunning>
+              <skipFirstRun>false</skipFirstRun>
+              <repoProviders>
+                <com.github.kostyasha.github.integration.generic.repoprovider.GitHubPluginRepoProvider>
+                  <cacheConnection>true</cacheConnection>
+                  <manageHooks>false</manageHooks>
+                  <repoPermission>PUSH</repoPermission>
+                </com.github.kostyasha.github.integration.generic.repoprovider.GitHubPluginRepoProvider>
+              </repoProviders>
+              <errorsAction>
+                <description>GitHub Branches Trigger Errors</description>
+                <errors class="java.util.Collections$SynchronizedSet" serialization="custom">
+                  <java.util.Collections_-SynchronizedCollection>
+                    <default>
+                      <c class="set"/>
+                      <mutex class="java.util.Collections$SynchronizedSet" reference="../../.."/>
+                    </default>
+                  </java.util.Collections_-SynchronizedCollection>
+                </errors>
+              </errorsAction>
+              <events>
+                <com.github.kostyasha.github.integration.branch.events.impl.GitHubBranchHashChangedEvent/>
+              </events>
+              <preStatus>false</preStatus>
+            </com.github.kostyasha.github.integration.branch.GitHubBranchTrigger>
+
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+          timeout: 120
+          fail: true
+          type: absolute
+
+    parameters:
+      - string:
+          default: ""
+          description: "Specific git SHA to build (used to overwrite triggered runs)."
+          name: GITHUB_BRANCH_HEAD_SHA
+
+    builders:
+      - resolve-git-sha
+      - detect-commit-go-version
+      - multijob:
+          name: "Packaging"
+          condition: SUCCESSFUL
+          projects:
+            - name: "PackageJujuSource"
+              current-parameters: true
+              predefined-parameters: |-
+                GITHUB_BRANCH_HEAD_SHA=${GITHUB_BRANCH_HEAD_SHA}
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                JUJU_BUILD_NUMBER=${BUILD_NUMBER}
+                GOVERSION=${GOVERSION}
+      - get-s3-source-payload
+
+      - inject:
+          properties-content: |-
+            OPERATOR_IMAGE_ACCOUNT=jujuqabot
+            PATH=/snap/bin:$PATH
+            series=bionic
+
+      - set-test-description
+
+      - multijob:
+          name: "Building"
+          condition: SUCCESSFUL
+          execution-type: SEQUENTIALLY
+          projects:
+            - name: "build-juju-ubuntu"
+              current-parameters: true
+              # Not sure why the current-params don't include these params.
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
+            - name: "build-juju-other"
+              current-parameters: true
+              # Not sure why the current-params don't include these params.
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
+            - name: build-caas-jujud-operator
+              current-parameters: true
+              # Not sure why the current-params don't include these params.
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
+            - name: SimpleStreams
+              # Not sure why the current-params don't include these params.
+              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
+    publishers:
+      - trigger-parameterized-builds:
+          - project: "CI-GatingTests"
+            condition: SUCCESS
+            # Not sure why the current-params don't include these params.
+            current-parameters: true
+            predefined-parameters: |-
+              SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+              series=${series}
+              BOOTSTRAP_SERIES=${series}
+              GOVERSION=${GOVERSION}
+          - project: "CI-ProvingGroundsTests"
+            condition: SUCCESS
+            # Not sure why the current-params don't include these params.
+            current-parameters: true
+            predefined-parameters: |-
+              SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+              series=${series}
+              BOOTSTRAP_SERIES=${series}
+              GOVERSION=${GOVERSION}
+
+- job:
+    name: "CI-GatingTests"
+    disabled: false
+    concurrent: false
+    description: |
+      These tests are required to be all green before a Juju release
+      is blessed for release.
+    project-type: "multijob"
+    node: noop-parent-jobs
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      # Give ci-run 20 hours to complete.
+      - timeout:
+          timeout: 1200
+          fail: true
+          type: absolute
+
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to test
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+      - string:
+          default: ""
+          description: "Series to use with charms in the functional tests"
+          name: series
+      - string:
+          default: ''
+          description: 'Ubuntu series to use when bootstrapping Juju'
+          name: BOOTSTRAP_SERIES
+      - string:
+          default: ''
+          description: 'Go version used for build.'
+          name: GOVERSION
+    builders:
+      - get-build-details
+      - set-test-description
+      - multijob:
+          name: "Testing"
+          condition: SUCCESSFUL
+          projects:
+            - name: "Unit Tests"
+              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
+            - name: "Gating Tests"
+              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                series=${series}
+                GOVERSION=${GOVERSION}
+                BOOTSTRAP_SERIES=${BOOTSTRAP_SERIES}
+
+- job:
+    name: "PackageJujuSource"
+    node: ephemeral-focal-small-amd64
+    project-type: "multijob"
+    condition: SUCCESSFUL
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+          fail: true
+          timeout: 240 # Might have to queue for nodes, give some flex
+          type: absolute
+    parameters:
+      - string:
+          name: GITHUB_BRANCH_HEAD_SHA
+          default: ""
+          description: "Specific git SHA to package."
+      - string:
+          default: ''
+          description: 'Go version used for build.'
+          name: GOVERSION
+    builders:
+      - inject:
+          properties-content: |-
+            JUJU_SOURCE_CHECKOUT=${WORKSPACE}/tmp_initial_clone
+      - shell: |-
+          git init "$JUJU_SOURCE_CHECKOUT"
+          cd "$JUJU_SOURCE_CHECKOUT"
+          git remote add origin "https://github.com/juju/juju.git"
+          git config --local gc.auto 0
+          git fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin "+$GITHUB_BRANCH_HEAD_SHA"
+          git checkout --progress --force $GITHUB_BRANCH_HEAD_SHA
+          git --no-pager log -1
+      - package-juju-source
+      - put-s3-source-payload
+    publishers:
+      - archive:
+          artifacts: "juju-*.tar.xz"
+          only-if-success: true

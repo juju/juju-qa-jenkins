@@ -1,0 +1,49 @@
+- project:
+    name: "sync-ntp"
+    server:
+      - arm64-slave: {}
+      - borbein: {}
+      - s390x-slave: {}
+    jobs:
+      - 'sync-ntp-{server}'
+    views:
+      - sync-ntp
+
+- job-template:
+    name: 'sync-ntp-{server}'
+    project-type: freestyle
+    node: '{server}'
+    description: Clock sync
+    concurrent: true
+    builders:
+      - shell:
+          !include-raw: "scripts/sync-ntp.sh"
+    triggers:
+    - timed: H */4 * * *
+    wrappers:
+    - timeout:
+        fail: true
+        timeout: 120
+        type: absolute
+
+- view-template:
+    name: sync-ntp
+    description: |
+      <div style="display:inline-block">
+        <img src="https://launchpadlibrarian.net/313157594/Juju_64.png" />
+        <div  style="margin-left:10px;display:inline-block">
+          <h2>Juju</h2>
+        </div>
+      </div>
+      <hr style="margin-top:20px;border: 1px solid #E95420" />
+    view-type: list
+    regex: '^(sync\-ntp.*)'
+    columns:
+      - status
+      - weather
+      - job
+      - last-success
+      - last-failure
+      - last-duration
+      - build-button
+      - built-on

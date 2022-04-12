@@ -1,0 +1,208 @@
+- job:
+    name: nw-network-health-aws
+    node: ephemeral-focal-4c-16g-amd64
+    description: |-
+      Use the assess-network-health script to test the network health of a juju deployment on a given substrate.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    - string:
+        default: eu-west-1
+        description: Which region in aws to run on.
+        name: region
+    - string:
+        default: bionic
+        description: ''
+        name: series
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-aws
+          timeout -s INT 45m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
+           --series $series --region $region \
+           --bundle 'cs:~juju/bundle/mediawiki-single' \
+           --logging-config 'juju.state.txn=TRACE'
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+
+- job:
+    name: nw-network-health-azure
+    node: ephemeral-focal-4c-16g-amd64
+    description: |-
+      Use the assess-network-health script to test the network health of a juju deployment on a given substrate.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    - string:
+        default: bionic
+        description: ''
+        name: series
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-azure-arm
+          timeout -s INT 80m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
+           --series $series \
+           --bundle 'cs:~juju/bundle/mediawiki-single' \
+           --logging-config 'juju.state.txn=TRACE'
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+
+- job:
+    name: nw-network-health-gce
+    node: ephemeral-focal-4c-16g-amd64
+    description: |-
+      Use the assess-network-health script to test the network health of a juju deployment on a given substrate.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    - string:
+        default: bionic
+        description: ''
+        name: series
+    - string:
+        default: 'europe-west1'
+        description: Which region in gce to run on.
+        name: region
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-gce
+          timeout -s INT 45m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
+           --region $region \
+           --series $series \
+           --bundle 'cs:~juju/bundle/mediawiki-single' \
+           --logging-config 'juju.state.txn=TRACE'
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+
+- job:  # nw-network-health-maas-2-9
+    name: nw-network-health-maas-2-9
+    node: maas
+    description: |-
+      Use the assess-network-health script to test the network health of a juju deployment on a given substrate.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    - string:
+        default: bionic
+        description: ''
+        name: series
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-finfolk-vmaas
+
+          timeout -s INT 45m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN ${WORKSPACE}/artifacts $JOB_NAME \
+           --series $series \
+           --bundle ${JUJU_REPOSITORY}/network-health-2-machines-bind.yaml \
+           --logging-config 'juju.state.txn=TRACE'
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+
+- job:
+    name: nw-network-health-oci
+    node: ephemeral-focal-4c-16g-amd64
+    description: |-
+      Use the assess-network-health script to test the network health of a juju deployment on a given substrate.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    - string:
+        default: bionic
+        description: ''
+        name: series
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-oracle-oci
+
+          timeout -s INT 45m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
+           --series $series
+           --bundle 'jenkins' \
+           --logging-config 'juju.state.txn=TRACE'
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+- job:  # nw-network-health-vsphere
+    name: nw-network-health-vsphere
+    disable: true
+    node: vsphere
+    description: |-
+      Use the assess-network-health script to test the network health of a juju deployment on a given substrate.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    - string:
+        default: bionic
+        description: ''
+        name: series
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-vsphere-vmfolder
+
+          timeout -s INT 45m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
+           --series $series \
+           --bundle 'cs:~juju/bundle/mediawiki-single' \
+           --logging-config 'juju.state.txn=TRACE'
+    publishers:
+      - artifact-results
+      - log-panic-check

@@ -1,0 +1,561 @@
+# Note: Unit test jobs that use LXD will need the 'get-test-results' publisher
+# to pull the tests.xml file into the workspace so the job can generate the
+# report.
+
+- job:
+    name: 'Unit Tests'
+    project-type: 'multijob'
+    description: 'Run unit tests for a Juju commit'
+    condition: SUCCESSFUL
+    node: noop-parent-jobs
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        name: series
+        default: ""
+        description: "Series used for deploying"
+    - string:
+        name: BOOTSTRAP_SERIES
+        default: ""
+        description: "Series to used for bootstrapping"
+    - string:
+        name: GOVERSION
+        default: ""
+        description: "Go version to use for unit tests"
+    builders:
+      - get-build-details
+      - set-test-description
+      - multijob:
+            name: UnitTests
+            projects:
+              - name: unit-tests-amd64
+                current-parameters: true
+              - name: unit-tests-arm64
+                current-parameters: true
+              - name: unit-tests-amd64-bionic
+                current-parameters: true
+              - name: unit-tests-arm64-bionic
+                current-parameters: true
+              - name: unit-tests-s390x-bionic
+                current-parameters: true
+              - name: unit-tests-ppc64el-bionic
+                current-parameters: true
+              - name: unit-tests-race-amd64
+                current-parameters: true
+              - name: unit-tests-race-arm64
+                current-parameters: true
+              - name: unit-tests-centos9
+                current-parameters: true
+              - name: unit-tests-win2012
+                current-parameters: true
+
+
+- builder:
+    # Takes parameter: GOTEST_TYPE. 'race' for go test race, 'xunit-report' for
+    # make test w/ verbose and generating an xml report and anything else for
+    # straight 'make test'
+    name: 'run-unit-tests-lxd'
+    builders:
+    - lxd-src-command:
+          src_command:
+              !include-raw: ../scripts/snippet_run-unit-tests.sh
+
+- builder:
+    # Takes parameter: GOTEST_TYPE. 'race' for go test race, 'xunit-report' for
+    # make test w/ verbose and generating an xml report and anything else for
+    # straight 'make test'
+    name: 'run-unit-tests-lxd-bionic'
+    builders:
+    - lxd-src-command-bionic:
+          src_command:
+              !include-raw: ../scripts/snippet_run-unit-tests.sh
+
+
+- builder:
+    # Takes parameter: GOTEST_TYPE. 'race' for go test race, 'xunit-report' for
+    # make test w/ verbose and generating an xml report and anything else for
+    # straight 'make test'
+    name: 'run-unit-tests-host'
+    builders:
+    - host-src-command:
+          src_command:
+              !include-raw: ../scripts/snippet_run-unit-tests.sh
+
+
+- job:
+    name: 'unit-tests-amd64'
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Build and run unit tests for amd64.
+    wrappers:
+      - default-unit-test-wrapper
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: '2400s'
+        name: TEST_TIMEOUT
+    - string:
+        name: USE_TMPFS_FOR_MGO
+        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+    - string:
+        name: series
+        default: ""
+        description: "Series used for deploying"
+    - string:
+        name: BOOTSTRAP_SERIES
+        default: ""
+        description: "Series to used for bootstrapping"
+    - string:
+        name: GOVERSION
+        default: ""
+        description: "Go version to use for unit tests"
+    builders:
+      # Need to populate with which arch we're building for.
+      - shell: echo "BUILD_ARCH=amd64" > build.properties
+      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
+      - shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
+      - inject:
+          properties-file: ${WORKSPACE}/build.properties
+      - get-s3-source-payload
+      - set-test-description
+      - run-unit-tests-host:
+          GOTEST_TYPE: "xunit-report"
+          JUJU_GOMOD_MODE: "vendor"
+    publishers:
+      - get-test-results
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+
+- job:
+    name: 'unit-tests-amd64-bionic'
+    node: ephemeral-bionic-8c-32g-amd64
+    description: |-
+      Build and run unit tests for amd64 using mongodb36 and bionic.
+    wrappers:
+      - default-unit-test-wrapper
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: '2400s'
+        name: TEST_TIMEOUT
+    - string:
+        name: USE_TMPFS_FOR_MGO
+        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+    - string:
+        name: series
+        default: ""
+        description: "Series used for deploying"
+    - string:
+        name: BOOTSTRAP_SERIES
+        default: ""
+        description: "Series to used for bootstrapping"
+    - string:
+        name: GOVERSION
+        default: ""
+        description: "Go version to use for unit tests"
+    builders:
+      # Need to populate with which arch we're building for.
+      - shell: echo "BUILD_ARCH=amd64" > build.properties
+      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
+      - shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
+      - inject:
+          properties-file: ${WORKSPACE}/build.properties
+      - get-s3-source-payload
+      - set-test-description
+      - run-unit-tests-host:
+          GOTEST_TYPE: "xunit-report"
+          JUJU_GOMOD_MODE: "vendor"
+    publishers:
+      - get-test-results
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+
+- job:
+    name: 'unit-tests-arm64'
+    node: ephemeral-focal-8c-32g-arm64
+    description: |-
+      Build and run unit tests for arm64.
+    wrappers:
+      - default-unit-test-wrapper
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: '5400s'
+        name: TEST_TIMEOUT
+    - string:
+        name: USE_TMPFS_FOR_MGO
+        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+    - string:
+        name: series
+        default: ""
+        description: "Series used for deploying"
+    - string:
+        name: BOOTSTRAP_SERIES
+        default: ""
+        description: "Series to used for bootstrapping"
+    - string:
+        name: GOVERSION
+        default: ""
+        description: "Go version to use for unit tests"
+    builders:
+      # Need to populate with which arch we're building for.
+      - shell: echo "BUILD_ARCH=arm64" > build.properties
+      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
+      - shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
+      - inject:
+          properties-file: ${WORKSPACE}/build.properties
+      - get-s3-source-payload
+      - set-test-description
+      - run-unit-tests-host:
+          GOTEST_TYPE: "xunit-report"
+          JUJU_GOMOD_MODE: "vendor"
+    publishers:
+      - get-test-results
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+
+- job:
+    name: 'unit-tests-arm64-bionic'
+    node: ephemeral-bionic-8c-32g-arm64
+    description: |-
+      Build and run unit tests for arm64 on bionic.
+    wrappers:
+      - default-unit-test-wrapper
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: '5400s'
+        name: TEST_TIMEOUT
+    - string:
+        name: USE_TMPFS_FOR_MGO
+        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+    - string:
+        name: series
+        default: ""
+        description: "Series used for deploying"
+    - string:
+        name: BOOTSTRAP_SERIES
+        default: ""
+        description: "Series to used for bootstrapping"
+    - string:
+        name: GOVERSION
+        default: ""
+        description: "Go version to use for unit tests"
+    builders:
+      # Need to populate with which arch we're building for.
+      - shell: echo "BUILD_ARCH=arm64" > build.properties
+      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
+      - shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
+      - inject:
+          properties-file: ${WORKSPACE}/build.properties
+      - get-s3-source-payload
+      - set-test-description
+      - run-unit-tests-host:
+          GOTEST_TYPE: "xunit-report"
+          JUJU_GOMOD_MODE: "vendor"
+    publishers:
+      - get-test-results
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+
+
+- job:
+    name: 'unit-tests-s390x-bionic'
+    description: |-
+      Build and run unit tests for s390x on bionic in an lxd container.
+    node: s390x
+    wrappers:
+      - default-unit-test-wrapper
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: '5400s'
+        name: TEST_TIMEOUT
+    - string:
+        name: USE_TMPFS_FOR_MGO
+        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+    - string:
+        name: series
+        default: ""
+        description: "Series used for deploying"
+    - string:
+        name: BOOTSTRAP_SERIES
+        default: ""
+        description: "Series to used for bootstrapping"
+    builders:
+      # Need to populate with which arch we're building for.
+      - shell: echo "BUILD_ARCH=s390x" > build.properties
+      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
+      - shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
+      - inject:
+          properties-file: ${WORKSPACE}/build.properties
+      - get-s3-source-payload
+      - set-test-description
+      - run-unit-tests-lxd-bionic:
+          GOTEST_TYPE: "xunit-report"
+          JUJU_GOMOD_MODE: "vendor"
+    publishers:
+      - get-test-results
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+
+
+- job:
+    name: 'unit-tests-ppc64el-bionic'
+    description: |-
+      Build and run unit tests for ppc64el.
+    node: ppc64el
+    wrappers:
+      - default-unit-test-wrapper
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: '5400s'
+        name: TEST_TIMEOUT
+    - string:
+        name: USE_TMPFS_FOR_MGO
+      # TODO(achilleasa): force tmpfs for ppc64el as it's the only one that
+      # struggles with timeouts due to the use of wiretiger on slow hw. Once
+      # we are happy with this, we can set the flag to 1 for the root job.
+        default: "1"
+        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+    - string:
+        name: series
+        default: ""
+        description: "Series used for deploying"
+    - string:
+        name: BOOTSTRAP_SERIES
+        default: ""
+        description: "Series to used for bootstrapping"
+    builders:
+      # Need to populate with which arch we're building for.
+      - shell: echo "BUILD_ARCH=ppc64el" > build.properties
+      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
+      #- shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
+      - shell: echo "USE_TMPFS_FOR_MGO=1" >> build.properties
+      - inject:
+          properties-file: ${WORKSPACE}/build.properties
+      - get-s3-source-payload
+      - set-test-description
+      - run-unit-tests-lxd-bionic:
+          GOTEST_TYPE: "xunit-report"
+          JUJU_GOMOD_MODE: "vendor"
+    publishers:
+      - get-test-results
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+
+
+- job:
+    name: 'unit-tests-race-amd64'
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Build and run unit race tests for amd64.
+    wrappers:
+      - default-unit-test-wrapper
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: '3000s'
+        name: TEST_TIMEOUT
+    - string:
+        name: USE_TMPFS_FOR_MGO
+        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+    - string:
+        name: series
+        default: ""
+        description: "Series used for deploying"
+    - string:
+        name: BOOTSTRAP_SERIES
+        default: ""
+        description: "Series to used for bootstrapping"
+    - string:
+        name: GOVERSION
+        default: ""
+        description: "Go version to use for unit tests"
+    builders:
+      # Need to populate with which arch we're building for.
+      - shell: echo "BUILD_ARCH=amd64" > build.properties
+      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
+      - shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
+      - inject:
+          properties-file: ${WORKSPACE}/build.properties
+      - get-s3-source-payload
+      - set-test-description
+      - run-unit-tests-host:
+          GOTEST_TYPE: "race"
+          JUJU_GOMOD_MODE: "vendor"
+    publishers:
+        - get-test-results
+        - junit:
+            results: tests.xml
+            allow-empty-results: true
+
+
+- job:
+    name: 'unit-tests-race-arm64'
+    node: ephemeral-focal-8c-32g-arm64
+    description: |-
+      Build and run unit race tests for arm64.
+    wrappers:
+      - default-unit-test-wrapper
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: '3000s'
+        name: TEST_TIMEOUT
+    - string:
+        name: USE_TMPFS_FOR_MGO
+        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+    - string:
+        name: series
+        default: ""
+        description: "Series used for deploying"
+    - string:
+        name: BOOTSTRAP_SERIES
+        default: ""
+        description: "Series to used for bootstrapping"
+    - string:
+        name: GOVERSION
+        default: ""
+        description: "Go version to use for unit tests"
+    builders:
+      # Need to populate with which arch we're building for.
+      - shell: echo "BUILD_ARCH=arm64" > build.properties
+      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
+      - shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
+      - inject:
+          properties-file: ${WORKSPACE}/build.properties
+      - get-s3-source-payload
+      - set-test-description
+      - run-unit-tests-host:
+          GOTEST_TYPE: "race"
+          JUJU_GOMOD_MODE: "vendor"
+    publishers:
+        - get-test-results
+        - junit:
+            results: tests.xml
+            allow-empty-results: true
+
+
+- job:
+    name: 'unit-tests-centos9'
+    description: |-
+      Build and run unit race tests on centos9 for amd64.
+    node: ephemeral-centos9-8c-32g-amd64
+    wrappers:
+      - default-unit-test-wrapper
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to test
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+      - string:
+          name: USE_TMPFS_FOR_MGO
+          description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+      - string:
+          name: series
+          default: ""
+          description: "Series used for deploying"
+      - string:
+          name: BOOTSTRAP_SERIES
+          default: ""
+          description: "Series to used for bootstrapping"
+      - string:
+          name: GOVERSION
+          default: "1.17"
+          description: "Go version to use for unit tests"
+    builders:
+      - install-go
+      - get-s3-source-payload
+      - set-test-description
+      - shell:
+          !include-raw: ../scripts/centos-unit-test.sh
+    publishers:
+      # centos-unit-test.sh puts the tests.xml file in the right place, no need to grab it.
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+
+- job:
+    name: 'unit-tests-win2012'
+    description: |-
+      Build and run unit race tests on win2012 for amd64.
+    node: features
+    wrappers:
+      - default-unit-test-wrapper
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    builders:
+      - get-s3-source-payload
+      - set-test-description
+      - shell:
+          !include-raw: ../scripts/windows-unit-test.sh
+    publishers:
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
+
+
+# Get the test results report regardless of success/failure
+- publisher:
+    name: 'get-test-results'
+    publishers:
+      - postbuildscript:
+          builders:
+            - role: SLAVE
+              build-on:
+                - SUCCESS
+                - FAILURE
+                - UNSTABLE
+              build-steps:
+              - shell: cp _stash/tests.xml ${WORKSPACE}/ || true
+
+- wrapper:
+    name: default-unit-test-wrapper
+    wrappers:
+      - ansicolor
+      - timestamps
+      - workspace-cleanup
+      - cirun-test-stuck-timeout

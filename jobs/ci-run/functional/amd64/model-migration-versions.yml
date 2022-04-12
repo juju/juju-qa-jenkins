@@ -1,0 +1,58 @@
+- job:
+    name: nw-model-migration-versions-aws
+    node: ephemeral-focal-4c-16g-amd64
+    description: |-
+      Test model migration functionality in public cloud AWS.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    - string:
+        default: eu-central-1
+        description: Which region in aws to run on.
+        name: region
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-aws
+          timeout -s INT 50m ${TESTS_DIR}/assess_model_migration_versions.py $ENV $JUJU_BIN \
+              $WORKSPACE/artifacts $JOB_NAME \
+              --region $region --stable-juju-bin /snap/bin/juju
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+
+- job:
+    name: nw-model-migration-versions-lxd
+    node: ephemeral-focal-4c-16g-amd64
+    description: |-
+      Test model migration functionality in public cloud AWS.
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-lxd
+          timeout -s INT 50m ${TESTS_DIR}/assess_model_migration_versions.py $ENV $JUJU_BIN \
+              $WORKSPACE/artifacts $JOB_NAME \
+              --stable-juju-bin /snap/bin/juju
+    publishers:
+      - artifact-results
+      - log-panic-check

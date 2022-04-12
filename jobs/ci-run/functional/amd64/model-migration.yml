@@ -1,0 +1,163 @@
+
+- job:
+    name: nw-model-migration-amd64-aws
+    node: ephemeral-focal-4c-16g-amd64
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          # Note: we have direct access to clouds in these nodes, so disable
+          #   for this step.
+          unset http_proxy
+          unset https_proxy
+          ENV=parallel-aws
+          timeout -s INT 90m ${TESTS_DIR}/assess_model_migration.py \
+            $ENV $JUJU_BIN \
+            $WORKSPACE/artifacts $JOB_NAME
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+
+- job:
+    name: nw-model-migration-amd64-lxd
+    node: ephemeral-focal-4c-16g-amd64
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          ENV=parallel-lxd
+          timeout -s INT 90m ${TESTS_DIR}/assess_model_migration.py \
+            $ENV $JUJU_BIN \
+            $WORKSPACE/artifacts $JOB_NAME
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+
+- job:
+    name: nw-model-migration-amd64-azure-arm
+    node: ephemeral-focal-4c-16g-amd64
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          # Note: we have direct access to clouds in these nodes, so disable
+          #   for this step.
+          unset http_proxy
+          unset https_proxy
+          # azure has a short name length limit
+          SHORT_JOB_NAME=nw-model-mig-azure-arm
+          ENV=parallel-azure-arm
+          timeout -s INT 110m ${TESTS_DIR}/assess_model_migration.py --region australiaeast \
+            $ENV $JUJU_BIN \
+            $WORKSPACE/artifacts $SHORT_JOB_NAME
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+
+- job:
+    name: nw-model-migration-amd64-gce
+    node: ephemeral-focal-4c-16g-amd64
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: 'amd64'
+        description: 'Arch to build for.'
+        name: BUILD_ARCH
+    - string:
+        default: us-west1
+        description: Which region in gce to run on.
+        name: region
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          # Note: we have direct access to clouds in these nodes, so disable
+          # for this step.
+          unset http_proxy
+          unset https_proxy
+          ENV=parallel-gce
+          timeout -s INT 90m ${TESTS_DIR}/assess_model_migration.py \
+            --region $region \
+            $ENV $JUJU_BIN \
+            $WORKSPACE/artifacts $JOB_NAME
+    publishers:
+      - artifact-results
+      - log-panic-check
+
+- job:
+    name: nw-model-migration-amd64-vsphere
+    node: vsphere
+    parameters:
+    - string:
+        default: ""
+        description: "Enable sub job to be run individually."
+        name: SHORT_GIT_COMMIT
+    - string:
+        default: "amd64"
+        description: "Arch to build for."
+        name: BUILD_ARCH
+    - string:
+        default: Boston
+        description: Which region in vSphere to run on.
+        name: region
+    wrappers:
+      - cirun-test-stuck-timeout
+    builders:
+      - prepare-functional-test
+      - shell: |-
+          # Note: we have direct access to clouds in these nodes, so disable
+          # for this step.
+          unset http_proxy
+          unset https_proxy
+          # A bit gross, need to handle the no_proxy parts for munna better.
+          # Boston vsphere and its disks.
+          export no_proxy=$no_proxy,10.246.152.100,azalea.internal,domino.internal,fludd.internal,eyerok.internal,chrom.internal,barnacle.internal
+          # Matches the VLAN used for vsphere juju-qa config
+          export no_proxy=$no_proxy,10.246.157.0/24
+          ENV=parallel-vsphere-boston
+          timeout -s INT 120m ${TESTS_DIR}/assess_model_migration.py \
+            --region $region \
+            --logging-config 'juju.provider.vmware=TRACE' \
+            --debug \
+            $ENV $JUJU_BIN \
+            $WORKSPACE/artifacts $JOB_NAME
+    publishers:
+      - artifact-results
+      - log-panic-check
