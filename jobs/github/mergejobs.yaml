@@ -173,6 +173,7 @@
     builders:
       - description-setter:
           description: '<a href="${ghprbPullLink}">PR #${ghprbPullId}</a>'
+      - install-go
       - shell: |-
           #!/bin/bash
           GOOS="linux"
@@ -233,6 +234,7 @@
     builders:
       - description-setter:
           description: '<a href="${ghprbPullLink}">PR #${ghprbPullId}</a>'
+      - install-go
       - inject:
           properties-content: |-
             PROJECT_DIR="github.com/juju/juju"
