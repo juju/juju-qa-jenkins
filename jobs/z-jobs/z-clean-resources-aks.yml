@@ -3,6 +3,7 @@
     description: Clean up aks clusters.
     builders:
     - get-aks-cleanup-scripts
+    - get-juju-cloud-creds
     - shell: |-
         #!/bin/bash
         set -x

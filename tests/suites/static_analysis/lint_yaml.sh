@@ -53,17 +53,14 @@ jobs:
     - github-prs
     - sync-ntp
     - z-clean-azure
-    - z-clean-microk8s
     - z-clean-resources-aws
     - z-clean-resources-gce
     - z-clean-resources-gke
     - z-clean-resources-aks
     - z-clean-resources-equinix
-    - z-clean-resources-joyent
     - z-clean-resources-oracle
     - z-clean-resources-rackspace
     - z-clean-resources-vsphere
-    - z-clean-resources-vsphere-boston
     - z-clean-resources-windows
     - run-unit-tests-lxd
 

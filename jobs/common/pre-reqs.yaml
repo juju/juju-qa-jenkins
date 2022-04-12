@@ -60,6 +60,53 @@
           sudo DEBIAN_FRONTEND=noninteractive apt install -y simplestreams
 
 - builder:
+    name: 'install-aws-libs'
+    builders:
+    - shell: |-
+        #!/bin/bash
+        set -xe
+
+        sudo DEBIAN_FRONTEND=noninteractive apt update;
+        sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
+        sudo pip3 install apache-libcloud;
+
+- builder:
+    name: 'install-gce-libs'
+    builders:
+    - shell: |-
+        #!/bin/bash
+        set -xe
+
+        sudo DEBIAN_FRONTEND=noninteractive apt update;
+        sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
+        sudo pip3 install apache-libcloud;
+
+- builder:
+    name: 'install-aks-libs'
+    builders:
+    - shell: |-
+        #!/bin/bash
+        set -xe
+
+        sudo DEBIAN_FRONTEND=noninteractive apt update;
+        sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
+        sudo apt install -y python3-dev
+        sudo pip3 install azure-identity;
+        sudo pip3 install azure-mgmt-containerservice;
+        sudo pip3 install msrestazure;
+
+- builder:
+    name: 'install-equinix-libs'
+    builders:
+    - shell: |-
+        #!/bin/bash
+        set -xe
+
+        sudo DEBIAN_FRONTEND=noninteractive apt update;
+        sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
+        sudo pip3 install pytz;
+
+- builder:
     name: 'install-azure-libs'
     builders:
     - shell: |-
@@ -74,6 +121,7 @@
         sudo pip3 install azure-mgmt-storage;
         sudo pip3 install azure-mgmt-network;
         sudo pip3 install azure-identity;
+        sudo pip3 install pytz;
 
 - builder:
     name: 'install-azure-s3-libs'
@@ -98,6 +146,7 @@
 
         cd scripts
         git checkout origin/main -- jobs/z-jobs/scripts/winazurearm.py
+        cd ${WORKSPACE}
     - inject:
         properties-content: |-
             SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
@@ -113,6 +162,7 @@
 
         cd scripts
         git checkout origin/main -- tools/scripts/azure_publish_tools.py
+        cd ${WORKSPACE}
     - inject:
         properties-content: |-
             SCRIPTS_DIR=${WORKSPACE}/scripts/tools/scripts/
@@ -127,6 +177,7 @@
 
         cd scripts
         git checkout origin/main -- jobs/z-jobs/scripts/clean_lxd.py
+        cd ${WORKSPACE}
     - inject:
         properties-content: |-
             SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
@@ -135,6 +186,7 @@
     name: 'get-aks-cleanup-scripts'
     builders:
     - checkout-qa-repo
+    - install-aks-libs
     - shell: |-
         #!/bin/bash
         set -eux
@@ -143,6 +195,7 @@
 
         cd scripts
         git checkout origin/main -- jobs/z-jobs/scripts/aks_cleanup.py
+        cd ${WORKSPACE}
     - inject:
         properties-content: |-
             SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
@@ -151,12 +204,14 @@
     name: 'get-aws-cleanup-scripts'
     builders:
     - checkout-qa-repo
+    - install-aws-libs
     - shell: |-
         #!/bin/bash
         set -eux
 
         cd scripts
         git checkout origin/main -- jobs/z-jobs/scripts/aws.py
+        cd ${WORKSPACE}
     - inject:
         properties-content: |-
             SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
@@ -166,6 +221,7 @@
     name: 'get-gce-cleanup-scripts'
     builders:
     - checkout-qa-repo
+    - install-gce-libs
     - shell: |-
         #!/bin/bash
         set -eux
@@ -174,6 +230,7 @@
 
         cd scripts
         git checkout origin/main -- jobs/z-jobs/scripts/gce.py
+        cd ${WORKSPACE}
     - inject:
         properties-content: |-
             SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
@@ -188,6 +245,7 @@
 
         cd scripts
         git checkout origin/main -- jobs/z-jobs/scripts/clean_maas
+        cd ${WORKSPACE}
     - inject:
         properties-content: |-
             SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/clean_maas
@@ -196,12 +254,14 @@
     name: 'get-equinix-cleanup-scripts'
     builders:
     - checkout-qa-repo
+    - install-equinix-libs
     - shell: |-
         #!/bin/bash
         set -eux
 
         cd scripts
         git checkout origin/main -- jobs/z-jobs/scripts/clean_equinix.py
+        cd ${WORKSPACE}
     - inject:
         properties-content: |-
             SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
