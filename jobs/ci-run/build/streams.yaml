@@ -1,5 +1,5 @@
 - job:
-    name: 'SimpleStreams'
+    name: 'simplestreams'
     project-type: 'multijob'
     description: 'Generate and publish streams for a run.'
     condition: SUCCESSFUL
@@ -35,7 +35,7 @@
     description: |-
       Publish stream metadata and agents from this build for use in
       functional testing.
-    node: noop-parent-jobs
+    node: ephemeral-focal-small-amd64
     wrappers:
       - ansicolor
       - workspace-cleanup
@@ -50,10 +50,11 @@
         default: "agents"
         description: "Either 'agents' or 'tools' (for 2.8)"
     builders:
+      - set-test-description
       - install-s3cmd
       - get-s3-creds
       - get-build-details
-      - set-test-description
+      - install-simplestreams
       - shell: |-
             #!/bin/bash
             # the rm's shouldn't be needed.
@@ -84,7 +85,7 @@
     description: |-
       Publish stream metadata and agents from this build for use in
       functional testing.
-    node: noop-parent-jobs
+    node: ephemeral-focal-small-amd64
     wrappers:
       - ansicolor
       - workspace-cleanup
@@ -124,7 +125,7 @@
 
           # NOTE: this sync removes the "build-$SHA" indirection and effectively
           # pulls the binaries one folder up (under agent/)
-          s3cmd sync $S3_CFG \
+          s3cmd sync --config $S3_CFG \
             ${WORKSPACE}/agent/build-${SHORT_GIT_COMMIT}/ \
             s3://ci-run-streams/builds/build-${SHORT_GIT_COMMIT}/agent/ \
             --acl-public
@@ -135,7 +136,7 @@
     description: |-
       Publish stream metadata and agents from this build for use in
       functional testing.
-    node: noop-parent-jobs
+    node: ephemeral-focal-small-amd64
     wrappers:
       - ansicolor
       - workspace-cleanup
@@ -171,13 +172,13 @@
             ${WORKSPACE}/streams \
             ${SHORT_GIT_COMMIT}
 
-          ${SCRIPT_DIR}/azure_publish_tools.py sync \
+          ${SCRIPTS_DIR}/azure_publish_tools.py sync \
             ${WORKSPACE}/streams \
             ci-run-streams/builds/build-${SHORT_GIT_COMMIT}/streams
 
           # NOTE: this sync removes the "build-$SHA" indirection and effectively
           # pulls the binaries one folder up (under agent/)
-          ${SCRIPT_DIR}/azure_publish_tools.py sync \
+          ${SCRIPTS_DIR}/azure_publish_tools.py sync \
             ${WORKSPACE}/agent/build-${SHORT_GIT_COMMIT}/ \
             ci-run-streams/builds/build-${SHORT_GIT_COMMIT}/agent
 

@@ -34,9 +34,9 @@
       - multijob:
           name: IntegrationTests
           projects:
-          - name: 'Gating-IntegrationTests-amd64'
+          - name: 'gating-integration-tests-amd64'
             current-parameters: true
-          - name: 'ProvingGrounds-IntegrationTests-amd64'
+          - name: 'provinggrounds-integration-tests-amd64'
             current-parameters: true
 
 
@@ -48,7 +48,7 @@
 
 
 - job:
-    name: "Gating-IntegrationTests-amd64"
+    name: "gating-integration-tests-amd64"
     project-type: "multijob"
     description: |-
       intergration-amd64 runs the new shell integration tests.
@@ -157,7 +157,7 @@
 
 
 - job:
-    name: "ProvingGrounds-IntegrationTests-amd64"
+    name: "provinggrounds-integration-tests-amd64"
     project-type: "multijob"
     description: |-
       intergration-amd64 runs the new shell integration tests.
@@ -188,7 +188,7 @@
       - inject:
           properties-file: build.properties
       - multijob:
-          name: 'ProvingGrounds-IntegrationTests-amd64'
+          name: 'provinggrounds-integration-tests-amd64'
           projects:
             # ------------------------------------------- integration tests -- #
             - name: 'test-agents-multijob'

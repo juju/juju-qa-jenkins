@@ -9,9 +9,9 @@
         set -eu
 
         # Display instances' regions
-        python $SCRIPTS_DIR/gce.py -v list-instances juju-*
+        python3 $SCRIPTS_DIR/gce.py -v list-instances juju-*
 
-        python $SCRIPTS_DIR/gce.py -v delete-instances -o 2 juju-*
+        python3 $SCRIPTS_DIR/gce.py -v delete-instances -o 2 juju-*
 
         #gcloud auth login
         gcloud config set project gothic-list-89514

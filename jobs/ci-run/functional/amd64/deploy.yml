@@ -165,7 +165,7 @@
           # Matches the VLAN used for vsphere juju-qa config
           export no_proxy=$no_proxy,10.246.157.0/24
           timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
-             parallel-vsphere-boston $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
+             ENV=parallel-vsphere-vmfolder $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
     publishers:
       - artifact-results
       - log-panic-check

@@ -1,5 +1,5 @@
 - job:
-    name: "CI-ProvingGroundsTests"
+    name: "ci-proving-ground-tests"
     project-type: "multijob"
     description: "Run proving ground tests for a Juju commit"
     condition: SUCCESSFUL
@@ -30,9 +30,9 @@
           name: CI ProvingGrounds Tests
           # Defining BUILD_ARCH ensures the right binaries are pulled down.
           projects:
-            - name: ProvingGrounds-RunFunctionalTests-amd64
+            - name: provinggrounds-functional-tests-amd64-amd64
               current-parameters: true
               predefined-parameters: BUILD_ARCH=amd64
-            - name: ProvingGrounds-IntegrationTests-amd64
+            - name: provinggrounds-integration-tests-amd64
               current-parameters: true
               predefined-parameters: BUILD_ARCH=arm64

@@ -1,5 +1,5 @@
 - job:
-    name: "ProvingGrounds-RunFunctionalTests-amd64"
+    name: "provinggrounds-functional-tests-amd64-amd64"
     project-type: "multijob"
     description: |-
       Build juju snap and binaries for amd64.
