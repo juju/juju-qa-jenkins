@@ -232,6 +232,7 @@
           description: 'Go version used for build.'
           name: GOVERSION
     builders:
+      - install-go
       - inject:
           properties-content: |-
             JUJU_SOURCE_CHECKOUT=${WORKSPACE}/tmp_initial_clone
