@@ -1,0 +1,29 @@
+- view:
+    name: 'ci-runs'
+    view-type: list
+    regex: 'ci-.*'
+
+- view:
+    name: 'unit-tests'
+    view-type: list
+    regex: 'unit-tests.*'
+
+- view:
+    name: 'gating-tests'
+    view-type: list
+    regex: 'gating-.*'
+
+- view:
+    name: 'proving-ground-tests'
+    view-type: list
+    regex: 'proving-ground.*'
+
+- view:
+    name: 'github-jobs'
+    view-type: list
+    regex: 'github-.*(-check-|-merge-).*'
+
+- view:
+    name: 'cleanup-jobs'
+    view-type: list
+    regex: 'z-.*'

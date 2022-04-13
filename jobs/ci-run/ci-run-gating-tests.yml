@@ -1,5 +1,5 @@
 - job:
-    name: "Gating Tests"
+    name: "gating-tests"
     project-type: "multijob"
     description: "Run gating tests for a Juju commit"
     condition: SUCCESSFUL

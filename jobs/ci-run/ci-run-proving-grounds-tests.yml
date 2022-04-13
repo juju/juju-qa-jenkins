@@ -30,9 +30,9 @@
           name: CI ProvingGrounds Tests
           # Defining BUILD_ARCH ensures the right binaries are pulled down.
           projects:
-            - name: provinggrounds-functional-tests-amd64-amd64
+            - name: proving-grounds-functional-tests-amd64
               current-parameters: true
               predefined-parameters: BUILD_ARCH=amd64
-            - name: provinggrounds-integration-tests-amd64
+            - name: proving-grounds-integration-tests-amd64
               current-parameters: true
               predefined-parameters: BUILD_ARCH=arm64
