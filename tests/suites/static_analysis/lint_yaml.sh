@@ -52,7 +52,7 @@ jobs:
     - github-mgo-merge-jobs
     - github-prs
     - sync-ntp
-    - z-clean-azure
+    - z-clean-resources-azure
     - z-clean-resources-aws
     - z-clean-resources-gce
     - z-clean-resources-gke
@@ -62,6 +62,8 @@ jobs:
     - z-clean-resources-rackspace
     - z-clean-resources-vsphere
     - z-clean-resources-windows
+    - z-clean-resources-eks
+    - z-clean-resources-ecr
     - run-unit-tests-lxd
 
     # TODO (stickupkid): The followng jobs seem to be orphan jobs with in the
@@ -80,13 +82,11 @@ jobs:
     - public-clouds
     - lxd-src-command-focal-base
     - test-manual-multijob
-    - z-clean-resources-eks
     - github-juju-experimental-check-jobs
     - juju-integration-deploy
     - nw-deploy-focal-amd64-lxd
     - get-s3-build-payload-exotic
     - integration-test-runner-focal
-    - z-clean-resources-ecr
 EOF
 )
   if [ -n "${OUT}" ]; then

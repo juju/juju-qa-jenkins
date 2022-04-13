@@ -1,5 +1,5 @@
 - job:
-    name: 'z-clean-azure'
+    name: 'z-clean-resources-azure'
     builders:
     - get-azure-creds
     - get-azure-cleanup-scripts
@@ -23,7 +23,7 @@
           <h1>Infrastructure failure: Azure</h1>
           The following job has repeatedly failed.
           <br />
-          Please login to jenkins job <pre>`z-clean-azure`</pre> to find out why
+          Please login to jenkins job <pre>`z-clean-resources-azure`</pre> to find out why
           it is failing.
           <br />
           $DEFAULT_CONTENT
