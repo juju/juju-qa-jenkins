@@ -9,6 +9,9 @@
         set -eu
         max_age_of_cluster="3H"
 
+        gcloud auth activate-service-account --key-file=$GCE_CREDENTIALS_FILE
+        gcloud config set project gothic-list-89514
+
         # Get GKE which were created more than 3 hours ago.
         clusters_to_delete=$(gcloud container clusters list --filter="createTime<-PT$max_age_of_cluster" --format=json)
         echo -e "clusters created more than $max_age_of_cluster -> \n$clusters_to_delete"

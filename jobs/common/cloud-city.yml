@@ -63,6 +63,8 @@
         files: gcerc juju-qa-gce-serviceaccount.json
     - inject:
         properties-file: $CLOUD_CITY/gcerc
+        properties-content:
+            GCE_CREDENTIALS_FILE=$CLOUD_CITY/juju-qa-gce-serviceaccount.json
 
 - builder:
     name: 'get-vsphere-creds'
