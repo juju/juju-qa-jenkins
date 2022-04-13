@@ -59,20 +59,9 @@ gen-wire-tests:
 		"./jobs/ci-run/integration/gen"\
 		<"${config}"
 
-IMAGES_AMI_PACKER := $(wildcard images/ami/*.json)
-AWS_ACCESS_KEY_ID ?=
-AWS_SECRET_ACCESS_KEY ?=
-
-images-ami: $(IMAGES_AMI_PACKER)
-	@go run ./tools/ami-cleanup/main.go
-
-$(IMAGES_AMI_PACKER):
-	@packer build $@
-
 .PHONY: clean
 clean:
 	rm -rf venv
 	find $(cwd) -iname "*.pyc" -delete
 
 .PHONY: tests
-.PHONY: images-ami $(IMAGES_AMI_PACKER)

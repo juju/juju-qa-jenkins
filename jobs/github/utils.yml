@@ -40,19 +40,6 @@
     - inject:
           properties-file: ${WORKSPACE}/goversion
 
-- property:
-    name: github-ephemeral-node
-    properties:
-    - raw:
-        xml: |
-            <jp.ikedam.jenkins.plugins.groovy__label__assignment.GroovyLabelAssignmentProperty plugin="groovy-label-assignment@1.2.0">
-                <secureGroovyScript plugin="script-security@1.74">
-                <script>def goVersion = GOVERSION.replace(&apos;.&apos;, &apos;-&apos;);
-            return String.format(&quot;ephemeral-github-{arch}-go%s&quot;, goVersion);</script>
-                <sandbox>true</sandbox>
-                </secureGroovyScript>
-            </jp.ikedam.jenkins.plugins.groovy__label__assignment.GroovyLabelAssignmentProperty>
-
 - builder:
     name: github-merge
     builders:

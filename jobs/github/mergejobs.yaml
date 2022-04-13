@@ -30,7 +30,7 @@
           status-context: "check-multi-juju"
           only-trigger-phrase: false
           auto-close-on-fail: false
-          cancel-builds-on-update: true  # Cancel existing builds if PR updated/re-run.
+          cancel-builds-on-update: true # Cancel existing builds if PR updated/re-run.
           cron: 'H/5 * * * *'
           org-list:
             - juju
@@ -147,6 +147,7 @@
     description: |-
       Run make check against PR
     concurrent: true
+    node: ephemeral-github-16c-64g-amd64
     parameters:
     - string:
         default: ''
@@ -157,8 +158,6 @@
         description: 'Go version used for build.'
         name: GOVERSION
     properties:
-      - github-ephemeral-node:
-          arch: amd64
       - authorization:
          anonymous:
              - job-read
@@ -210,6 +209,7 @@
       Run windows unit tests against PR
     node: builder-lxd # for now we need cloud city
     concurrent: false
+    disabled: true
     parameters:
     - string:
         default: ''
