@@ -9,7 +9,7 @@ fi
 
 BODY_FILE="${{WORKSPACE}}/merge-${{ghprbPullId}}.txt"
 # Long random EOM to prevent code injection due to templating used by jenkins.
-cat | sudo tee ${{BODY_FILE}} <<EOM83bbd81ba02cc92bf3c97602ad9f947f2a9e87d2a631e77d59cb842df2d90a9e
+cat | tee ${{BODY_FILE}} <<EOM83bbd81ba02cc92bf3c97602ad9f947f2a9e87d2a631e77d59cb842df2d90a9e
 {merge_comment}
 EOM83bbd81ba02cc92bf3c97602ad9f947f2a9e87d2a631e77d59cb842df2d90a9e
 
