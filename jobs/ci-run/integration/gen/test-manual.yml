@@ -95,7 +95,7 @@
 
 - job:
     name: test-manual-test-deploy-manual-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test test_deploy_manual in manual suite on aws
     parameters:
@@ -191,7 +191,7 @@
 
 - job:
     name: test-manual-test-spaces-manual-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test test_spaces_manual in manual suite on aws
     parameters:

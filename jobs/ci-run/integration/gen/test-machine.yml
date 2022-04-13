@@ -90,7 +90,7 @@
 
 - job:
     name: test-machine-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test machine suite on aws
     parameters:

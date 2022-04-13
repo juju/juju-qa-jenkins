@@ -95,7 +95,7 @@
 
 - job:
     name: test-smoke-test-build-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test test_build in smoke suite on aws
     parameters:
@@ -191,7 +191,7 @@
 
 - job:
     name: test-smoke-test-deploy-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test test_deploy in smoke suite on aws
     parameters:

@@ -1,6 +1,6 @@
 - job:
     name: 'test-network-health-ec2'
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test Network Health on EC2
     parameters:

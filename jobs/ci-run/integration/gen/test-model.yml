@@ -103,7 +103,7 @@
 
 - job:
     name: test-model-test-model-config-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test test_model_config in model suite on aws
     parameters:
@@ -199,7 +199,7 @@
 
 - job:
     name: test-model-test-model-metrics-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test test_model_metrics in model suite on aws
     parameters:
@@ -295,7 +295,7 @@
 
 - job:
     name: test-model-test-model-migration-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test test_model_migration in model suite on aws
     parameters:
@@ -391,7 +391,7 @@
 
 - job:
     name: test-model-test-model-multi-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test test_model_multi in model suite on aws
     parameters:

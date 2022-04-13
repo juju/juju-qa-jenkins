@@ -90,7 +90,7 @@
 
 - job:
     name: test-network-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test network suite on aws
     parameters:

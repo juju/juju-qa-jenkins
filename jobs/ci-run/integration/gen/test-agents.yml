@@ -90,7 +90,7 @@
 
 - job:
     name: test-agents-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test agents suite on aws
     parameters:
