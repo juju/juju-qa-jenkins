@@ -94,7 +94,7 @@
 - job-template:
     name: github-check-merge-juju-{project_name}
     project-type: freestyle
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-github-small-amd64
     concurrent: true
     # black_list is a comma separated list of branch names to ignore (i.e. fail
     # straight away if a merge/check is started for any of these branches."
@@ -185,7 +185,7 @@
 - job-template:
     name: github-merge-juju-{project_name}
     project-type: freestyle
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-github-small-amd64
     concurrent: false
     # black_list is a comma separated list of branch names to ignore (i.e. fail
     # straight away if a merge/check is started for any of these branches."
