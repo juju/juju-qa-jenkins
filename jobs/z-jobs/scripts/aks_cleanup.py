@@ -14,13 +14,6 @@ from msrestazure import azure_exceptions
 MAX_LIFE_IN_HOURS = 4
 MonkeyPatch.patch_fromisoformat()
 
-with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'environments.yaml')) as f:
-    environments = yaml.load(f, yaml.SafeLoader)
-
-
-config = environments['environments']['aks']
-resource_group = config['resource-group']
-
 
 def get_poller_result(poller, wait=5):
     try:
@@ -50,15 +43,36 @@ def delete_cluster(client, name):
         print(e)
 
 
+def get_creds():
+    if 'JUJU_DATA' not in os.environ:
+        raise Exception('JUJU_DATA envvar not defined')
+
+    if 'AKS_TENANT_ID' not in os.environ:
+        raise Exception('AKS_TENANT_ID envvar not defined')
+
+    juju_home = os.environ['JUJU_DATA']
+    with open(juju_home + "/credentials.yaml", "r") as stream:
+        aks_creds = yaml.safe_load(stream)["credentials"]["aks"]
+        creds = aks_creds["credentials"]
+        creds['tenant-id'] = os.environ['AKS_TENANT_ID']
+        return creds
+
+
 def main():
+    creds = get_creds()
     client = containerservice.ContainerServiceClient(
         credential=ClientSecretCredential(
-            tenant_id=config['tenant-id'],
-            client_id=config['application-id'],
-            client_secret=config['application-password'],
+            tenant_id=creds['tenant-id'],
+            client_id=creds['application-id'],
+            client_secret=creds['application-password'],
         ),
-        subscription_id=config['subscription-id']
+        subscription_id=creds['subscription-id']
     )
+    if 'AKS_RESOURCE_GROUP' not in os.environ:
+        raise Exception('AKS_RESOURCE_GROUP envvar not defined')
+
+    resource_group = os.environ['AKS_RESOURCE_GROUP']
+
     for cluster in client.managed_clusters.list_by_resource_group(resource_group):
         if cluster.tags is None or len(cluster.tags) == 0:
             print("IGNORED: cluster {} has UNKNOWN creation time".format(cluster.name))

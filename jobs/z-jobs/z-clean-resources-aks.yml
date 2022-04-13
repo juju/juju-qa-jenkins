@@ -4,6 +4,10 @@
     builders:
     - get-aks-cleanup-scripts
     - get-juju-cloud-creds
+    - inject:
+        properties-content: |-
+          AKS_RESOURCE_GROUP=DefaultResourceGroup-EUS
+          AKS_TENANT_ID=3c2d4464-eb43-4c6c-9bb8-cf8e9bce1971
     - shell: |-
         #!/bin/bash
         set -x
