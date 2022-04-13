@@ -179,7 +179,7 @@
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
                 GOVERSION=${GOVERSION}
-            - name: "Gating Tests"
+            - name: "gating-tests"
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}

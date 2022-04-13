@@ -13,8 +13,6 @@
           timeout: 300
           fail: true
           type: absolute
-    views:
-      - 'integration-view'
     parameters:
       - string:
           default: ""
@@ -34,17 +32,10 @@
       - multijob:
           name: IntegrationTests
           projects:
-          - name: 'gating-integration-tests-amd64'
+          - name: gating-integration-tests-amd64
             current-parameters: true
-          - name: 'provinggrounds-integration-tests-amd64'
+          - name: proving-grounds-integration-tests-amd64
             current-parameters: true
-
-
-- view:
-    name: 'integration-view'
-    view-type: list
-    # include jobs with integration tests in the name, but not the github merge ones.
-    regex: '(?!github)(?i).*integration(-?)tests.*'
 
 
 - job:
@@ -69,8 +60,6 @@
           default: ''
           description: 'Ubuntu series to use when bootstrapping Juju'
           name: BOOTSTRAP_SERIES
-    views:
-      - 'integration-view'
     builders:
       - get-build-details
       - set-test-description
@@ -81,7 +70,6 @@
       - multijob:
           name: 'gating-integration-tests-amd64'
           projects:
-            # ------------------------------------------- integration tests -- #
             - name: 'test-appdata-multijob'
               current-parameters: true
               predefined-parameters: |-
@@ -157,7 +145,7 @@
 
 
 - job:
-    name: "provinggrounds-integration-tests-amd64"
+    name: proving-grounds-integration-tests-amd64
     project-type: "multijob"
     description: |-
       intergration-amd64 runs the new shell integration tests.
@@ -178,8 +166,6 @@
           default: ''
           description: 'Ubuntu series to use when bootstrapping Juju'
           name: BOOTSTRAP_SERIES
-    views:
-      - 'integration-view'
     builders:
       - get-build-details
       - set-test-description
@@ -188,9 +174,8 @@
       - inject:
           properties-file: build.properties
       - multijob:
-          name: 'provinggrounds-integration-tests-amd64'
+          name: proving-grounds-integration-tests-amd64
           projects:
-            # ------------------------------------------- integration tests -- #
             - name: 'test-agents-multijob'
               current-parameters: true
               predefined-parameters: |-
