@@ -90,7 +90,7 @@
 
 - job:
     name: test-hooktools-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test hooktools suite on aws
     parameters:

@@ -95,7 +95,7 @@
 
 - job:
     name: test-branches-test-active-branch-output-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test test_active_branch_output in branches suite on aws
     parameters:
@@ -191,7 +191,7 @@
 
 - job:
     name: test-branches-test-branch-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test test_branch in branches suite on aws
     parameters:

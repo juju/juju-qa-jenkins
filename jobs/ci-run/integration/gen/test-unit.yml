@@ -90,7 +90,7 @@
 
 - job:
     name: test-unit-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test unit suite on aws
     parameters:

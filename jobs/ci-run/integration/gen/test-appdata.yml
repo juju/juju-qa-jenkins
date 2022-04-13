@@ -90,7 +90,7 @@
 
 - job:
     name: test-appdata-aws
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test appdata suite on aws
     parameters:

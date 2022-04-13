@@ -1,6 +1,6 @@
 - job:
     name: 'test-spaces-ec2'
-    node: integration-tests
+    node: ephemeral-focal-small-amd64
     description: |-
       Test Spaces on EC2 Suite
     parameters:

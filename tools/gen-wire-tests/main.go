@@ -400,7 +400,7 @@ const Template = `
     {{- end }}
 
     {{- $builder := "run-integration-test" -}}
-    {{- $run_on := "integration-tests" -}}
+    {{- $run_on := "ephemeral-focal-small-amd64" -}}
     {{- if or (eq (index $node.Ephemeral $test_name) true) (eq $provider_name "lxd") }}
       {{- $builder = "run-integration-test-ephemeral" -}}
       {{- $run_on = "ephemeral-focal-8c-32g-amd64" -}}
