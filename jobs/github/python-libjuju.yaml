@@ -26,7 +26,7 @@
     name: github-integration-tests-pylibjuju-{project_name}
     description: |-
       Run python libjuju integration tests
-    node: ephemeral-github-16c-64g-amd64
+    node: ephemeral-github-medium-amd64
     concurrent: false
     parameters:
     - string:
@@ -66,10 +66,11 @@
       - inject:
           properties-content: |-
             PROJECT_DIR="github.com/juju/python-libjuju"
-      - run-build-check-lxd:
+      - run-build-check-raw:
           build_env: |-
               PYTHON_VERSION={PYTHON_VERSION}
               JUJU_CHANNEL={JUJU_CHANNEL}
+          setup_steps: ""
           src_command:
               !include-raw-escape: "./scripts/pylibjuju-integration-test.sh"
           checkout_command:
