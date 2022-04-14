@@ -34,7 +34,7 @@ export PATH="/snap/bin:$PATH"
 
 lxd waitready --timeout 120
 sudo chmod 666 /var/snap/lxd/common/lxd/unix.socket
-lxd init --auto --network-address='[::]' --network-port=8443 --storage-backend=dir
+lxd init --auto --network-address='[::]' --network-port=8443
 lxc network set lxdbr0 ipv6.address none
 
 lxc storage create juju-zfs dir source=/var/snap/lxd/common/lxd/storage-pools/juju-zfs

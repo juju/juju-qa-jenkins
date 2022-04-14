@@ -59,7 +59,7 @@
     name: github-make-check-mgo
     description: |-
       Run test suite against PR
-    node: silcoon
+    node: ephemeral-github-medium-amd64
     concurrent: true
     parameters:
     - string:
@@ -92,8 +92,9 @@
       - inject:
           properties-content: |-
             PROJECT_DIR="github.com/juju/mgo/v2"
-      - run-build-check-lxd:
+      - run-build-check-raw:
           build_env: ""
+          setup_steps: ""
           src_command:
               !include-raw: "./scripts/snippet_build_check-juju-mgo.sh"
           checkout_command:
