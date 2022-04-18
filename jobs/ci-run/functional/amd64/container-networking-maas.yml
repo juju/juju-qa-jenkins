@@ -15,7 +15,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
           ENV=parallel-finfolk-vmaas
           timeout -s INT 45m ${TESTS_DIR}/assess_container_networking.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \

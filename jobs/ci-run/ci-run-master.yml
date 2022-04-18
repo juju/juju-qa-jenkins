@@ -101,20 +101,88 @@
             series=bionic
 
       - set-test-description
+      - multijob:
+          name: "Building Juju Binaries"
+          condition: SUCCESSFUL
+          execution-type: PARALLEL
+          projects:
+            - name: build-juju-linux-arm64
+              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
+            - name: build-juju-linux-amd64
+              current-parameters: true
+              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
+            - name: build-juju-linux-s390x
+              current-parameters: true
+              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
+            - name: build-juju-linux-ppc64le
+              current-parameters: true
+              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
+            - name: build-juju-darwin-amd64
+              current-parameters: true
+              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
+            - name: build-juju-darwin-arm64
+              current-parameters: true
+              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
+            - name: build-juju-windows-amd64
+              current-parameters: true
+              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
 
       - multijob:
-          name: "Building"
+          name: "Building Juju OCI Images"
+          condition: SUCCESSFUL
+          projects:
+            - name: build-jujud-operator
+              current-parameters: true
+              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
+
+      - multijob:
+          name: "Simple Streams"
           condition: SUCCESSFUL
           execution-type: SEQUENTIALLY
           projects:
-            - name: build-juju-ubuntu
+            - name: generate-agent-testing-streams
               current-parameters: true
-            - name: build-juju-other
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+
+      - multijob:
+          name: "Simple Streams Publish"
+          condition: SUCCESSFUL
+          execution-type: SEQUENTIALLY
+          projects:
+            - name: publish-testing-streams-aws
               current-parameters: true
-            - name: build-caas-jujud-operator
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+            - name: publish-testing-streams-azure
               current-parameters: true
-            - name: simplestreams
-              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+
     publishers:
       - trigger-parameterized-builds:
           - project: "ci-gating-tests"
@@ -123,12 +191,16 @@
             predefined-parameters: |-
               series=${series}
               BOOTSTRAP_SERIES=${series}
+              SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+              GOVERSION=${GOVERSION}
           - project: "ci-proving-ground-tests"
             condition: SUCCESS
             current-parameters: true
             predefined-parameters: |-
               series=${series}
               BOOTSTRAP_SERIES=${series}
+              SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+              GOVERSION=${GOVERSION}
 
 - job:
     name: "ci-gating-tests"

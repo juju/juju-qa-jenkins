@@ -19,7 +19,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
           ENV=parallel-aws
           timeout -s INT 50m ${TESTS_DIR}/assess_model_migration_versions.py $ENV $JUJU_BIN \
@@ -47,7 +48,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
           ENV=parallel-lxd
           timeout -s INT 50m ${TESTS_DIR}/assess_model_migration_versions.py $ENV $JUJU_BIN \

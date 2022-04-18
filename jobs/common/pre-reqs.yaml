@@ -15,6 +15,7 @@
       - get-docker-creds
       - host-src-command-docker:
           src_command: |-
+            #!/bin/bash
             set -eu
             set +x
 
@@ -26,20 +27,96 @@
 - builder:
     name: 'install-common-tools'
     builders:
-      - shell:
+      - shell: |-
           #!/bin/bash
-          set -ex
+          set -eux
+
+          echo "Updating packages"
+          sudo DEBIAN_FRONTEND=noninteractive apt-get update
 
           echo "Installing common tools"
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             make
 
 - builder:
+    name: 'install-go'
+    builders:
+    - shell:
+        !include-raw: "scripts/install-go.sh"
+
+# setup-go-environment is responsible for setting up the basic GO environment
+# needed to build and run go applications related to juju.
+#
+# This builder well set and make the GOPATH
+- builder:
+    name: 'setup-go-environment'
+    builders:
+      - install-go
+      - inject:
+          properties-content: |-
+            GOPATH=${WORKSPACE}/go-path
+      - shell: |-
+          #!/bin/bash
+          set -ex
+          mkdir -p "$GOPATH"
+
+# set-common-environment is responsible for setting up a common environment for
+# our jobs. This shouldn't be used as a splat everything in builder that grows
+# out of control. It should be simple and only provide constructs that the vast
+# majority of jobs needs.
+#
+# It should be safe for any job to add this builder. Preferably placed at the
+# top of a builder list.
+- builder:
+    name: 'set-common-environment'
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -eux
+
+          touch build.properties
+          echo "BUILD_DIR=${WORKSPACE}/build" >> build.properties
+
+          cat build.properties
+      - inject:
+          properties-file: build.properties
+      - shell: |-
+          #!/bin/bash
+          set -e
+
+          mkdir -p ${BUILD_DIR}
+
+# wait-for-cloud-init is a pre-req utility for jobs running on on ephemeral
+# nodes where we use cloud-init to stepup the node. We are waiting for the locks
+# to be release on apt so the rest of our scripts can get on with the job
+# quickly and not fail.
+#
+# If in doubt just add this as the first builder to your job. It won't do any
+# harm.
+- builder:
+    name: 'wait-for-cloud-init'
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -eux
+
+          # Just in case, wait for cloud-init.
+          cloud-init status --wait 2> /dev/null || true
+          while sudo lsof /var/lib/dpkg/lock-frontend 2> /dev/null; do
+              echo "Waiting for dpkg lock..."
+              sleep 10
+          done
+          while sudo lsof /var/lib/apt/lists/lock 2> /dev/null; do
+              echo "Waiting for apt lock..."
+              sleep 10
+          done
+
+- builder:
     name: 'install-s3cmd'
     builders:
     - shell:
         #!/bin/bash
-        set -xe
+        set -xeu
 
         if [ -z "$(command -v s3cmd)" ]; then
           sudo DEBIAN_FRONTEND=noninteractive apt update;
@@ -54,7 +131,7 @@
     builders:
       - shell: |-
           #!/bin/bash
-          set -ex
+          set -eux
 
           sudo DEBIAN_FRONTEND=noninteractive apt update;
           sudo DEBIAN_FRONTEND=noninteractive apt install -y simplestreams
@@ -64,7 +141,7 @@
     builders:
     - shell: |-
         #!/bin/bash
-        set -xe
+        set -xeu
 
         sudo DEBIAN_FRONTEND=noninteractive apt update;
         sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
@@ -75,7 +152,7 @@
     builders:
     - shell: |-
         #!/bin/bash
-        set -xe
+        set -xeu
 
         sudo DEBIAN_FRONTEND=noninteractive apt update;
         sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
@@ -86,7 +163,7 @@
     builders:
     - shell: |-
         #!/bin/bash
-        set -xe
+        set -xeu
 
         sudo DEBIAN_FRONTEND=noninteractive apt update;
         sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
@@ -100,7 +177,7 @@
     builders:
     - shell: |-
         #!/bin/bash
-        set -xe
+        set -xeu
 
         sudo DEBIAN_FRONTEND=noninteractive apt update;
         sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
@@ -111,7 +188,7 @@
     builders:
     - shell: |-
         #!/bin/bash
-        set -xe
+        set -xeu
 
         sudo DEBIAN_FRONTEND=noninteractive apt update;
         sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
@@ -128,7 +205,7 @@
     builders:
     - shell: |-
         #!/bin/bash
-        set -xe
+        set -xeu
 
         sudo DEBIAN_FRONTEND=noninteractive apt update;
         sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;

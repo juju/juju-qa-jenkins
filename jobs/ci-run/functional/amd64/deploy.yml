@@ -15,7 +15,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
             timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series focal \
                 parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME --debug \
@@ -41,7 +42,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
             timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
                 parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME --debug \
@@ -74,7 +76,7 @@
       - cirun-test-stuck-timeout
     builders:
       - prepare-ephemeral-functional-test-exotic:
-          platform: centos
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
           timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
                 --region $region \
@@ -102,7 +104,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
           #!/bin/bash
           timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
@@ -128,7 +131,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
           #!/bin/bash
           timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
@@ -154,7 +158,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
           #!/bin/bash
 
@@ -192,8 +197,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test-exotic:
-            platform: osx
+      - prepare-functional-test-core:
+          platform: "darwin/${BUILD_ARCH}"
       - shell: |-
             ${TESTS_DIR}/deploy_job.py parallel-gce ${JUJU_BIN} artifacts testing-osx-client1 \
             --region $region \
@@ -225,8 +230,8 @@
         description: 'Arch to build for.'
         name: BUILD_ARCH
     builders:
-      - prepare-functional-test-exotic:
-            platform: windows
+      - prepare-functional-test-core:
+          platform: "windows/${BUILD_ARCH}"
       - shell:
           !include-raw: ../../scripts/deploy-client-windows.sh
     publishers:

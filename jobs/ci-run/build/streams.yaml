@@ -1,84 +1,71 @@
+## Jobs and builders for handling agent json
 - job:
-    name: 'simplestreams'
-    project-type: 'multijob'
-    description: 'Generate and publish streams for a run.'
-    condition: SUCCESSFUL
-    node: noop-parent-jobs
+    name: "generate-agent-testing-streams"
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Build simple streams agent product json
     wrappers:
       - ansicolor
       - workspace-cleanup
       - timestamps
     parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
     builders:
       - get-build-details
-      - set-test-description
-      - multijob:
-            name: GenerateSimpleStreams
-            projects:
-              - name: generate-testing-streams
-                current-parameters: true
-      - multijob:
-            name: PublishSimpleStreams
-            projects:
-              - name: publish-testing-streams-aws
-                current-parameters: true
-              - name: publish-testing-streams-azure
-                current-parameters: true
-
-
-- job:
-    name: 'generate-testing-streams'
-    description: |-
-      Publish stream metadata and agents from this build for use in
-      functional testing.
-    node: ephemeral-focal-small-amd64
-    wrappers:
-      - ansicolor
-      - workspace-cleanup
-      - timestamps
-    parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
-    - string:
-        name: INDEX_TYPE
-        default: "agents"
-        description: "Either 'agents' or 'tools' (for 2.8)"
-    builders:
-      - set-test-description
+      - get-s3-agent-payload:
+          dest: ${WORKSPACE}
+          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64le windows/amd64
+      - shell: |-
+          #!/bin/bash
+          set -e
+          mkdir -p ${WORKSPACE}/agent_json
+      - generate-agent-json:
+          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64le
+          product_name: ubuntu
+          output_dir: "${WORKSPACE}/agent_json"
+      - generate-agent-json:
+          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64le
+          product_name: centos
+          output_dir: "${WORKSPACE}/agent_json"
+      - generate-agent-json:
+          platforms: windows/amd64
+          product_name: windows
+          output_dir: "${WORKSPACE}/agent_json"
+      - install-simplestreams
       - install-s3cmd
       - get-s3-creds
-      - get-build-details
-      - install-simplestreams
       - shell: |-
-            #!/bin/bash
-            # the rm's shouldn't be needed.
-            rm -fr ${WORKSPACE}/agent_json || true
-            mkdir ${WORKSPACE}/agent_json
-            INDEX_TYPE="agents"
-            if [[ "${JUJU_VERSION}" == 2.8* ]]; then
-              INDEX_TYPE="tools"
-            fi
-      - get-s3-agent-json-payload:
-            dest: ${WORKSPACE}/agent_json
-      - shell: |-
-            # Generate the streams data.
-            mkdir generated
-            json2streams --juju-format ${WORKSPACE}/agent_json/*.json ${WORKSPACE}/generated/
+          #!/bin/bash
+          set -eu
 
-            GENERATED_STREAMS_TARBALL=build-${SHORT_GIT_COMMIT}-generated-streams.tar.xz
-            tar cfJ ${GENERATED_STREAMS_TARBALL} -C generated/ streams
+          # Generate the streams data.
+          mkdir -p generated
+          agent_json_file_path=${WORKSPACE}/agent_json/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}-agent.json
+          json2streams --juju-format \
+            "${agent_json_file_path}" \
+            "${WORKSPACE}/generated/"
 
-            s3cmd --config $S3_CFG \
-                put \
-                ${GENERATED_STREAMS_TARBALL} \
-                s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/agents/
+           GENERATED_STREAMS_TARBALL=build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}-generated-streams.tar.xz
+           tar cfJ ${GENERATED_STREAMS_TARBALL} -C generated/ streams
 
+           s3cmd --config $S3_CFG \
+               put \
+               "${GENERATED_STREAMS_TARBALL}" \
+               s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/agents/
+
+- builder:
+    # Used to generate agent metadata for CI tests
+    name: "generate-agent-json"
+    # Note: This builder expects the following parameters
+    #  (they are used within the script)
+    # platforms: space seperated list of go style platforms (e.g. linux/arm64 windows/amd64)
+    # product_name: Product name to use (e.g. windows, ubuntu, centos)
+    # output_dir: The directory in which to place the resulting json files
+    builders:
+      - shell: !include-raw: ../scripts/generate-agent-json.sh
 
 - job:
     name: 'publish-testing-streams-aws'
@@ -101,13 +88,20 @@
       - get-build-details
       - set-test-description
       - shell: |-
-            rm -fr ${WORKSPACE}/agent || true
-            mkdir -p ${WORKSPACE}/agent/build-${SHORT_GIT_COMMIT}/
+          #!/bin/bash
+          set -e
+
+          rm -fr ${WORKSPACE}/agent || true
+          mkdir -p ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}/
       - get-s3-agent-payload:
-            dest: ${WORKSPACE}/agent/build-${SHORT_GIT_COMMIT}
+          dest: ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}
+          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64le windows/amd64
       - retrieve-generated-streams
       - install-stream-patcher
       - shell: |-
+          #!/bin/bash
+          set -e
+
           # Patch the index/product files so that all paths are namespaced by
           # the build ID. Basically, we create the following folder structure:
           # $root/
@@ -126,7 +120,7 @@
           # NOTE: this sync removes the "build-$SHA" indirection and effectively
           # pulls the binaries one folder up (under agent/)
           s3cmd sync --config $S3_CFG \
-            ${WORKSPACE}/agent/build-${SHORT_GIT_COMMIT}/ \
+            ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}/ \
             s3://ci-run-streams/builds/build-${SHORT_GIT_COMMIT}/agent/ \
             --acl-public
 
@@ -150,10 +144,14 @@
       - get-build-details
       - set-test-description
       - shell: |-
-            rm -fr ${WORKSPACE}/agent || true
-            mkdir -p ${WORKSPACE}/agent/build-${SHORT_GIT_COMMIT}/
+          #!/bin/bash
+          set -e
+
+          rm -fr ${WORKSPACE}/agent || true
+          mkdir -p ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}/
       - get-s3-agent-payload:
-            dest: ${WORKSPACE}/agent/build-${SHORT_GIT_COMMIT}
+          dest: ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}
+          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64le windows/amd64
       - retrieve-generated-streams
       - install-stream-patcher
       - get-azure-publish-script
@@ -179,7 +177,7 @@
           # NOTE: this sync removes the "build-$SHA" indirection and effectively
           # pulls the binaries one folder up (under agent/)
           ${SCRIPTS_DIR}/azure_publish_tools.py sync \
-            ${WORKSPACE}/agent/build-${SHORT_GIT_COMMIT}/ \
+            ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}/ \
             ci-run-streams/builds/build-${SHORT_GIT_COMMIT}/agent
 
 
@@ -189,7 +187,7 @@
     - install-s3cmd
     - get-s3-creds
     - shell: |-
-        GENERATED_STREAMS_TARBALL=build-${SHORT_GIT_COMMIT}-generated-streams.tar.xz
+        GENERATED_STREAMS_TARBALL=build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}-generated-streams.tar.xz
         s3cmd --config $S3_CFG \
           get \
           s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/agents/${GENERATED_STREAMS_TARBALL} \

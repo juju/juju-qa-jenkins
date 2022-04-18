@@ -23,7 +23,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - prepare-ephemeral-node-for-k8s-py-tests:
           channel: "latest/stable"
       - shell: |-
@@ -60,7 +61,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - prepare-ephemeral-node-for-k8s-py-tests:
           channel: latest/stable
       - shell: |-
@@ -97,7 +99,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - prepare-ephemeral-node-for-k8s-py-tests:
           channel: latest/stable
       - shell: |-
@@ -135,7 +138,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - prepare-ephemeral-node-for-k8s-py-tests:
           channel: latest/stable
       - shell: |-
