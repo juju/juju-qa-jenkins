@@ -78,8 +78,6 @@
               current-parameters: true
             - name: nw-model-migration-amd64-lxd
               current-parameters: true
-            - name: nw-model-migration-amd64-gce
-              current-parameters: true
             - name: nw-model-migration-amd64-vsphere
               current-parameters: true
             - name: nw-network-health-aws
