@@ -43,3 +43,5 @@
               current-parameters: true
             - name: nw-upgrade-juju-beta
               current-parameters: true
+            - name: nw-model-migration-amd64-gce
+              current-parameters: true
