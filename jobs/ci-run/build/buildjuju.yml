@@ -2,90 +2,341 @@
 # Uses macros described in utils.yml
 
 - job:
-    name: "build-juju-ubuntu"
-    project-type: "multijob"
-    condition: SUCCESSFUL
-    node: noop-parent-jobs
+    name: "build-juju-linux-arm64"
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Build juju binaries for linux/arm64
     wrappers:
       - ansicolor
       - workspace-cleanup
       - timestamps
-      - timeout:
-          fail: true
-          timeout: 240 # Might have to queue for nodes, give some flex
-          type: absolute
     parameters:
       - string:
-          name: SHORT_GIT_COMMIT
           default: ""
           description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
       - string:
           default: ''
           description: 'Go version used for build.'
           name: GOVERSION
     builders:
-      - get-build-details
-      - set-test-description
-      - multijob:
-          name: Build agents
-          projects:
-            - name: build-juju-amd64
-              current-parameters: true
-            - name: build-juju-s390x
-              current-parameters: true
-            - name: build-juju-ppc64el
-              current-parameters: true
-            - name: build-juju-arm64
-              current-parameters: true
-    publishers:
-      - email-ext:
-          # outbound traffic is only allowed from Kabuto(10.125.0.203) to smtp.internal,
-          # if Kabuto has been rebuilt or got ip changed, ask IS to reconfig the firewall.
-          recipients: juju-crew@lists.canonical.com
-          content-type: html
-          attach-build-log: false # we don't attach the log because it could be very big.
-          fixed-unhealthy: true
-
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - setup-go-environment
+      - get-s3-source-payload
+      - set-builder-description
+      - make-juju:
+          platforms: "linux/arm64"
+      - create-build-payload-tarballs:
+          platforms: "linux/arm64"
+      - upload-s3-binaries:
+          platforms: "linux/arm64"
+      - upload-s3-agent-binaries:
+          platforms: "linux/arm64"
 
 - job:
-    name: "build-juju-other"
-    project-type: "multijob"
-    condition: SUCCESSFUL
-    node: noop-parent-jobs
+    name: "build-juju-linux-amd64"
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Build juju binaries for linux/amd64
     wrappers:
       - ansicolor
       - workspace-cleanup
       - timestamps
-      - timeout:
-          fail: true
-          timeout: 240 # Might have to queue for nodes, give some flex
-          type: absolute
     parameters:
       - string:
-          name: SHORT_GIT_COMMIT
           default: ""
           description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
       - string:
           default: ''
           description: 'Go version used for build.'
           name: GOVERSION
     builders:
-      - get-build-details
-      - set-test-description
-      - multijob:
-          name: Build binaries
-          projects:
-            - name: build-juju-windows-amd64
-              current-parameters: true
-            - name: build-juju-centos-amd64
-              current-parameters: true
-            - name: build-juju-macos-amd64
-              current-parameters: true
-            - name: build-juju-k8s-amd64
-              current-parameters: true
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - setup-go-environment
+      - get-s3-source-payload
+      - set-builder-description
+      - make-juju:
+          platforms: "linux/amd64"
+      - create-build-payload-tarballs:
+          platforms: "linux/amd64"
+      - upload-s3-binaries:
+          platforms: "linux/amd64"
+      - upload-s3-agent-binaries:
+          platforms: "linux/amd64"
 
 - job:
-    name: "build-caas-jujud-operator"
+    name: "build-juju-linux-s390x"
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Build juju binaries for linux/s390x
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: ''
+          description: 'Go version used for build.'
+          name: GOVERSION
+    builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - setup-go-environment
+      - get-s3-source-payload
+      - set-builder-description
+      - make-juju:
+          platforms: "linux/s390x"
+      - create-build-payload-tarballs:
+          platforms: "linux/s390x"
+      - upload-s3-binaries:
+          platforms: "linux/s390x"
+      - upload-s3-agent-binaries:
+          platforms: "linux/s390x"
+
+- job:
+    name: "build-juju-linux-ppc64le"
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Build juju binaries for linux/ppc64le
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: ''
+          description: 'Go version used for build.'
+          name: GOVERSION
+    builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - setup-go-environment
+      - get-s3-source-payload
+      - set-builder-description
+      - make-juju:
+          platforms: "linux/ppc64le"
+      - create-build-payload-tarballs:
+          platforms: "linux/ppc64le"
+      - upload-s3-binaries:
+          platforms: "linux/ppc64le"
+      - upload-s3-agent-binaries:
+          platforms: "linux/ppc64le"
+
+- job:
+    name: "build-juju-darwin-amd64"
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Build juju binaries for darwin/amd64
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: ''
+          description: 'Go version used for build.'
+          name: GOVERSION
+    builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - setup-go-environment
+      - get-s3-source-payload
+      - set-builder-description
+      - make-juju:
+          platforms: "darwin/amd64"
+      - create-build-payload-tarballs:
+          platforms: "darwin/amd64"
+      - upload-s3-binaries:
+          platforms: "darwin/amd64"
+      - upload-s3-agent-binaries:
+          platforms: "darwin/amd64"
+
+- job:
+    name: "build-juju-darwin-arm64"
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Build juju binaries for darwin/arm64
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: ''
+          description: 'Go version used for build.'
+          name: GOVERSION
+    builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - setup-go-environment
+      - get-s3-source-payload
+      - set-builder-description
+      - make-juju:
+          platforms: "darwin/arm64"
+      - create-build-payload-tarballs:
+          platforms: "darwin/arm64"
+      - upload-s3-binaries:
+          platforms: "darwin/arm64"
+      - upload-s3-agent-binaries:
+          platforms: "darwin/arm64"
+
+- job:
+    name: "build-juju-windows-amd64"
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Build juju binaries for windows/amd64
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+    parameters:
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: ''
+          description: 'Go version used for build.'
+          name: GOVERSION
+    builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - setup-go-environment
+      - get-s3-source-payload
+      - set-builder-description
+      - make-juju:
+          platforms: "windows/amd64"
+      - create-build-payload-tarballs:
+          platforms: "windows/amd64"
+      - upload-s3-binaries:
+          platforms: "windows/amd64"
+      - upload-s3-agent-binaries:
+          platforms: "windows/amd64"
+
+# make-juju is responsible for making the juju binaries for a given set of
+# platforms that are space seperated in GOOS/GOARCH format. For example
+# "linux/amd64 linux/arm64"
+# Epected parameters:
+#   platforms: space sperated list of go style platforms
+# Epected pre-requistates:
+# - get-s3-source-payload has been called before this builder.
+- builder:
+    name: "make-juju"
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -eu
+
+          touch make-juju.properties
+          echo "CLIENT_PACKAGE_PLATFORMS={platforms}" >> make-juju.properties
+          echo "AGENT_PACKAGE_PLATFORMS={platforms}" >> make-juju.properties
+      - inject:
+          properties-file: make-juju.properties
+      - shell: |-
+          #!/bin/bash
+          set -eu
+
+          rm -rf make-juju.properties
+      - host-src-command-v2:
+          src_command: !include-raw: ../scripts/snippet_make-release-build.sh
+
+# upload-s3-binaries is responsible for uploading a binaries tarball after a
+# successful make-juju. This builder will make a seperate tarball and upload
+# for each platforms in platforms.
+# Epected paramters:
+#   platforms: space sperated list of go style platforms
+# Expected pre-requistates:
+# - make-juju has been called for the same platforms as this command.
+- builder:
+    name: "upload-s3-binaries"
+    builders:
+      - install-s3cmd
+      - get-s3-creds
+      - shell: |-
+          #!/bin/bash
+          set -eu
+
+          for platform in "{platforms}"; do
+            echo "Uploading juju binaries for ${{platform}}"
+
+            build_platform_dir="${{BUILD_DIR}}/${{platform//\//_}}/bin"
+
+            arch=$(echo "${{platform}}" | cut -f 2 -d '/')
+            os=$(echo "${{platform}}" | cut -f 1 -d '/')
+
+            binary_tarball_name="juju_binaries-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-${{arch}}.tar.xz"
+
+            s3cmd --config $S3_CFG \
+              put \
+              --no-progress \
+              ${{build_platform_dir}}/${{binary_tarball_name}} \
+              s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/build-${{arch}}/${{os}}/
+          done
+
+# upload-s3-agent-binaries is responsible for uploading a binaries tarball after
+# a successful make-juju for all of the Juju agents. This builder will make a
+# seperate tarball and upload for each platforms in platforms.
+# Epected paramters:
+#   platforms: space sperated list of go style platforms
+# Expected pre-requistates:
+# - make-juju has been called for the same platforms as this command.
+- builder:
+    name: "upload-s3-agent-binaries"
+    builders:
+      - install-s3cmd
+      - get-s3-creds
+      - shell: |-
+          #!/bin/bash
+          set -eu
+
+          for platform in "{platforms}"; do
+            echo "Uploading juju binaries for ${{platform}}"
+
+            echo "Uploading juju agent binaries for ${{platform}}"
+
+            build_platform_dir="${{BUILD_DIR}}/${{platform//\//_}}/bin"
+
+            arch=$(echo "${{platform}}" | cut -f 2 -d '/')
+            os=$(echo "${{platform}}" | cut -f 1 -d '/')
+
+            agent_tarball_name=juju-${{JUJU_VERSION}}-${{os}}-${{arch}}.tgz
+
+            s3cmd --config $S3_CFG \
+                put \
+                --no-progress \
+                ${{build_platform_dir}}/${{agent_tarball_name}} \
+                s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/agents/
+          done
+
+
+- job:
+    name: "build-jujud-operator"
     node: ephemeral-focal-8c-32g-amd64
     description: Build juju docker image for caas operator on all platforms.
     wrappers:
@@ -113,16 +364,17 @@
           default: "jujuqabot"
           description: "Operator docker image account name."
       - string:
-          default: "linux/amd64,linux/arm64,linux/s390x,linux/ppc64le"
-          description: "Comma seperated list of Go Platforms to build the OCI images for"
+          default: "linux/amd64 linux/arm64 linux/s390x linux/ppc64le"
+          description: "Space seperated list of Go Platforms to build the OCI images for"
           name: BUILD_PLATFORMS
     builders:
-      - install-go
-      - set-common-variables
+      - wait-for-cloud-init
+      - set-common-environment
       - install-common-tools
+      - setup-go-environment
       - shell: |-
           #!/bin/bash
-          set -ex
+          set -eu
 
           touch build.properties
           echo "DOCKER_USERNAME=${OPERATOR_IMAGE_ACCOUNT}" >> build.properties
@@ -133,580 +385,117 @@
       - get-s3-source-payload
       - host-install-docker
       - docker-login
-      - get-s3-build-payload-core-v2:
-          build_platforms: "${BUILD_PLATFORMS}"
-          commit_ref: "${SHORT_GIT_COMMIT}"
-          STAGING_ROOT: "${STAGING_ROOT}"
+      - get-s3-build-payload-packaging:
+          platforms: "${BUILD_PLATFORMS}"
       - set-builder-description
       - host-src-command:
           src_command: !include-raw: ../scripts/snippet_caas-jujud-operator.sh
           env_file: "build.properties"
 
-- job:
-    name: "build-juju-amd64"
-    node: ephemeral-focal-8c-32g-amd64
-    description: |-
-      Build juju binaries for amd64.
-    wrappers:
-      - ansicolor
-      - workspace-cleanup
-      - timestamps
-    parameters:
-      - string:
-          default: ""
-          description: "Enable sub job to be run individually."
-          name: SHORT_GIT_COMMIT
-      - string:
-          default: ''
-          description: 'Go version used for build.'
-          name: GOVERSION
-    builders:
-      - install-go
-      # Need to populate with which arch we're building for.
-      - shell: |-
-          #!/bin/bash
-          set -e
-          echo "BUILD_ARCH=amd64" > build.properties
-      - inject:
-          properties-file: build.properties
-      - get-s3-source-payload
-      - set-builder-description
-      # Need to pass GIT_COMMIT loaded from get-s3-source-payload
-      - shell: |-
-          #!/bin/bash
-          set -e
-          echo "GIT_COMMIT=${GIT_COMMIT}" > make.properties
-          echo "JUJU_BUILD_NUMBER=${JUJU_BUILD_NUMBER}" >> make.properties
-          echo "JUJU_GOMOD_MODE=${JUJU_GOMOD_MODE}" >> make.properties
-      - host-src-command-base:
-          src_command: !include-raw: ../scripts/snippet_make-release-build.sh
-          env_file: "make.properties"
-          setup_steps: ""
-          pre_test_steps: ""
-      - create-build-payload-tarballs
-      # Used to generate agent metadata for CI tests
-      - generate-ubuntu-agent-json
-      - put-s3-build-payload
-      - put-s3-agent-payload
-    publishers:
-      - archive:
-          artifacts: "_results/**"
-          allow-empty: false
-          only-if-success: false
-          fingerprint: false
-          default-excludes: true
-          case-sensitive: true
 
-- job:
-    name: "build-juju-arm64"
-    node: ephemeral-focal-8c-32g-amd64
-    description: |-
-      Build juju binaries for arm64.
-    wrappers:
-      - ansicolor
-      - workspace-cleanup
-      - timestamps
-    parameters:
-      - string:
-          default: ""
-          description: "Enable sub job to be run individually."
-          name: SHORT_GIT_COMMIT
-      - string:
-          default: ''
-          description: 'Go version used for build.'
-          name: GOVERSION
-    builders:
-      - install-go
-      # Need to populate with which arch we're building for.
-      - shell: |-
-          #!/bin/bash
-          set -e
-          echo "BUILD_ARCH=arm64" > build.properties
-      - inject:
-          properties-file: build.properties
-      - get-s3-source-payload
-      - set-builder-description
-      # Need to pass GIT_COMMIT loaded from get-s3-source-payload
-      - shell: |-
-          #!/bin/bash
-          set -e
-          echo "GIT_COMMIT=${GIT_COMMIT}" > make.properties
-          echo "JUJU_BUILD_NUMBER=${JUJU_BUILD_NUMBER}" >> make.properties
-          echo "JUJU_GOMOD_MODE=${JUJU_GOMOD_MODE}" >> make.properties
-      - host-src-command-base:
-          src_command: !include-raw: ../scripts/snippet_make-release-build.sh
-          env_file: "make.properties"
-          setup_steps: ""
-          pre_test_steps: ""
-      - create-build-payload-tarballs
-      # Used to generate agent metadata for CI tests
-      - generate-ubuntu-agent-json
-      - put-s3-build-payload
-      - put-s3-agent-payload
-    publishers:
-      - archive:
-          artifacts: "_results/**"
-          allow-empty: false
-          only-if-success: false
-          fingerprint: false
-          default-excludes: true
-          case-sensitive: true
-
-- job:
-    name: "build-juju-ppc64el"
-    description: |-
-      Build juju binaries for ppc64el.
-    node: ppc64el
-    wrappers:
-      - ansicolor
-      - workspace-cleanup
-      - timestamps
-    parameters:
-      - string:
-          default: ""
-          description: "Enable sub job to be run individually."
-          name: SHORT_GIT_COMMIT
-    builders:
-      # Need to populate with which arch we're building for.
-      - shell: |-
-          #!/bin/bash
-          set -e
-          echo "BUILD_ARCH=ppc64el" > build.properties
-      - inject:
-          properties-file: build.properties
-      - get-s3-source-payload
-      - set-builder-description
-      # Need to pass GIT_COMMIT loaded from get-s3-source-payload
-      - shell: |-
-          #!/bin/bash
-          set -e
-          echo "GIT_COMMIT=${GIT_COMMIT}" > make.properties
-          echo "JUJU_BUILD_NUMBER=${JUJU_BUILD_NUMBER}" >> make.properties
-          echo "JUJU_GOMOD_MODE=${JUJU_GOMOD_MODE}" >> make.properties
-      - lxd-src-command-bionic-base:
-          src_command: !include-raw: ../scripts/snippet_make-release-build.sh
-          env_file: "make.properties"
-          setup_steps: ""
-      - create-build-payload-tarballs
-      # Used to generate agent metadata for CI tests
-      - generate-ubuntu-agent-json
-      - put-s3-build-payload
-      - put-s3-agent-payload
-    publishers:
-      - archive:
-          artifacts: "_results/**"
-          allow-empty: false
-          only-if-success: false
-          fingerprint: false
-          default-excludes: true
-          case-sensitive: true
-
-- job:
-    name: "build-juju-s390x"
-    description: |-
-      Build juju binaries for s390x.
-    node: s390x
-    wrappers:
-      - ansicolor
-      - workspace-cleanup
-      - timestamps
-    parameters:
-      - string:
-          default: ""
-          description: "Enable sub job to be run individually."
-          name: SHORT_GIT_COMMIT
-    builders:
-      - install-go
-      # Need to populate with which arch we're building for.
-      - shell: |-
-          #!/bin/bash
-          set -e
-          echo "BUILD_ARCH=s390x" > build.properties
-          echo "GOVERSION=$(go version | cut -d' ' -f 3)" >> build.properties
-      - inject:
-          properties-file: build.properties
-      - get-s3-source-payload
-      - set-builder-description
-      # Need to pass GIT_COMMIT loaded from get-s3-source-payload
-      - shell: |-
-          #!/bin/bash
-          set -e
-          echo "GIT_COMMIT=${GIT_COMMIT}" > make.properties
-          echo "JUJU_BUILD_NUMBER=${JUJU_BUILD_NUMBER}" >> make.properties
-          echo "JUJU_GOMOD_MODE=${JUJU_GOMOD_MODE}" >> make.properties
-      - lxd-src-command-bionic-base:
-          src_command: !include-raw: ../scripts/snippet_make-release-build.sh
-          env_file: "make.properties"
-          setup_steps: ""
-      - create-build-payload-tarballs
-      # Used to generate agent metadata for CI tests
-      - generate-ubuntu-agent-json
-      - put-s3-build-payload
-      - put-s3-agent-payload
-    publishers:
-      - archive:
-          artifacts: "_results/**"
-          allow-empty: false
-          only-if-success: false
-          fingerprint: false
-          default-excludes: true
-          case-sensitive: true
-
-# Other arches need a little more love to build.
-- job:
-    name: "build-juju-windows-amd64"
-    node: ephemeral-focal-8c-32g-amd64
-    description: |-
-      Build juju binaries (and agent) for windows amd64.
-    wrappers:
-      - ansicolor
-      - workspace-cleanup
-      - timestamps
-    parameters:
-      - string:
-          default: ""
-          description: "Enable sub job to be run individually."
-          name: SHORT_GIT_COMMIT
-    builders:
-      - install-go
-      # Need to populate with which arch we're building for.
-      - shell: |-
-          #!/bin/bash
-          set -e
-          echo "BUILD_ARCH=amd64" > build.properties
-          # This should probably be set to 1.10 (or at least a conditional for 2.*)
-          echo "GOVERSION=$(go version | cut -d' ' -f 3)" >> build.properties
-      - inject:
-          properties-file: build.properties
-      - get-s3-source-payload
-      - set-builder-description
-      - shell: |-
-          #!/bin/bash
-          set -ex
-
-          mkdir _build
-          mkdir _results
-          mkdir _bin
-          tar xf ${JUJU_SRC_TARBALL} -C _build/
-          export GOPATH=${WORKSPACE}/_build
-          export GOARCH=${BUILD_ARCH}
-          export GOOS=windows
-
-          PLATFORM=windows
-          # Refer to juju/Makefile when updating this.
-          LINK_FLAGS="-s -w -X github.com/juju/juju/version.GitCommit=${GIT_COMMIT} -X github.com/juju/juju/version.GitTreeState=archive -X github.com/juju/juju/version.build=${JUJU_BUILD_NUMBER}"
-
-          go version
-          cd ${WORKSPACE}/_build/src/github.com/juju/juju
-          # validate jujuc is a package
-          jujuc_pkg=`go list github.com/juju/juju/cmd/... | grep "^github.com/juju/juju/cmd/jujuc$" | cat`
-          go install -mod=vendor -ldflags "${LINK_FLAGS}" github.com/juju/juju/cmd/juju github.com/juju/juju/cmd/jujud ${jujuc_pkg}
-          cd ${WORKSPACE}
-
-          # Tar up the interesting binaries
-          mv ${GOPATH}/bin/windows_amd64/juju.exe \
-              ${GOPATH}/bin/windows_amd64/jujud.exe \
-              _bin/
-          mv ${GOPATH}/bin/windows_amd64/jujuc.exe _bin/ || true
-
-          # Will this naming break something further down the track?
-          BINARY_TARBALL_NAME="juju_binaries-${PLATFORM}-${JUJU_VERSION}-${SHORT_GIT_COMMIT}-${BUILD_ARCH}.tar.xz"
-          
-          if [ -f ${WORKSPACE}/_bin/jujuc.exe ]; then
-            jujuc=jujuc.exe
-          fi
-          tar cfJ ${BINARY_TARBALL_NAME} -C ${WORKSPACE}/_bin/ \
-            juju.exe jujud.exe ${jujuc}
-
-          # Create an agent tarball.
-          AGENT_TARBALL_NAME=juju-${JUJU_VERSION}-${PLATFORM}-${BUILD_ARCH}.tgz
-          tar cfz ${AGENT_TARBALL_NAME} -C ${WORKSPACE}/_bin/ jujud.exe jujuc.exe
-
-          mv "${BINARY_TARBALL_NAME}" "${AGENT_TARBALL_NAME}" ${WORKSPACE}/_results/
-      - put-s3-build-payload-exotic:
-          platform: windows
-      # Used to generate agent metadata for CI tests
-      - generate-agent-json:
-          agent_file_source_dir: "${WORKSPACE}/_results"
-          # Series only used for Juju 2.8
-          product_series: "win2016 win2019 win7 win10"
-          product_name: "windows"
-          output_dir: "${WORKSPACE}/_results/"
-      - put-s3-agent-payload
-    publishers:
-      - archive:
-          artifacts: "_results/**"
-          allow-empty: false
-          only-if-success: false
-          fingerprint: false
-          default-excludes: true
-          case-sensitive: true
-
-- job:
-    name: "build-juju-centos-amd64"
-    description: |-
-      Build juju binaries (and agent) for centos amd64.
-    node: ephemeral-centos9-8c-32g-amd64
-    wrappers:
-      - ansicolor
-      - workspace-cleanup
-      - timestamps
-    parameters:
-      - string:
-          default: ""
-          description: "Enable sub job to be run individually."
-          name: SHORT_GIT_COMMIT
-      - string:
-          default: ''
-          description: 'Go version used for build.'
-          name: GOVERSION
-    builders:
-      - install-go
-      # Need to populate with which arch we're building for.
-      - shell: |-
-          #!/bin/bash
-          set -e
-          echo "BUILD_ARCH=amd64" > build.properties
-      - inject:
-          properties-file: build.properties
-      - get-s3-source-payload
-      - set-builder-description
-      - shell: |-
-          mkdir _build
-          mkdir _results
-          mkdir _bin
-          tar xf ${JUJU_SRC_TARBALL} -C _build/
-          export GOPATH=${WORKSPACE}/_build
-          export GOARCH=${BUILD_ARCH}
-          export GOOS=linux
-
-          PLATFORM=centos
-
-          go version
-          cd ${WORKSPACE}/_build/src/github.com/juju/juju
-          JUJU_GOMOD_MODE=vendor make install
-          cd ${WORKSPACE}
-
-          # Will this naming break something further down the track?
-          # As we're adding files to the tarball we will compress it
-          # afterward. We need a working file name.
-          BINARY_TARBALL_NAME_TMP="juju_binaries-${PLATFORM}-${JUJU_VERSION}-${SHORT_GIT_COMMIT}-${BUILD_ARCH}.tar"
-          BINARY_TARBALL_NAME=${BINARY_TARBALL_NAME_TMP}.xz
-
-          tar cf ${BINARY_TARBALL_NAME_TMP} -C ${GOPATH}/bin/ juju jujud juju-metadata jujuc
-          tar -rf ${BINARY_TARBALL_NAME_TMP} -C ${GOPATH}/src/github.com/juju/juju LICENCE
-          xz ${BINARY_TARBALL_NAME_TMP}
-
-          # Create an agent tarball.
-          AGENT_TARBALL_NAME=juju-${JUJU_VERSION}-${PLATFORM}-${BUILD_ARCH}.tgz
-          tar cfz ${AGENT_TARBALL_NAME} -C ${GOPATH}/bin/ jujud jujuc
-
-          mv "${BINARY_TARBALL_NAME}" "${AGENT_TARBALL_NAME}" ${WORKSPACE}/_results/
-      - put-s3-build-payload-exotic:
-          platform: centos
-      # Used to generate agent metadata for CI tests
-      - generate-agent-json:
-          agent_file_source_dir: "${WORKSPACE}/_results"
-          # Series only used for Juju 2.8
-          product_series: "centos7 centos8"
-          product_name: "centos"
-          output_dir: "${WORKSPACE}/_results/"
-      - put-s3-agent-payload
-    publishers:
-      - archive:
-          artifacts: "_results/**"
-          allow-empty: false
-          only-if-success: false
-          fingerprint: false
-          default-excludes: true
-          case-sensitive: true
-
-- job:
-    name: "build-juju-macos-amd64"
-    node: ephemeral-focal-8c-32g-amd64
-    description: |-
-      Build juju binaries (and agent) for macos amd64.
-    wrappers:
-      - ansicolor
-      - workspace-cleanup
-      - timestamps
-    parameters:
-      - string:
-          default: ""
-          description: "Enable sub job to be run individually."
-          name: SHORT_GIT_COMMIT
-      - string:
-          default: ''
-          description: 'Go version used for build.'
-          name: GOVERSION
-    builders:
-      - install-go
-      - shell: |-
-          #!/bin/bash
-          set -e
-          echo "BUILD_ARCH=amd64" > build.properties
-          echo "GOVERSION=$(go version | cut -d' ' -f 3)" >> build.properties
-      - inject:
-          properties-file: build.properties
-      - get-s3-source-payload
-      - set-builder-description
-      - shell: |-
-          mkdir _build
-          mkdir _results
-          tar xf ${JUJU_SRC_TARBALL} -C _build/
-          export GOPATH=${WORKSPACE}/_build
-          export GOARCH=${BUILD_ARCH}
-          export GOOS=darwin
-
-          PLATFORM=osx
-          # Refer to juju/Makefile when updating this.
-          LINK_FLAGS="-s -w -X github.com/juju/juju/version.GitCommit=${GIT_COMMIT} -X github.com/juju/juju/version.GitTreeState=archive -X github.com/juju/juju/version.build=${JUJU_BUILD_NUMBER}"
-
-          go version
-          cd ${WORKSPACE}/_build/src/github.com/juju/juju
-          go install -mod=vendor -ldflags "${LINK_FLAGS}" github.com/juju/juju/cmd/...
-          cd ${WORKSPACE}
-
-          # Will this naming break something further down the track?
-          # As we're adding files to the tarball we will compress it
-          # afterward. We need a working file name.
-          BINARY_TARBALL_NAME_TMP="juju_binaries-${PLATFORM}-${JUJU_VERSION}-${SHORT_GIT_COMMIT}-${BUILD_ARCH}.tar"
-          BINARY_TARBALL_NAME=${BINARY_TARBALL_NAME_TMP}.xz
-
-          mv "${BINARY_TARBALL_NAME}" ${WORKSPACE}/_results/
-      - put-s3-build-payload-exotic:
-          platform: osx
-      # No agent needed for mac.
-    publishers:
-      - archive:
-          artifacts: "_results/**"
-          allow-empty: false
-          only-if-success: false
-          fingerprint: false
-          default-excludes: true
-          case-sensitive: true
-
-
-- job:
-    name: "build-juju-k8s-amd64"
-    node: ephemeral-focal-8c-32g-amd64
-    description: |-
-      Build minimal kubernetes binaries for k8s amd64.
-    wrappers:
-      - ansicolor
-      - workspace-cleanup
-      - timestamps
-    parameters:
-      - string:
-          default: ""
-          description: "Enable sub job to be run individually."
-          name: SHORT_GIT_COMMIT
-      - string:
-          default: ''
-          description: 'Go version used for build.'
-          name: GOVERSION
-    builders:
-      - install-go
-      - get-s3-source-payload
-      # Need to populate with which arch we're building for.
-      - shell: |-
-          #!/bin/bash
-          set -e
-          echo "BUILD_ARCH=amd64" > build.properties
-          echo "PLATFORM=ubuntu-k8s" >> build.properties
-          
-          echo "GIT_COMMIT=${GIT_COMMIT}" > make.properties
-          echo "JUJU_BUILD_NUMBER=${JUJU_BUILD_NUMBER}" >> make.properties
-          echo "JUJU_GOMOD_MODE=${JUJU_GOMOD_MODE}" >> make.properties
-          echo "BUILD_TAGS=\"minimal provider_kubernetes\"" >> make.properties
-      - inject:
-          properties-file: build.properties
-      - set-builder-description
-      - host-src-command-base:
-          src_command: !include-raw: ../scripts/snippet_make-release-build.sh
-          env_file: "make.properties"
-          setup_steps: ""
-          pre_test_steps: ""
-      - create-build-payload-tarballs
-      - put-s3-build-payload-exotic:
-          platform: ubuntu-k8s
-      - put-s3-agent-payload
-    publishers:
-      - archive:
-          artifacts: "_results/**"
-          allow-empty: false
-          only-if-success: false
-          fingerprint: false
-          default-excludes: true
-          case-sensitive: true
-
+# create-build-payload-tarballs will for each platforms defined in platforms
+# create a binary payload of the juju bins and a corresponding agent tar ball.
+# This builder expects that the binaries for the platforms have already been
+# built.
+#
+# platforms is a space seperated list of GO OS/ARCH platforms.
 - builder:
     name: "create-build-payload-tarballs"
     builders:
       - shell: |-
-          mkdir _results
-          stash_dir=${WORKSPACE}/_stash
+          #!/bin/bash
+          set -eu
 
-          # The k8sagent binary has been renamed to containeragent but we want
-          # to retain the copy step until all branches have been properly
-          # updated.
-          containeragent_name=
-          if test -f "${stash_dir}/k8sagent"; then
-            echo "k8sagent exists"
-            containeragent_name=k8sagent
-          fi
-          if test -f "${stash_dir}/containeragent"; then
-            echo "containeragent exists"
-            containeragent_name=containeragent
-          fi
+          echo "Creating build payload tarbals for platforms \"{platforms}\""
 
-          # TODO(pebble): pebble may change name for 2.9+ release.
-          pebble_name=
-          if test -f "${stash_dir}/juju-fake-init"; then
-            echo "juju-fake-init exists"
-            pebble_name=juju-fake-init
-          fi
-          if test -f "${stash_dir}/pebble"; then
-            echo "pebble exists"
-            pebble_name=pebble
-          fi
+          for platform in "{platforms}"; do
+            build_platform_dir="${{BUILD_DIR}}/${{platform//\//_}}/bin"
 
-          wait_for_name=
-          if test -f "${stash_dir}/juju-wait-for"; then
-            echo "juju-wait-for exists"
-            wait_for_name=juju-wait-for
-          fi
+            juju_name=juju
+            if [[ -f "${{build_platform_dir}}/juju.exe" ]]; then
+              juju_name=juju.exe
+            fi
 
-          BINARY_TARBALL_NAME="juju_binaries-${JUJU_VERSION}-${SHORT_GIT_COMMIT}-${BUILD_ARCH}.tar.xz"
-          tar cfJ ${BINARY_TARBALL_NAME} -C ${stash_dir}/ juju jujud jujuc juju-metadata ${containeragent_name} ${pebble_name} ${wait_for_name}
+            jujud_name=jujud
+            if [[ -f "${{build_platform_dir}}/jujud.exe" ]]; then
+              jujud_name=jujud.exe
+            fi
 
-          PLATFORM=${PLATFORM:-ubuntu}
-          AGENT_TARBALL_NAME=juju-${JUJU_VERSION}-${PLATFORM}-${BUILD_ARCH}.tgz
-          # Note the owner, group and no-same-owner args, without this the un-tar fails
-          # on lxc containers (I imagine due to UID/GID mapping setups.)
-          tar cfz ${AGENT_TARBALL_NAME}  --owner root --group root --no-same-owner -C ${stash_dir}/ jujud jujuc
+            jujuc_name=jujuc
+            if [[ -f "${{build_platform_dir}}/jujuc.exe" ]]; then
+              jujuc_name=jujuc.exe
+            fi
 
-          cp "${BINARY_TARBALL_NAME}" "${AGENT_TARBALL_NAME}" ${WORKSPACE}/_results/
+            juju_metadata_name=juju-metadata
+            if [[ -f "${{build_platform_dir}}/juju-metadata.exe" ]]; then
+              juju_metadata_name=juju-metadata.exe
+            fi
 
-- builder:
-    # Used to generate agent metadata for CI tests
-    name: "generate-agent-json"
-    # Note: This builder expects the following parameters
-    #  (they are used within the script)
-    # agent_file: The .tgz file to generate the json for.
-    # product_series: The space separated list of series to build for (e.g. "bionic xenial")
-    # product_name: Product name to use (e.g. windows, ubuntu, centos)
-    # output_dir: The directory in which to place the resulting json files
-    builders:
-      - shell: !include-raw: ../scripts/generate-agent-json.sh
+            # The k8sagent binary has been renamed to containeragent but we want
+            # to retain the copy step until all branches have been properly
+            # updated.
+            containeragent_name=
+            if [[ -f "${{build_platform_dir}}/k8sagent" ]]; then
+              echo "k8sagent exists for platform ${{platform}}"
+              containeragent_name=k8sagent
+            elif [[ -f "${{build_platform_dir}}/k8sagent.exe" ]]; then
+              echo "k8sagent exists for platform ${{platform}}"
+              containeragent_name=k8sagent.exe
+            fi
 
-- builder:
-    # Used to generate agent metadata for CI tests
-    name: "generate-ubuntu-agent-json"
-    builders:
-      - generate-agent-json:
-          agent_file_source_dir: "${WORKSPACE}/_results"
-          # Series only used for Juju 2.8 and we only run CI tests on LTS releases
-          product_series: "trusty:14.04 xenial:16.04 bionic:18.04 focal:20.04"
-          product_name: "ubuntu"
-          output_dir: "${WORKSPACE}/_results/"
+            if [[ -f "${{build_platform_dir}}/containeragent" ]]; then
+              echo "containeragent exists for platform ${{platform}}"
+              containeragent_name=containeragent
+            elif [[ -f "${{build_platform_dir}}/containeragent.exe" ]]; then
+              echo "containeragent exists for platform ${{platform}}"
+              containeragent_name=containeragent.exe
+            fi
+
+            # TODO(pebble): pebble may change name for 2.9+ release.
+            pebble_name=
+            if [[ -f "${{build_platform_dir}}/pebble" ]]; then
+              echo "pebble exists for platform ${{platform}}"
+              pebble_name=pebble
+            elif [[ -f "${{build_platform_dir}}/pebble.exe" ]]; then
+              echo "pebble exists for platform ${{platform}}"
+              pebble_name=pebble.exe
+            fi
+
+            wait_for_name=
+            if [[ -f "${{build_platform_dir}}/juju-wait-for" ]]; then
+              echo "juju-wait-for exists for platform ${{platform}}"
+              wait_for_name=juju-wait-for
+            elif [[ -f "${{build_platform_dir}}/juju-wait-for.exe" ]]; then
+              echo "juju-wait-for exists for platform ${{platform}}"
+              wait_for_name=juju-wait-for.exe
+            fi
+
+            arch=$(echo "${{platform}}" | cut -f 2 -d '/')
+            os=$(echo "${{platform}}" | cut -f 1 -d '/')
+
+            binary_tarball_name="juju_binaries-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-${{arch}}.tar.xz"
+            echo "Creating build payload for ${{platform}} - ${{binary_tarball_name}}"
+
+            tar cfJ ${{build_platform_dir}}/${{binary_tarball_name}} \
+              -C ${{build_platform_dir}}/ \
+              ${{juju_name}} \
+              ${{jujud_name}} \
+              ${{jujuc_name}} \
+              ${{juju_metadata_name}} \
+              ${{containeragent_name}} \
+              ${{pebble_name}} \
+              ${{wait_for_name}}
+
+            agent_tarball_name=juju-${{JUJU_VERSION}}-${{os}}-${{arch}}.tgz
+            echo "Creating agent payload for ${{platform}} - ${{agent_tarball_name}}"
+
+            tar cfz ${{build_platform_dir}}/${{agent_tarball_name}} \
+              --owner root \
+              --group root \
+              --no-same-owner \
+              -C ${{build_platform_dir}}/ \
+              ${{jujud_name}} \
+              ${{jujuc_name}}
+
+          done
+

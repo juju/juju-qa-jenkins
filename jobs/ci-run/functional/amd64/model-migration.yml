@@ -14,7 +14,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
           # Note: we have direct access to clouds in these nodes, so disable
           #   for this step.
@@ -44,7 +45,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
           ENV=parallel-lxd
           timeout -s INT 90m ${TESTS_DIR}/assess_model_migration.py \
@@ -70,7 +72,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
           # Note: we have direct access to clouds in these nodes, so disable
           #   for this step.
@@ -106,7 +109,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
           # Note: we have direct access to clouds in these nodes, so disable
           # for this step.
@@ -140,7 +144,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
           # Note: we have direct access to clouds in these nodes, so disable
           # for this step.

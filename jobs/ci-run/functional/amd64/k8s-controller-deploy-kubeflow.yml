@@ -42,7 +42,8 @@
     builders:
     - description-setter:
         description: "${CAAS_PROVIDER}|bundle:${BUNDLE_VERSION}|build:${BUILD_CHARMS}|rbac:${ENABLE_RBAC}|${OPERATOR_IMAGE_ACCOUNT}"
-    - prepare-functional-test
+    - prepare-functional-test-core:
+        platform: "linux/${BUILD_ARCH}"
     - prepare-ephemeral-node-for-k8s-py-tests:
         channel: "1.21/stable"  # https://github.com/canonical/bundle-kubeflow/issues/419#issuecomment-1008732052
     - shell: |-

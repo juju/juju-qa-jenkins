@@ -23,6 +23,14 @@
           default: ""
           description: "Series to use with charms in the functional tests"
           name: series
+      - string:
+          default: ''
+          description: 'Ubuntu series to use when bootstrapping Juju'
+          name: BOOTSTRAP_SERIES
+      - string:
+          default: ''
+          description: 'Go version used for build.'
+          name: GOVERSION
     builders:
       - get-build-details
       - set-test-description

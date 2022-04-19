@@ -23,7 +23,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
             ENV=parallel-gce
             timeout -s INT 40m ${TESTS_DIR}/assess_block.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \

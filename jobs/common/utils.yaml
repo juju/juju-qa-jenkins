@@ -1,5 +1,0 @@
-- builder:
-    name: 'install-go'
-    builders:
-    - shell:
-        !include-raw: "scripts/install-go.sh"

@@ -19,7 +19,7 @@
         - amd64
         - arm64
         - s390x
-        - ppc64el
+        - ppc64le
     - string:
         default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
@@ -40,9 +40,9 @@
       - default-integration-test-wrapper
     builders:
       - prepare-integration-test
-      - get-s3-build-payload:
+      - get-s3-build-payload-testing:
           SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
-          BUILD_ARCH: "${{BUILD_ARCH}}"
+          platform: "linux/{BUILD_ARCH}"
       - prepare-ephemeral-node-for-docker
       - ensure-aws-credentials
       - integration-test-runner-ephemeral:

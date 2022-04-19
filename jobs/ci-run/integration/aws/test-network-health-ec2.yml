@@ -17,9 +17,9 @@
     builders:
       - get-build-details
       - set-test-description
-      - get-s3-build-payload:
+      - get-s3-build-payload-testing:
             SHORT_GIT_COMMIT: ${SHORT_GIT_COMMIT}
-            BUILD_ARCH: ${BUILD_ARCH}
+            platform: "linux/${BUILD_ARCH}"
       - get-s3-source-payload
       - shell: |-
           #!/bin/bash

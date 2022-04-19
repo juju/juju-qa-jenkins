@@ -13,7 +13,8 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-functional-test
+      - prepare-functional-test-core:
+          platform: "linux/${BUILD_ARCH}"
       - shell: |-
           ENV=parallel-lxd
           timeout -s INT 120m ${TESTS_DIR}/assess_upgrade_series.py \

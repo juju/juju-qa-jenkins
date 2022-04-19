@@ -85,7 +85,6 @@ jobs:
     - github-juju-experimental-check-jobs
     - juju-integration-deploy
     - nw-deploy-focal-amd64-lxd
-    - get-s3-build-payload-exotic
     - integration-test-runner-focal
 EOF
 )
