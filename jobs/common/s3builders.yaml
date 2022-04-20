@@ -1,0 +1,70 @@
+# Group of common builders used when pushing and pulling build artefacts to
+# and from s3.
+
+# upload-s3-binaries is responsible for uploading a binaries tarball after a
+# successful make-juju. This builder will make a separate tarball and upload
+# for each platforms in platforms.
+# Expected parameters:
+#   platforms: space separated list of go style platforms
+# Expected pre-requisites:
+# - make-juju has been called for the same platforms as this command.
+- builder:
+    name: "upload-s3-binaries"
+    builders:
+      - install-s3cmd
+      - get-s3-creds
+      - shell: |-
+          #!/bin/bash
+          set -eu
+
+          for platform in "{platforms}"; do
+            echo "Uploading juju binaries for ${{platform}}"
+
+            build_platform_dir="${{BUILD_DIR}}/${{platform//\//_}}/bin"
+
+            arch=$(echo "${{platform}}" | cut -f 2 -d '/')
+            os=$(echo "${{platform}}" | cut -f 1 -d '/')
+
+            binary_tarball_name="juju_binaries-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-${{arch}}.tar.xz"
+
+            s3cmd --config $S3_CFG \
+              put \
+              --no-progress \
+              ${{build_platform_dir}}/${{binary_tarball_name}} \
+              s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/build-${{arch}}/${{os}}/
+          done
+
+# upload-s3-agent-binaries is responsible for uploading a binaries tarball after
+# a successful make-juju for all of the Juju agents. This builder will make a
+# separate tarball and upload for each platforms in platforms.
+# Expected parameters:
+#   platforms: space separated list of go style platforms
+# Expected pre-requisites:
+# - make-juju has been called for the same platforms as this command.
+- builder:
+    name: "upload-s3-agent-binaries"
+    builders:
+      - install-s3cmd
+      - get-s3-creds
+      - shell: |-
+          #!/bin/bash
+          set -eu
+
+          for platform in "{platforms}"; do
+            echo "Uploading juju binaries for ${{platform}}"
+
+            echo "Uploading juju agent binaries for ${{platform}}"
+
+            build_platform_dir="${{BUILD_DIR}}/${{platform//\//_}}/bin"
+
+            arch=$(echo "${{platform}}" | cut -f 2 -d '/')
+            os=$(echo "${{platform}}" | cut -f 1 -d '/')
+
+            agent_tarball_name=juju-${{JUJU_VERSION}}-${{os}}-${{arch}}.tgz
+
+            s3cmd --config $S3_CFG \
+                put \
+                --no-progress \
+                ${{build_platform_dir}}/${{agent_tarball_name}} \
+                s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/agents/
+          done

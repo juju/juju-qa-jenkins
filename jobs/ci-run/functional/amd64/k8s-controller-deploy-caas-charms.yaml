@@ -23,11 +23,15 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - prepare-ephemeral-node-for-k8s-py-tests:
           channel: "latest/stable"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=microk8s
           timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
           $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \
@@ -61,11 +65,16 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
+      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - prepare-ephemeral-node-for-k8s-py-tests:
           channel: latest/stable
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=gke
           timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
           $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \
@@ -99,11 +108,16 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
+      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - prepare-ephemeral-node-for-k8s-py-tests:
           channel: latest/stable
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=aks
           timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
           $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \
@@ -138,11 +152,16 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
+      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - prepare-ephemeral-node-for-k8s-py-tests:
           channel: latest/stable
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=eks
           timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
           $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \

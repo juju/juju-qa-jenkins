@@ -1,0 +1,19 @@
+# Common builders needed for functional tests to continue running
+
+- builder:
+    name: 'functional-python-deps'
+    builders:
+    - shell: |-
+        #!/bin/bash
+        set -eux
+
+        pip_deps="pywinrm boto pytz"
+        if ! [[ "{modules}" =~ ^.modules.$ ]]; then
+          pip_deps="$pip_deps {modules}"
+        fi
+
+        if command -v pip; then
+          pip install $pip_deps
+        else
+          pip3 install $pip_deps
+        fi

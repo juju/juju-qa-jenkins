@@ -13,9 +13,15 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
+      - functional-python-deps
+      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=parallel-lxd
           timeout -s INT 90m ${TESTS_DIR}/assess_resolve.py \
             $ENV $JUJU_BIN \

@@ -40,6 +40,7 @@
     wrappers:
     - cirun-test-stuck-timeout
     builders:
+    - wait-for-cloud-init
     - description-setter:
         description: "${CAAS_PROVIDER}|bundle:${BUNDLE_VERSION}|build:${BUILD_CHARMS}|rbac:${ENABLE_RBAC}|${OPERATOR_IMAGE_ACCOUNT}"
     - prepare-functional-test-core:
@@ -48,7 +49,7 @@
         channel: "1.21/stable"  # https://github.com/canonical/bundle-kubeflow/issues/419#issuecomment-1008732052
     - shell: |-
         #!/bin/bash
-        set -ex
+        set -eux
 
         test -d $HOME/.local/bin || mkdir -p $HOME/.local/bin
         export PATH=$PATH:$HOME/.local/bin

@@ -27,6 +27,9 @@
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=parallel-lxd
           timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
           $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \
@@ -64,6 +67,9 @@
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=parallel-lxd
           timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
           $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \

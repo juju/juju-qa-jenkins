@@ -113,36 +113,30 @@
                 GOVERSION=${GOVERSION}
             - name: build-juju-linux-amd64
               current-parameters: true
-              current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
                 GOVERSION=${GOVERSION}
             - name: build-juju-linux-s390x
-              current-parameters: true
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
                 GOVERSION=${GOVERSION}
             - name: build-juju-linux-ppc64le
               current-parameters: true
-              current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
                 GOVERSION=${GOVERSION}
             - name: build-juju-darwin-amd64
-              current-parameters: true
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
                 GOVERSION=${GOVERSION}
             - name: build-juju-darwin-arm64
               current-parameters: true
-              current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
                 GOVERSION=${GOVERSION}
             - name: build-juju-windows-amd64
-              current-parameters: true
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
@@ -153,7 +147,6 @@
           condition: SUCCESSFUL
           projects:
             - name: build-jujud-operator
-              current-parameters: true
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}

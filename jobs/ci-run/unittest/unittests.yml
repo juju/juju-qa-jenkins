@@ -37,24 +37,27 @@
             projects:
               - name: unit-tests-amd64
                 current-parameters: true
-              - name: unit-tests-arm64
-                current-parameters: true
               - name: unit-tests-amd64-bionic
-                current-parameters: true
-              - name: unit-tests-arm64-bionic
-                current-parameters: true
-              - name: unit-tests-s390x-bionic
-                current-parameters: true
-              - name: unit-tests-ppc64el-bionic
                 current-parameters: true
               - name: unit-tests-race-amd64
                 current-parameters: true
-              - name: unit-tests-race-arm64
-                current-parameters: true
-              - name: unit-tests-centos9
-                current-parameters: true
-              - name: unit-tests-win2012
-                current-parameters: true
+# These unit tests are comment out here as they are currently unable to be run
+# due to our Jenkins setup. They will eventually me added back in with our
+# final Jenkins install (tlm 21/04/2022)
+#             - name: unit-tests-arm64
+#               current-parameters: true
+#             - name: unit-tests-arm64-bionic
+#               current-parameters: true
+#             - name: unit-tests-s390x-bionic
+#               current-parameters: true
+#             - name: unit-tests-ppc64el-bionic
+#               current-parameters: true
+#             - name: unit-tests-race-arm64
+#               current-parameters: true
+#             - name: unit-tests-centos9
+#               current-parameters: true
+#             - name: unit-tests-win2012
+#               current-parameters: true
 
 
 - builder:

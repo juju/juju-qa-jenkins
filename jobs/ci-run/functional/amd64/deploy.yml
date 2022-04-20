@@ -15,19 +15,23 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
-            timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series focal \
-                parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME --debug \
-                --agent-url https://ci-run-streams.s3.amazonaws.com/builds/build-${SHORT_GIT_COMMIT}/ --agent-stream build-${SHORT_GIT_COMMIT}
+          #!/bin/bash
+          set -eu
+
+          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series focal \
+              parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME --debug \
+              --agent-url https://ci-run-streams.s3.amazonaws.com/builds/build-${SHORT_GIT_COMMIT}/ --agent-stream build-${SHORT_GIT_COMMIT}
     publishers:
       - artifact-results
       - log-panic-check
 
 - job:
     name: nw-deploy-bionic-amd64-lxd
-    node: ephemeral-bionic-4c-16g
+    node: ephemeral-bionic-4c-16g-amd64
     description: |-
       Deploy local lxd on bionic+amd64 using bionic apps.
     parameters:
@@ -42,12 +46,29 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
+      - shell: |-
+          #!/bin/bash
+          set -eu
+
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+            rust-all \
+            python3-dev
+      - pip-install:
+          modules: setuptools
+      - pip-install:
+          modules: setuptools-rust
+      - functional-python-deps
+      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
-            timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
-                parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME --debug \
-                --agent-url https://ci-run-streams.s3.amazonaws.com/builds/build-${SHORT_GIT_COMMIT}/ --agent-stream build-${SHORT_GIT_COMMIT}
+          #!/bin/bash
+          set -eu
+
+          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
+              parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME --debug \
+              --agent-url https://ci-run-streams.s3.amazonaws.com/builds/build-${SHORT_GIT_COMMIT}/ --agent-stream build-${SHORT_GIT_COMMIT}
     publishers:
       - artifact-results
       - log-panic-check
@@ -75,9 +96,16 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
-      - prepare-ephemeral-functional-test-exotic:
+      - wait-for-cloud-init
+      - functional-python-deps:
+          modules: pexpect
+      - get-cloud-environments
+      - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
                 --region $region \
                 parallel-aws $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME --debug \
@@ -108,6 +136,8 @@
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
           #!/bin/bash
+          set -eu
+
           timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
              parallel-finfolk-vmaas $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
     publishers:
@@ -116,7 +146,7 @@
 
 - job:
     name: nw-deploy-bionic-amd64-equinix
-    node: ephemeral-bionic-4c-16g
+    node: ephemeral-bionic-4c-16g-amd64
     description: |-
       Deploy to equinix cloud bionic+amd64 using bionic apps.
     parameters:
@@ -131,10 +161,17 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
+      - pip-install:
+          modules: setuptools
+      - functional-python-deps
+      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
           #!/bin/bash
+          set -eu
+
           timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
              parallel-equinix $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
     publishers:
@@ -158,10 +195,12 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
           #!/bin/bash
+          set -eu
 
           # A bit gross, need to handle the no_proxy parts for munna better.
           export no_proxy=$no_proxy,$(echo 10.247.4.{1..100} | tr ' ' ',')
@@ -197,13 +236,17 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
       - prepare-functional-test-core:
           platform: "darwin/${BUILD_ARCH}"
       - shell: |-
-            ${TESTS_DIR}/deploy_job.py parallel-gce ${JUJU_BIN} artifacts testing-osx-client1 \
-            --region $region \
-            --series xenial \
-            --agent-url https://ci-run-streams.s3.amazonaws.com/builds/build-${SHORT_GIT_COMMIT} --agent-stream build-${SHORT_GIT_COMMIT}
+          #!/bin/bash
+          set -eu
+
+          ${TESTS_DIR}/deploy_job.py parallel-gce ${JUJU_BIN} artifacts testing-osx-client1 \
+          --region $region \
+          --series xenial \
+          --agent-url https://ci-run-streams.s3.amazonaws.com/builds/build-${SHORT_GIT_COMMIT} --agent-stream build-${SHORT_GIT_COMMIT}
     publishers:
       - artifact-results
       - log-panic-check
@@ -230,6 +273,7 @@
         description: 'Arch to build for.'
         name: BUILD_ARCH
     builders:
+      - wait-for-cloud-init
       - prepare-functional-test-core:
           platform: "windows/${BUILD_ARCH}"
       - shell:

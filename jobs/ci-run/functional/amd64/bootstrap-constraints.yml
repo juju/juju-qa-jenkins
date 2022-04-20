@@ -16,11 +16,14 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           export ENV=parallel-finfolk-vmaas
-          set -eux
 
           # The 'maas env29 machines read' takes a while to complete.
           # Extract the first 'Ready' host from the list of available.

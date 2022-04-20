@@ -19,12 +19,19 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
+      - functional-python-deps:
+          modules: apache-libcloud
+      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           export ENV=parallel-aws
-           timeout -s INT 50m ${TESTS_DIR}/assess_constraints.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
-           $JOB_NAME --series xenial --region $region
+          timeout -s INT 50m ${TESTS_DIR}/assess_constraints.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
+          $JOB_NAME --series xenial --region $region
     publishers:
       - artifact-results
       - log-panic-check

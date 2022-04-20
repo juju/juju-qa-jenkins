@@ -31,8 +31,6 @@
             # Please keep it that way!
             - name: nw-add-cloud-many
               current-parameters: true
-            - name: nw-add-credentials-aws
-              current-parameters: true
             - name: nw-assess-persistent-storage
               current-parameters: true
             - name: nw-block-commands
@@ -40,8 +38,6 @@
             - name: nw-deploy-bionic-gke
               current-parameters: true
             - name: nw-deploy-bionic-aks
-              current-parameters: true
-            - name: nw-deploy-bionic-eks
               current-parameters: true
             - name: nw-deploy-client-centos9
               current-parameters: true
@@ -51,20 +47,9 @@
               current-parameters: true
             - name: nw-constraints-aws
               current-parameters: true
-            - name: nw-container-networking-maas-2-9
-              current-parameters: true
             - name: nw-cross-model-relations
               current-parameters: true
-            - name: nw-deploy-bionic-amd64-lxd
-              current-parameters: true
             - name: nw-deploy-client-windows
-              current-parameters: true
-            - name: nw-deploy-bionic-amd64-maas-2-9
-              current-parameters: true
-            - name: nw-deploy-bionic-amd64-equinix
-              current-parameters: true
-              enable-condition: '!["2.8"].contains("${JUJU_VERSION_MAJOR_MINOR}")' # Provider support is only available on 2.9+
-            - name: nw-deploy-bionic-vsphere
               current-parameters: true
             - name: nw-destroy-model-aws
               current-parameters: true
@@ -78,15 +63,13 @@
               current-parameters: true
             - name: nw-model-migration-amd64-lxd
               current-parameters: true
-            - name: nw-model-migration-amd64-vsphere
+            - name: nw-model-migration-amd64-gce
               current-parameters: true
             - name: nw-network-health-aws
               current-parameters: true
             - name: nw-network-health-azure
               current-parameters: true
             - name: nw-network-health-gce
-              current-parameters: true
-            - name: nw-network-health-maas-2-9
               current-parameters: true
             - name: nw-network-spaces-aws
               current-parameters: true
@@ -127,9 +110,10 @@
       - set-test-description
       - multijob:
           name: FunctionalTestss390x
-          projects:
-            - name: nw-deploy-xenial-s390x-lxd
-              current-parameters: true
+          projects: []
+# TODO tlm add back in when we have s390x arch support again
+#        - name: nw-deploy-xenial-s390x-lxd
+#          current-parameters: true
 
 - job:
     name: "gating-functional-tests-arm64"
@@ -180,10 +164,11 @@
       - get-build-details
       - set-test-description
       - multijob:
-          name: FunctionalTestsarm64
-          projects:
-            - name: nw-deploy-xenial-ppc64el-lxd
-              current-parameters: true
+          name: FunctionalTestsppc64le
+          projects: []
+# TODO tlm add back in when we have ppc arch support again
+#      - name: nw-deploy-xenial-ppc64el-lxd
+#        current-parameters: true
 
 - wrapper:
     name: default-functional-test-wrapper

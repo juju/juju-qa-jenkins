@@ -645,10 +645,24 @@
         # For some reason, .ssh/config has incorrect permissions on centos nodes
         test -f $HOME/.ssh/config && sudo chmod 600 $HOME/.ssh/config || true
 
+- builder:
+    name: 'pip-install'
+    builders:
+    - shell: |-
+        #!/bin/bash
+        set -eux
+
+        if command -v pip; then
+          pip install {modules}
+        else
+          pip3 install {modules}
+        fi
+
 # Prepare things for an integration test
 - builder:
     name: 'prepare-integration-test'
     builders:
+    - set-common-environment
     - get-build-details
     - get-s3-source-payload
     - set-test-description

@@ -23,9 +23,15 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
+      - functional-python-deps
+      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=parallel-aws
           timeout -s INT 45m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
            --series $series --region $region \
@@ -57,9 +63,16 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
+      - functional-python-deps:
+          modules: azure-mgmt-compute azure-mgmt-storage azure-mgmt-resource azure-keyvault-secrets azure-storage-blob msrestazure
+      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=parallel-azure-arm
           timeout -s INT 80m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
            --series $series \
@@ -95,9 +108,16 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
+      - functional-python-deps:
+          modules: apache-libcloud
+      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=parallel-gce
           timeout -s INT 45m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
            --region $region \
@@ -133,6 +153,9 @@
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=parallel-finfolk-vmaas
 
           timeout -s INT 45m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN ${WORKSPACE}/artifacts $JOB_NAME \
@@ -165,9 +188,15 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
+      - functional-python-deps
+      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=parallel-oracle-oci
 
           timeout -s INT 45m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
@@ -203,6 +232,9 @@
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=parallel-vsphere-vmfolder
 
           timeout -s INT 45m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
