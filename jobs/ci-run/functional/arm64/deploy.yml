@@ -1,6 +1,6 @@
 - job:  # nw-deploy-xenial-arm64-lxd
     name: nw-deploy-xenial-arm64-lxd
-    node: arm64-slave
+    node: ephemeral-focal-8c-32g-arm64
     description: |-
       Deploy lxd on xenial+arm64 using xenial apps.
     parameters:
@@ -15,6 +15,7 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-

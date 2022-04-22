@@ -22,7 +22,26 @@
       - multijob:
           name: ProvingGroundsFunctionalTestsAmd64
           projects:
+            - name: nw-deploy-bionic-amd64-equinix
+              current-parameters: true
+              enable-condition: '!["2.8"].contains("${JUJU_VERSION_MAJOR_MINOR}")' # Provider support is only available on 2.9+
+            - name: nw-deploy-bionic-amd64-lxd
+              current-parameters: true
+            - name: nw-deploy-bionic-eks
+              current-parameters: true
+            - name: nw-model-migration-amd64-vsphere
+              current-parameters: true
+            - name: nw-deploy-bionic-vsphere
+              current-parameters: true
+            - name: nw-network-health-maas-2-9
+              current-parameters: true
+            - name: nw-deploy-bionic-amd64-maas-2-9
+              current-parameters: true
+            - name: nw-container-networking-maas-2-9
+              current-parameters: true
             - name: nw-bootstrap-constraints-maas-2-9
+              current-parameters: true
+            - name: nw-add-credentials-aws
               current-parameters: true
             - name: nw-deploy-client-macos
               current-parameters: true

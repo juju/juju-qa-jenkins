@@ -89,7 +89,6 @@
     export BOOTSTRAP_REUSE_LOCAL
     export OPERATOR_IMAGE_ACCOUNT
     # shellcheck source=/dev/null
-    source "$WORKSPACE/buildvars"
     set -u
 
     echo "=> Running tests"

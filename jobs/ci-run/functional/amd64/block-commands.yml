@@ -23,13 +23,20 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
+      - functional-python-deps:
+          modules: apache-libcloud
+      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
-            ENV=parallel-gce
-            timeout -s INT 40m ${TESTS_DIR}/assess_block.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
-                --region $region \
-                --series $series
+          #!/bin/bash
+          set -eu
+
+          ENV=parallel-gce
+          timeout -s INT 40m ${TESTS_DIR}/assess_block.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
+              --region $region \
+              --series $series
     publishers:
       - artifact-results
       - log-panic-check

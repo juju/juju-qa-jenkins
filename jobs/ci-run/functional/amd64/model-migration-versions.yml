@@ -19,9 +19,21 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
+      - shell: |-
+          #!/bin/bash
+          set -eu
+
+          sudo snap install juju --classic
+
+      - functional-python-deps
+      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=parallel-aws
           timeout -s INT 50m ${TESTS_DIR}/assess_model_migration_versions.py $ENV $JUJU_BIN \
               $WORKSPACE/artifacts $JOB_NAME \
@@ -48,9 +60,16 @@
     wrappers:
       - cirun-test-stuck-timeout
     builders:
+      - wait-for-cloud-init
+      - pip-install:
+          modules: pywinrm boto pytz
+      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-
+          #!/bin/bash
+          set -eu
+
           ENV=parallel-lxd
           timeout -s INT 50m ${TESTS_DIR}/assess_model_migration_versions.py $ENV $JUJU_BIN \
               $WORKSPACE/artifacts $JOB_NAME \
