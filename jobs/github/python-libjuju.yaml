@@ -4,6 +4,9 @@
       - edge:
           PYTHON_VERSION: "3"
           JUJU_CHANNEL: "2.9/edge"
+      - python3.10:
+          PYTHON_VERSION: "3.10"
+          JUJU_CHANNEL: "stable"
       - python3.9:
           PYTHON_VERSION: "3.9"
           JUJU_CHANNEL: "stable"
