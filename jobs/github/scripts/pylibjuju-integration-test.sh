@@ -20,6 +20,7 @@ sudo ls -l -R ~/.config
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt-get update -q
 sudo apt-get remove -qy --purge lxd lxd-client
+sudo snap remove lxd
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y git make "python${PYTHON_VERSION}" "python${MAINLINE_PYTHON_VERSION}-distutils" "python3-pip"
 
 PYTHON_PATH=$(which "python${PYTHON_VERSION}")
@@ -27,7 +28,7 @@ $PYTHON_PATH -m pip install --user tox
 
 attempts=0
 while [ $attempts -lt 3 ]; do
-    sudo snap install lxd && break || true
+    sudo snap install lxd --channel=4.24/stable && break || true
     attempts=$((attempts + 1))
 done
 export PATH="/snap/bin:$PATH"
@@ -44,7 +45,7 @@ lxc storage create juju-btrfs dir source=/var/snap/lxd/common/lxd/storage-pools/
 # but for some reason that doesn't work in 2 nested deep containers. So
 # instead we turn apparmor off, we should investigate why this doesn't work
 # correctly.
-lxc profile set default raw.lxc lxc.apparmor.profile=unconfined
+# lxc profile set default raw.lxc lxc.apparmor.profile=unconfined
 
 attempts=0
 while [ $attempts -lt 3 ]; do
