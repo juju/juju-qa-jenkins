@@ -51,7 +51,18 @@ jobs:
     - github-mgo-check-jobs
     - github-mgo-merge-jobs
     - github-prs
+    - nw-deploy-xenial-ppc64el-lxd
+    - nw-deploy-xenial-s390x-lxd
+    - prepare-ephemeral-functional-test-exotic
+    - prepare-functional-test
     - sync-ntp
+    - unit-tests-arm64
+    - unit-tests-arm64-bionic
+    - unit-tests-centos9
+    - unit-tests-ppc64el-bionic
+    - unit-tests-race-arm64
+    - unit-tests-s390x-bionic
+    - unit-tests-win2012
     - z-clean-resources-azure
     - z-clean-resources-aws
     - z-clean-resources-gce
