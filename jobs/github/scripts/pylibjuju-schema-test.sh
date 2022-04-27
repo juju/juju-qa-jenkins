@@ -9,7 +9,7 @@
 
     sudo add-apt-repository ppa:deadsnakes/ppa
     sudo apt-get update -q
-    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y git gcc make python3.5 python3.6 python3.7 python3.8 python3-pip
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y git gcc make python3.5 python3.6 python3.7 python3.8 python3-pip python3.9 python3.10
 
     # now go to libjuju and make sure it's working correctly
     mkdir -p ~/tmp
