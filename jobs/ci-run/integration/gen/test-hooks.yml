@@ -132,7 +132,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'hooks'
             pre_test_steps: ''
             task_name: 'test_dispatching_script'
@@ -228,7 +228,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'hooks'
             pre_test_steps: ''
             task_name: 'test_start_hook_fires_after_reboot'

@@ -136,7 +136,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'relations'
             pre_test_steps: ''
             task_name: 'test_relation_data_exchange'
@@ -232,7 +232,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'relations'
             pre_test_steps: ''
             task_name: 'test_relation_departing_unit'
@@ -328,7 +328,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'relations'
             pre_test_steps: ''
             task_name: 'test_relation_list_app'

@@ -136,7 +136,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'charmhub'
             pre_test_steps: ''
             task_name: 'test_charmhub_download'
@@ -232,7 +232,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'charmhub'
             pre_test_steps: ''
             task_name: 'test_charmhub_find'
@@ -328,7 +328,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'charmhub'
             pre_test_steps: ''
             task_name: 'test_charmhub_info'

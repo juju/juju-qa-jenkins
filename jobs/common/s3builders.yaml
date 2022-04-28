@@ -1,70 +1,322 @@
-# Group of common builders used when pushing and pulling build artefacts to
-# and from s3.
+- builder:
+    name: put-s3-source-payload
+    builders:
+    - install-s3cmd
+    - get-s3-creds
+    - shell: |-
+        #!/bin/bash
+        set -eu
+
+        if [ -z "$SHORT_GIT_COMMIT" ]; then
+          echo "SHORT_GIT_COMMIT can not be empty"
+          exit 1
+        fi
+        if [ -z "$JUJU_SRC_TARBALL" ]; then
+          echo "JUJU_SRC_TARBALL can not be empty"
+          exit 1
+        fi
+
+        # Create buildvars file
+        cat >buildvars <<EOF
+        JUJU_VERSION=${JUJU_VERSION}
+        JUJU_SRC_TARBALL=${JUJU_SRC_TARBALL}
+        SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+        GIT_COMMIT=${GIT_COMMIT}
+        JUJU_BUILD_NUMBER=${JUJU_BUILD_NUMBER}
+        JUJU_GOMOD_MODE=${JUJU_GOMOD_MODE}
+        GOVERSION=${GOVERSION}
+        EOF
+
+        FILES_OF_INTEREST="${WORKSPACE}/${JUJU_SRC_TARBALL} buildvars"
+        s3cmd --config $S3_CFG \
+            put \
+            --no-progress \
+            ${FILES_OF_INTEREST} \
+            s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/src/
 
 # upload-s3-binaries is responsible for uploading a binaries tarball after a
-# successful make-juju. This builder will make a separate tarball and upload
-# for each platforms in platforms.
+# successful make-juju for the specified platform.
 # Expected parameters:
-#   platforms: space separated list of go style platforms
+#   platform: go style platform
+#   label: label to use to augment the binary tarball name
 # Expected pre-requisites:
-# - make-juju has been called for the same platforms as this command.
+# - make-juju has been called for the same platform as this command.
 - builder:
-    name: "upload-s3-binaries"
+    name: upload-s3-binaries
     builders:
-      - install-s3cmd
-      - get-s3-creds
-      - shell: |-
+    - install-s3cmd
+    - get-s3-creds
+    - shell: |-
+        #!/bin/bash
+        set -eu
+
+        if [ -z "{platform}" ]; then
+          echo "platform var is empty"
+          exit 1
+        fi
+
+        FILE_LABEL=""
+        if [ ! -z "{label}" ]; then
+          FILE_LABEL="-{label}"
+        fi
+
+        echo "Uploading juju binaries for {platform}"
+
+        platform_dir={platform}
+        build_platform_dir="${{BUILD_DIR}}/${{platform_dir//\//_}}/bin"
+
+        arch=$(echo "{platform}" | cut -f 2 -d '/')
+        os=$(echo "{platform}" | cut -f 1 -d '/')
+
+        binary_tarball_name="juju_binaries-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}${{FILE_LABEL}}-${{arch}}.tar.xz"
+
+        s3cmd --config $S3_CFG \
+        put \
+        --no-progress \
+        ${{build_platform_dir}}/${{binary_tarball_name}} \
+        s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/build-${{arch}}/${{os}}/
+
+# upload-s3-agent-binaries is responsible for uploading a binaries tarball after a
+# successful make-juju for the specified platform.
+# Expected parameters:
+#   platforms: go style platform
+# Expected pre-requisites:
+# - make-juju has been called for the same platform as this command.
+- builder:
+    name: upload-s3-agent-binaries
+    builders:
+    - install-s3cmd
+    - get-s3-creds
+    - shell: |-
+        #!/bin/bash
+        set -eu
+
+        if [ -z "{platform}" ]; then
+            echo "platform var is empty"
+            exit 1
+        fi
+
+        echo "Uploading juju agent binaries for {platform}"
+
+        platform_dir={platform}
+        build_platform_dir="${{BUILD_DIR}}/${{platform_dir//\//_}}/bin"
+
+        arch=$(echo "{platform}" | cut -f 2 -d '/')
+        os=$(echo "{platform}" | cut -f 1 -d '/')
+
+        agent_tarball_name=juju-${{JUJU_VERSION}}-${{os}}-${{arch}}.tgz
+
+        s3cmd --config $S3_CFG \
+          put \
+          --no-progress \
+          ${{build_platform_dir}}/${{agent_tarball_name}} \
+          s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/agents/
+
+- builder:
+    name: 'get-s3-installshield'
+    builders:
+    - install-s3cmd
+    - get-s3-creds
+    - shell: |-
+        s3cmd --config $S3_CFG \
+            get \
+            --no-progress \
+            s3://windows-ci-tools/InnoSetup5.tar.gz \
+            {dest}
+    - shell: |-
+        #!/bin/bash
+        set -ex
+
+        sudo dpkg --add-architecture i386;
+        sudo DEBIAN_FRONTEND=noninteractive apt update;
+        sudo DEBIAN_FRONTEND=noninteractive apt install -y xvfb wine wine32;
+        tar -C {dest} -zxf {dest}/InnoSetup5.tar.gz
+
+- builder:
+    name: get-s3-source-payload
+    builders:
+    - install-s3cmd
+    - get-s3-creds
+    - get-build-details
+    - shell: |-
+        #!/bin/bash
+        set -eu
+
+        echo "Getting Juju src tarball ${JUJU_SRC_TARBALL}"
+        s3cmd --config $S3_CFG \
+            --recursive get \
+            --no-progress \
+            --force \
+            --exclude="*" \
+            --include="${JUJU_SRC_TARBALL}" \
+            s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/src/ \
+            ./
+    - shell: |-
+        #!/bin/bash
+        set -e
+        touch juju-src.properties
+
+        if [ ! -z $GOPATH ]; then
+          echo "GOPATH is defined. Unpacking Juju src tarball onto GOPATH"
+          tar xf "${JUJU_SRC_TARBALL}" -C "${GOPATH}"
+          echo "JUJU_SRC_PATH=${GOPATH}/src/github.com/juju/juju" >> juju-src.properties
+        else
+          echo "GOPATH is not defined. Doing nothing with the Juju src tarball"
+        fi
+
+        echo "Juju source properties being injected"
+        cat juju-src.properties
+    - inject:
+        properties-file: juju-src.properties
+    - shell: |-
           #!/bin/bash
-          set -eu
+          set -e
+          rm -rf juju-src.properties
 
-          for platform in "{platforms}"; do
-            echo "Uploading juju binaries for ${{platform}}"
+# get-s3-build-payload-packaging is a utility builder for fetching a list of
+# architecture builds for Juju. This builder will unpack the binaries into
+# seperate build directories for each architecture.
+# Paramters:
+# - platforms: A space seperated list of go style platforms to fetch Juju
+#              binaries for.
+# Injected Properties:
+# - BIN_DIR: build directory where binaries were unpacked to in seperate
+#            platform base directories.
+- builder:
+    name: get-s3-build-payload-packaging
+    builders:
+    - get-s3-build-payload:
+        platforms: "{platforms}"
+    - shell: |-
+        #!/bin/bash
+        set -eu
+        for i in {platforms}; do
+          os=$(echo "$i" | cut -d / -f 1)
+          arch=$(echo "$i" | cut -d / -f 2)
 
-            build_platform_dir="${{BUILD_DIR}}/${{platform//\//_}}/bin"
+          echo "Make build directory for ${{os}}/${{arch}}"
+          mkdir -p ${{BUILD_DIR}}/${{os}}_${{arch}}/bin
 
-            arch=$(echo "${{platform}}" | cut -f 2 -d '/')
-            os=$(echo "${{platform}}" | cut -f 1 -d '/')
+          echo "Unpacking Juju binaries for ${{os}}/${{arch}}"
+          tar xf juju_binaries-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-${{arch}}.tar.xz -C ${{BUILD_DIR}}/${{os}}_${{arch}}/bin
+        done
+    - inject:
+        properties-content:
+            BIN_DIR=${{BUILD_DIR}}
 
-            binary_tarball_name="juju_binaries-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-${{arch}}.tar.xz"
+# get-s3-build-payload is a utility builder for fetching a list
+# of architecture builds for Juju. This builder is intended to be used by the
+# builders get-s3-build-payload-packaging.
+# Parameters:
+# - platforms: A space seperated list of go style platforms to fetch Juju
+#              binaries for.
+- builder:
+    name: get-s3-build-payload
+    builders:
+    - install-s3cmd
+    - get-s3-creds
+    - shell: |-
+        #!/bin/bash
+        set -eu
 
-            s3cmd --config $S3_CFG \
-              put \
+        for i in {platforms}; do
+          os=$(echo "$i" | cut -d / -f 1)
+          arch=$(echo "$i" | cut -d / -f 2)
+
+          echo "downloads juju build payload for ${{SHORT_GIT_COMMIT}} ${{os}}/${{arch}}"
+          s3cmd --config $S3_CFG \
+              --recursive get \
               --no-progress \
-              ${{build_platform_dir}}/${{binary_tarball_name}} \
-              s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/build-${{arch}}/${{os}}/
-          done
+              --force \
+              --exclude="*" \
+              --include="juju_binaries-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-${{arch}}.tar.xz" \
+              s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/build-${{arch}}/${{os}}/ \
+              ./
+        done
 
-# upload-s3-agent-binaries is responsible for uploading a binaries tarball after
-# a successful make-juju for all of the Juju agents. This builder will make a
-# separate tarball and upload for each platforms in platforms.
-# Expected parameters:
-#   platforms: space separated list of go style platforms
-# Expected pre-requisites:
-# - make-juju has been called for the same platforms as this command.
+# get-s3-build-payload-testing is a utility builder for getting the juju
+# binaries compiled for a given platform, version and commit. This builder will
+# unpack the downloaded binaries to the bin directory.
+# Paramters:
+# - platform: Go style platform to download binaries for (e.g. linux/arm64)
+#              binaries for.
+# Injected Properties:
+# - BIN_DIR: build directory where binaries were unpacked.
 - builder:
-    name: "upload-s3-agent-binaries"
+    name: get-s3-build-payload-testing
     builders:
-      - install-s3cmd
-      - get-s3-creds
-      - shell: |-
+    - get-s3-build-payload:
+        platforms: "{platform}"
+    - shell: |-
+        #!/bin/bash
+        set -eu
+
+        arch=$(echo "{platform}" | cut -d / -f 2)
+        tar xf juju_binaries-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-${{arch}}.tar.xz -C ${{BUILD_DIR}}/
+    - inject:
+        properties-content:
+            BIN_DIR=${{BUILD_DIR}}
+
+# get-s3-agent-payload is a new utility builder for fetching a list of build
+# agents for a given set of platforms of a Juju version and git commit.
+# Expected pre-reqs:
+# - get-build-details or get-s3-source has been run to set the buildvars
+#   correctly.
+# Required properties:
+# - dest: destination where to persist the download agent tarballs
+# - platforms: a space seperated list of go style platforms (e.g. linux/amd64 linux/arm64)
+# - SHORT_GIT_COMMIT: the short git commit of the source code to fetch agents for
+- builder:
+    name: get-s3-agent-payload
+    builders:
+    - install-s3cmd
+    - get-s3-creds
+    - shell: |-
+        #!/bin/bash
+        set -eu
+
+        for i in {platforms}; do
+          os=$(echo "$i" | cut -d / -f 1)
+          arch=$(echo "$i" | cut -d / -f 2)
+
+          agent_tarball_name=juju-${{JUJU_VERSION}}-${{os}}-${{arch}}.tgz
+          echo "Downloading juju agent payload ${{agent_tarball_name}} for ${{SHORT_GIT_COMMIT}}"
+
+          s3cmd --config $S3_CFG \
+              --recursive get \
+              --no-progress \
+              --exclude="*" \
+              --include="${{agent_tarball_name}}" \
+              s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/agents/ \
+              {dest}
+
+        done
+
+# get-build-details is responsible for
+- builder:
+    name: get-build-details
+    builders:
+    - install-s3cmd
+    - get-s3-creds
+    - shell: |-
+        #!/bin/bash
+        set -eu
+
+        # We first want to get the buildvars properties file from the src
+        # directory so that we get the JUJU_BUILD_NUMBER and pull the correct
+        # src artifacts.
+        #
+        echo "Downloading buildvars for Juju source ${SHORT_GIT_COMMIT}"
+        s3cmd --config $S3_CFG \
+          get --force s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/src/buildvars
+
+        echo "Contents of buildvars for Juju source ${SHORT_GIT_COMMIT}"
+        cat buildvars
+        echo "Injecting Juju source ${SHORT_GIT_COMMIT} buildvars"
+    - inject:
+        properties-file: ${WORKSPACE}/buildvars
+    - shell: |-
           #!/bin/bash
-          set -eu
-
-          for platform in "{platforms}"; do
-            echo "Uploading juju binaries for ${{platform}}"
-
-            echo "Uploading juju agent binaries for ${{platform}}"
-
-            build_platform_dir="${{BUILD_DIR}}/${{platform//\//_}}/bin"
-
-            arch=$(echo "${{platform}}" | cut -f 2 -d '/')
-            os=$(echo "${{platform}}" | cut -f 1 -d '/')
-
-            agent_tarball_name=juju-${{JUJU_VERSION}}-${{os}}-${{arch}}.tgz
-
-            s3cmd --config $S3_CFG \
-                put \
-                --no-progress \
-                ${{build_platform_dir}}/${{agent_tarball_name}} \
-                s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/agents/
-          done
+          set -e
+          echo "Removing Juju source ${SHORT_GIT_COMMIT} buildvars file"
+          rm -rf buildvars

@@ -92,53 +92,84 @@
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
                 JUJU_BUILD_NUMBER=${BUILD_NUMBER}
                 GOVERSION=${GOVERSION}
-      - get-s3-source-payload
 
+      - get-s3-source-payload
       - inject:
           properties-content: |-
             OPERATOR_IMAGE_ACCOUNT=jujuqabot
             PATH=/snap/bin:$PATH
             series=bionic
-
-      - set-test-description
+      - get-build-details
+      - set-build-description
       - multijob:
           name: "Building Juju Binaries"
           condition: SUCCESSFUL
           execution-type: PARALLEL
           projects:
-            - name: build-juju-linux-arm64
+            - name: build-juju
+              alias: build-juju-linux-amd64
               current-parameters: true
               predefined-parameters: |-
+                PLATFORM=linux/amd64
+                BUILD_LABEL=linux-amd64
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
                 GOVERSION=${GOVERSION}
-            - name: build-juju-linux-amd64
+            - name: build-juju
+              alias: build-juju-linux-arm64
               current-parameters: true
               predefined-parameters: |-
+                PLATFORM=linux/arm64
+                BUILD_LABEL=linux-arm64
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
                 GOVERSION=${GOVERSION}
-            - name: build-juju-linux-s390x
+            - name: build-juju
+              alias: build-juju-linux-s390x
               current-parameters: true
               predefined-parameters: |-
+                PLATFORM=linux/s390x
+                BUILD_LABEL=linux-s390x
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
                 GOVERSION=${GOVERSION}
-            - name: build-juju-linux-ppc64le
+            - name: build-juju
+              alias: build-juju-linux-ppc64el
               current-parameters: true
               predefined-parameters: |-
+                PLATFORM=linux/ppc64el
+                BUILD_LABEL=linux-ppc64el
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
                 GOVERSION=${GOVERSION}
-            - name: build-juju-darwin-amd64
+            - name: build-juju
+              alias: build-juju-darwin-amd64
               current-parameters: true
               predefined-parameters: |-
+                PLATFORM=darwin/amd64
+                BUILD_LABEL=darwin-amd64
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
                 GOVERSION=${GOVERSION}
-            - name: build-juju-darwin-arm64
+            - name: build-juju
+              alias: build-juju-darwin-arm64
               current-parameters: true
               predefined-parameters: |-
+                PLATFORM=darwin/arm64
+                BUILD_LABEL=darwin-arm64
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
                 GOVERSION=${GOVERSION}
-            - name: build-juju-windows-amd64
+            - name: build-juju
+              alias: build-juju-windows-amd64
               current-parameters: true
               predefined-parameters: |-
+                PLATFORM=windows/amd64
+                BUILD_LABEL=windows-amd64
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
+            - name: build-juju
+              alias: build-juju-k8s-linux-amd64
+              current-parameters: true
+              predefined-parameters: |-
+                PLATFORM=linux/amd64
+                LABEL=k8s
+                BUILD_TAGS=minimal,provider_kubernetes
+                BUILD_LABEL=k8s-linux-amd64
                 SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
                 GOVERSION=${GOVERSION}
 

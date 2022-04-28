@@ -132,7 +132,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'resources'
             pre_test_steps: ''
             task_name: 'test_basic_resources'
@@ -228,7 +228,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'resources'
             pre_test_steps: ''
             task_name: 'test_upgrade_resources'

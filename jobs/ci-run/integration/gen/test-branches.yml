@@ -132,7 +132,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'branches'
             pre_test_steps: ''
             task_name: 'test_active_branch_output'
@@ -228,7 +228,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'branches'
             pre_test_steps: ''
             task_name: 'test_branch'

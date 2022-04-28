@@ -39,10 +39,12 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
+      - wait-for-cloud-init
+      - set-common-environment
       - prepare-integration-test
       - get-s3-build-payload-testing:
-          SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
-          platform: "linux/{BUILD_ARCH}"
+          SHORT_GIT_COMMIT: "${SHORT_GIT_COMMIT}"
+          platform: "linux/${BUILD_ARCH}"
       - prepare-ephemeral-node-for-docker
       - ensure-aws-credentials
       - integration-test-runner-ephemeral:

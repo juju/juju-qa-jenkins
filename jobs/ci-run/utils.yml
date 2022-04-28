@@ -217,125 +217,6 @@
     - inject:
         properties-file: ${WORKSPACE}/build.properties
 
-- builder:
-    name: 'put-s3-source-payload'
-    builders:
-    - install-s3cmd
-    - get-s3-creds
-    - shell: |-
-        #!/bin/bash
-        set -xe
-
-        if [ -z "$SHORT_GIT_COMMIT" ]; then
-          echo "SHORT_GIT_COMMIT can not be empty"
-          exit 1
-        fi
-        if [ -z "$JUJU_SRC_TARBALL" ]; then
-          echo "JUJU_SRC_TARBALL can not be empty"
-          exit 1
-        fi
-        if [ -z "$JUJU_FTESTS_TARBALL" ]; then
-          echo "JUJU_FTESTS_TARBALL can not be empty"
-          exit 1
-        fi
-
-        # Create buildvars file
-        cat >buildvars <<EOF
-        JUJU_VERSION=${JUJU_VERSION}
-        JUJU_SRC_TARBALL=${JUJU_SRC_TARBALL}
-        JUJU_FTESTS_TARBALL=${JUJU_FTESTS_TARBALL}
-        JUJU_VERSION_MAJOR_MINOR=${JUJU_VERSION_MAJOR_MINOR}
-        SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-        GIT_COMMIT=${GIT_COMMIT}
-        JUJU_BUILD_NUMBER=${JUJU_BUILD_NUMBER}
-        JUJU_GOMOD_MODE=${JUJU_GOMOD_MODE}
-        JUJU_RELEASE_TOOLS_TARBALL=${JUJU_RELEASE_TOOLS_TARBALL}
-        GOVERSION=${GOVERSION}
-        EOF
-
-        FILES_OF_INTEREST="${WORKSPACE}/${JUJU_SRC_TARBALL} ${WORKSPACE}/${JUJU_FTESTS_TARBALL} buildvars"
-        s3cmd --config $S3_CFG \
-            put \
-            --no-progress \
-            ${FILES_OF_INTEREST} \
-            s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/src/
-
-# get-build-details is responsible for
-- builder:
-    name: 'get-build-details'
-    builders:
-    - install-s3cmd
-    - get-s3-creds
-    - shell: |-
-        #!/bin/bash
-        set -eu
-
-        # We first want to get the buildvars properties file from the src
-        # directory so that we get the JUJU_BUILD_NUMBER and pull the correct
-        # src artifacts.
-        #
-        echo "Downloading buildvars for Juju source ${SHORT_GIT_COMMIT}"
-        s3cmd --config $S3_CFG \
-            --recursive get \
-            --no-progress \
-            --force \
-            --exclude="*" \
-            --include="buildvars" \
-            s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/src/ \
-            ./
-
-        echo "Contents of buildvars for Juju source ${SHORT_GIT_COMMIT}"
-        cat buildvars
-        echo "Injecting Juju source ${SHORT_GIT_COMMIT} buildvars"
-    - inject:
-        properties-file: ${WORKSPACE}/buildvars
-    - shell: |-
-          #!/bin/bash
-          set -e
-          echo "Removing Juju source ${SHORT_GIT_COMMIT} buildvars file"
-          rm -rf buildvars
-
-# TODO document
-- builder:
-    name: 'get-s3-source-payload'
-    builders:
-    - install-s3cmd
-    - get-s3-creds
-    - get-build-details
-    - shell: |-
-        #!/bin/bash
-        set -e
-
-        echo "Getting Juju src tarball ${JUJU_SRC_TARBALL}"
-        s3cmd --config $S3_CFG \
-            --recursive get \
-            --no-progress \
-            --force \
-            --exclude="*" \
-            --include="${JUJU_SRC_TARBALL}" \
-            s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/src/ \
-            ./
-    - shell: |-
-        #!/bin/bash
-        set -e
-        touch juju-src.properties
-
-        if [ ! -z $GOPATH ]; then
-          echo "GOPATH is defined. Unpacking Juju src tarball onto GOPATH"
-          tar xf "${JUJU_SRC_TARBALL}" -C "${GOPATH}"
-          echo "JUJU_SRC_PATH=${GOPATH}/src/github.com/juju/juju" >> juju-src.properties
-        else
-          echo "GOPATH is not defined. Doing nothing with the Juju src tarball"
-        fi
-
-        echo "Juju source properties being injected"
-        cat juju-src.properties
-    - inject:
-        properties-file: juju-src.properties
-    - shell: |-
-          #!/bin/bash
-          set -e
-          rm -rf juju-src.properties
 
 - builder:
     name: 'get-s3-test-payload'
@@ -364,123 +245,7 @@
         properties-content: |-
             TESTS_DIR=${WORKSPACE}/acceptancetests/
 
-# get-s3-build-payload-core is a utility builder for fetching a list
-# of architecture builds for Juju. This builder is intended to be used by the
-# builders get-s3-build-payload-packaging.
-# Parameters:
-# - platforms: A space seperated list of go style platforms to fetch Juju
-#              binaries for.
-- builder:
-    name: 'get-s3-build-payload-core'
-    builders:
-    - install-s3cmd
-    - get-s3-creds
-    - shell: |-
-        #!/bin/bash
-        set -e
 
-        for i in {platforms}; do
-          os=$(echo "$i" | cut -d / -f 1)
-          arch=$(echo "$i" | cut -d / -f 2)
-
-          echo "downloads juju build payload for ${{SHORT_GIT_COMMIT}} ${{os}}/${{arch}}"
-          s3cmd --config $S3_CFG \
-              --recursive get \
-              --no-progress \
-              --force \
-              --exclude="*" \
-              --include="juju_binaries-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-${{arch}}.tar.xz" \
-              s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/build-${{arch}}/${{os}}/ \
-              ./
-        done
-
-# get-s3-build-payload-packaging is a utility builder for fetching a list of
-# architecture builds for Juju. This builder will unpack the binaries into
-# seperate build directories for each architecture.
-# Paramters:
-# - platforms: A space seperated list of go style platforms to fetch Juju
-#              binaries for.
-# Injected Properties:
-# - BIN_DIR: build directory where binaries were unpacked to in seperate
-#            platform base directories.
-- builder:
-    name: 'get-s3-build-payload-packaging'
-    builders:
-    - get-s3-build-payload-core:
-        platforms: "{platforms}"
-    - shell: |-
-        #!/bin/bash
-        set -eu
-        for i in {platforms}; do
-          os=$(echo "$i" | cut -d / -f 1)
-          arch=$(echo "$i" | cut -d / -f 2)
-
-          echo "Make build directory for ${{os}}/${{arch}}"
-          mkdir -p ${{BUILD_DIR}}/${{os}}_${{arch}}/bin
-
-          echo "Unpacking Juju binaries for ${{os}}/${{arch}}"
-          tar xf juju_binaries-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-${{arch}}.tar.xz -C ${{BUILD_DIR}}/${{os}}_${{arch}}/bin
-        done
-    - inject:
-        properties-content:
-            BIN_DIR=${{WORKSPACE}}/build/
-
-# get-s3-build-payload-testing is a utility builder for getting the juju
-# binaries compiled for a given platform, version and commit. This builder will
-# unpack the downloaded binaries to the bin directory.
-# Paramters:
-# - platform: Go style platform to download binaries for (e.g. linux/arm64)
-#              binaries for.
-# Injected Properties:
-# - BIN_DIR: build directory where binaries were unpacked.
-- builder:
-    name: 'get-s3-build-payload-testing'
-    builders:
-    - get-s3-build-payload-core:
-        platforms: "{platform}"
-    - shell: |-
-        #!/bin/bash
-        set -eu
-        arch=$(echo "{platform}" | cut -d / -f 2)
-        tar xf juju_binaries-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-${{arch}}.tar.xz -C ${{BUILD_DIR}}/
-    - inject:
-        properties-content:
-            BIN_DIR=${{WORKSPACE}}/build/
-
-# get-s3-agent-payload is a new utility builder for fetching a list of build
-# agents for a given set of platforms of a Juju version and git commit.
-# Expected pre-reqs:
-# - get-build-details or get-s3-source has been run to set the buildvars
-#   correctly.
-# Required properties:
-# - dest: destination where to persist the download agent tarballs
-# - platforms: a space seperated list of go style platforms (e.g. linux/amd64 linux/arm64)
-# - SHORT_GIT_COMMIT: the short git commit of the source code to fetch agents for
-- builder:
-    name: 'get-s3-agent-payload'
-    builders:
-    - install-s3cmd
-    - get-s3-creds
-    - shell: |-
-        #!/bin/bash
-        set -e
-
-        for i in {platforms}; do
-          os=$(echo "$i" | cut -d / -f 1)
-          arch=$(echo "$i" | cut -d / -f 2)
-
-          agent_tarball_name=juju-${{JUJU_VERSION}}-${{os}}-${{arch}}.tgz
-          echo "Downloading juju agent payload ${{agent_tarball_name}} for ${{SHORT_GIT_COMMIT}}"
-
-          s3cmd --config $S3_CFG \
-              --recursive get \
-              --no-progress \
-              --exclude="*" \
-              --include="${{agent_tarball_name}}" \
-              s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/agents/ \
-              {dest}
-
-        done
 
 - builder:
     name: 'set-test-description'
@@ -488,6 +253,11 @@
         - description-setter:
             description: "${JUJU_VERSION_MAJOR_MINOR}:${SHORT_GIT_COMMIT}"
 
+- builder:
+    name: 'set-build-description'
+    builders:
+        - description-setter:
+            description: "${JUJU_VERSION}:${SHORT_GIT_COMMIT}"
 
 - builder:
     name: 'set-builder-description'
@@ -658,61 +428,6 @@
           pip3 install {modules}
         fi
 
-# Prepare things for an integration test
-- builder:
-    name: 'prepare-integration-test'
-    builders:
-    - set-common-environment
-    - get-build-details
-    - get-s3-source-payload
-    - set-test-description
-
-- builder:
-    name: 'run-integration-test'
-    builders:
-    - prepare-integration-test
-    - get-s3-build-payload-testing:
-          SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
-          platform: "linux/${{BUILD_ARCH}}"
-    - integration-test-runner:
-          test_name: "{test_name}"
-          task_name: "{task_name}"
-          skip_tasks: "{skip_tasks}"
-
-- builder:
-    name: 'run-integration-test-ephemeral'
-    builders:
-    - prepare-integration-test
-    - get-s3-build-payload-testing:
-          SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
-          platform: "linux/${{BUILD_ARCH}}"
-    - integration-test-runner-ephemeral:
-          pre_test_steps: "{pre_test_steps}"
-          test_name: "{test_name}"
-          task_name: "{task_name}"
-          skip_tasks: "{skip_tasks}"
-          setup_steps: ""
-
-- builder:
-    name: 'run-integration-test-ephemeral-microk8s'
-    builders:
-    - prepare-integration-test
-    - get-s3-build-payload-testing:
-          SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
-          platform: "linux/${{BUILD_ARCH}}"
-    - shell: |-
-        #!/bin/bash
-        sudo getent group microk8s || sudo addgroup microk8s &&
-        sudo getent group docker || sudo addgroup docker &&
-        sudo usermod -a -G microk8s,docker $USER
-    - integration-test-runner-ephemeral:
-          pre_test_steps:
-            !include-raw: "scripts/microk8s-setup.sh"
-          test_name: "{test_name}"
-          task_name: "{task_name}"
-          skip_tasks: "{skip_tasks}"
-          setup_steps: ""
-
 - builder:
     name: 'lxd-src-command-base'
     builders:
@@ -791,33 +506,14 @@
           fail: true
           type: absolute
 
-
-
+# host-src-command runs the given src_command with in the context of
+# a new shell owned by the jenkins user.
 - builder:
-    name: 'host-src-command-v2'
+    name: host-src-command
     builders:
-      - shell: "{src_command}"
-
-# raw runners
-- builder:
-    name: 'host-src-command'
-    builders:
-        - host-src-command-base:
-            env_file: ""
-            setup_steps: ""
-            src_command: "{src_command}"
-            pre_test_steps: ""
-
-
-# host-src-command-docker runs the given src_command with in the context of
-# a jenkins users that has the correct permissions to talk to Docker socket.
-# Expects that host-install-docker has been run before using this.
-- builder:
-    name: 'host-src-command-docker'
-    builders:
-    #  {src_command} which should be a the commands to run within the workspace.
+      #{src_command} which should be the commands to run within the workspace.
       - shell:
-          !include-raw: "scripts/docker-command.sh"
+          !include-raw: "scripts/host-command.sh"
 
 - builder:
     name: 'host-src-command-base'

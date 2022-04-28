@@ -399,7 +399,7 @@ const Template = `
         {{- $full_task_name = (printf "test-%s-%s-%s" $.SuiteName (ensureHyphen $task_name) $provider_name) -}}
     {{- end }}
 
-    {{- $builder := "run-integration-test" -}}
+    {{- $builder := "run-integration-test-ephemeral" -}}
     {{- $run_on := "ephemeral-focal-small-amd64" -}}
     {{- if or (eq (index $node.Ephemeral $test_name) true) (eq $provider_name "lxd") }}
       {{- $builder = "run-integration-test-ephemeral" -}}

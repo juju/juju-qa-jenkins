@@ -1,6 +1,7 @@
+#!/bin/bash
 set -eux
 
-cd ${full_path}
+cd ${JUJU_SRC_PATH}
 
 # DO NOT build jujud here, and always copy from existing build.
 export OPERATOR_IMAGE_BUILD_SRC=false
