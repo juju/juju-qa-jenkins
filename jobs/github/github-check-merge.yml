@@ -138,6 +138,10 @@
             - CanonicalLtd
           allow-whitelist-orgs-as-admins: true
     builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - setup-go-environment
       - shell: |-
           # Workaround not being able to black list branchs as a job argument
           # (cannot pass a list of strings as a job-template param).
