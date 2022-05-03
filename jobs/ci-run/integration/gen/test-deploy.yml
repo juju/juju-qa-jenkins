@@ -136,7 +136,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'deploy'
             pre_test_steps: ''
             task_name: 'test_cmr_bundles_export_overlay'
@@ -232,7 +232,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'deploy'
             pre_test_steps: ''
             task_name: 'test_deploy_bundles'
@@ -328,7 +328,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'deploy'
             pre_test_steps: ''
             task_name: 'test_deploy_charms'
@@ -424,7 +424,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'deploy'
             pre_test_steps: ''
             task_name: 'test_deploy_os'
@@ -520,7 +520,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'deploy'
             pre_test_steps: ''
             task_name: 'test_deploy_revision'

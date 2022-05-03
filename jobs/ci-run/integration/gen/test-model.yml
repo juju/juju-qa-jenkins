@@ -140,7 +140,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'model'
             pre_test_steps: ''
             task_name: 'test_model_config'
@@ -236,7 +236,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'model'
             pre_test_steps: ''
             task_name: 'test_model_metrics'
@@ -332,7 +332,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'model'
             pre_test_steps: ''
             task_name: 'test_model_migration'
@@ -428,7 +428,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'model'
             pre_test_steps: ''
             task_name: 'test_model_multi'

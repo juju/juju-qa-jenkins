@@ -132,7 +132,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'controller'
             pre_test_steps: ''
             task_name: 'test_enable_ha'
@@ -228,7 +228,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'controller'
             pre_test_steps: ''
             task_name: 'test_mongo_memory_profile'

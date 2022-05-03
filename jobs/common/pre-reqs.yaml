@@ -13,7 +13,7 @@
     name: 'docker-login'
     builders:
       - get-docker-creds
-      - host-src-command-docker:
+      - host-src-command:
           src_command: |-
             #!/bin/bash
             set -eu

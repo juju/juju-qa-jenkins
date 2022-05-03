@@ -123,7 +123,8 @@
         default: ""
         description: "Go version to use for unit tests"
     builders:
-      - install-go
+      - wait-for-cloud-init
+      - setup-go-environment
       # Need to populate with which arch we're building for.
       - shell: echo "BUILD_ARCH=amd64" > build.properties
       - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties

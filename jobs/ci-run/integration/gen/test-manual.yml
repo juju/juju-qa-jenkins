@@ -132,7 +132,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'manual'
             pre_test_steps: ''
             task_name: 'test_deploy_manual'
@@ -228,7 +228,7 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test:
+      - run-integration-test-ephemeral:
             test_name: 'manual'
             pre_test_steps: ''
             task_name: 'test_spaces_manual'
