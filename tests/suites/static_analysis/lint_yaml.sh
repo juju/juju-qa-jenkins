@@ -65,6 +65,20 @@ jobs:
     - z-clean-resources-eks
     - z-clean-resources-ecr
     - run-unit-tests-lxd
+    - upload-s3-agent-binaries
+    - unit-tests-win2012
+    - unit-tests-s390x-bionic
+    - unit-tests-race-arm64
+    - unit-tests-ppc64el-bionic
+    - unit-tests-centos9
+    - unit-tests-arm64-bionic
+    - unit-tests-arm64
+    - run-unit-tests-lxd-bionic
+    - nw-deploy-xenial-s390x-lxd
+    - nw-deploy-xenial-ppc64el-lxd
+    - make-windows-installer
+    - gating-functional-tests-s390x
+    - gating-functional-tests-ppc64el
 
     # TODO (stickupkid): The followng jobs seem to be orphan jobs with in the
     # jenkins suite. We should clean them up to ensure that they do run, or 

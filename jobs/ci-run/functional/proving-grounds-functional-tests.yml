@@ -64,3 +64,19 @@
               current-parameters: true
             - name: nw-model-migration-amd64-gce
               current-parameters: true
+            - name: nw-deploy-kubeflow
+              alias: nw-kubeflow-microk8s-lite-rbac
+              current-parameters: true
+              predefined-parameters: |-
+                CAAS_PROVIDER=MICROK8S
+                BUNDLE_VERSION=lite
+                BUILD_CHARMS=false
+                ENABLE_RBAC=true
+            - name: nw-add-cloud-many
+              current-parameters: true
+            - name: nw-deploy-client-centos9
+              current-parameters: true
+            - name: nw-cross-model-relations
+              current-parameters: true
+            - name: nw-deploy-client-windows
+              current-parameters: true

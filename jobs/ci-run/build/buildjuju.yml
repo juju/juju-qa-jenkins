@@ -48,6 +48,8 @@
       - install-common-tools
       - setup-go-environment
       - get-s3-source-payload
+      - set-build-description:
+          GOVERSION: "${GOVERSION}"
       - make-juju:
           platform: ${PLATFORM}
           build_tags: ${BUILD_TAGS}
@@ -179,6 +181,9 @@
       - set-common-environment
       - install-common-tools
       - setup-go-environment
+      - get-s3-source-payload
+      - set-build-description:
+          GOVERSION: "${GOVERSION}"
       - shell: |-
           #!/bin/bash
           set -eu
@@ -189,12 +194,10 @@
           cat build.properties
       - inject:
           properties-file: build.properties
-      - get-s3-source-payload
-      - host-install-docker
+      - install-docker
       - docker-login
       - get-s3-build-payload-packaging:
           platforms: "${BUILD_PLATFORMS}"
-      - set-builder-description
       - host-src-command:
           src_command: !include-raw: ../scripts/snippet_caas-jujud-operator.sh
 

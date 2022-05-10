@@ -84,9 +84,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'smoke'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_build'
             skip_tasks: 'test_deploy'
 
@@ -95,7 +95,7 @@
 
 - job:
     name: test-smoke-test-build-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test test_build in smoke suite on aws
     parameters:
@@ -132,9 +132,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'smoke'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_build'
             skip_tasks: 'test_deploy'
 
@@ -180,9 +180,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'smoke'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_deploy'
             skip_tasks: 'test_build'
 
@@ -191,7 +191,7 @@
 
 - job:
     name: test-smoke-test-deploy-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test test_deploy in smoke suite on aws
     parameters:
@@ -228,9 +228,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'smoke'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_deploy'
             skip_tasks: 'test_build'
 

@@ -173,6 +173,21 @@
           set -e
           rm -rf juju-src.properties
 
+- builder:
+    name: get-s3-functional-payload
+    builders:
+    - get-s3-source-payload
+    - shell: |-
+        #!/bin/bash
+        set -eu
+
+        mkdir -p ${WORKSPACE}/juju-src-functional
+        tar --strip-components 5 -xf "${JUJU_SRC_TARBALL}"  -C $WORKSPACE/juju-src-functional ./src/github.com/juju/juju/acceptancetests
+    - inject:
+        properties-content: |-
+          TESTS_DIR=${WORKSPACE}/juju-src-functional/acceptancetests
+
+
 # get-s3-build-payload-packaging is a utility builder for fetching a list of
 # architecture builds for Juju. This builder will unpack the binaries into
 # seperate build directories for each architecture.

@@ -88,9 +88,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'charmhub'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_charmhub_download'
             skip_tasks: 'test_charmhub_find,test_charmhub_info'
 
@@ -136,9 +136,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'charmhub'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_charmhub_download'
             skip_tasks: 'test_charmhub_find,test_charmhub_info'
 
@@ -184,9 +184,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'charmhub'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_charmhub_find'
             skip_tasks: 'test_charmhub_download,test_charmhub_info'
 
@@ -232,9 +232,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'charmhub'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_charmhub_find'
             skip_tasks: 'test_charmhub_download,test_charmhub_info'
 
@@ -280,9 +280,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'charmhub'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_charmhub_info'
             skip_tasks: 'test_charmhub_download,test_charmhub_find'
 
@@ -328,9 +328,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'charmhub'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_charmhub_info'
             skip_tasks: 'test_charmhub_download,test_charmhub_find'
 

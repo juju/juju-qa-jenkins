@@ -20,7 +20,8 @@
       - cirun-test-stuck-timeout
     builders:
       - wait-for-cloud-init
-      - functional-python-deps
+      - functional-python-deps:
+          modules: apache-libcloud
       - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"

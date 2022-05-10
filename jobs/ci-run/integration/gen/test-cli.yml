@@ -86,9 +86,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'cli'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_block_commands'
             skip_tasks: 'test_display_clouds,test_local_charms,test_model_config,test_model_defaults'
 
@@ -134,9 +134,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'cli'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_display_clouds'
             skip_tasks: 'test_block_commands,test_local_charms,test_model_config,test_model_defaults'
 
@@ -182,9 +182,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'cli'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_local_charms'
             skip_tasks: 'test_block_commands,test_display_clouds,test_model_config,test_model_defaults'
 
@@ -230,9 +230,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'cli'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_model_config'
             skip_tasks: 'test_block_commands,test_display_clouds,test_local_charms,test_model_defaults'
 
@@ -278,9 +278,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'cli'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_model_defaults'
             skip_tasks: 'test_block_commands,test_display_clouds,test_local_charms,test_model_config'
 

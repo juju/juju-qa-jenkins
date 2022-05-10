@@ -239,84 +239,9 @@
     name: 'integration-artifacts'
     publishers:
         - archive:
-            artifacts: "artifacts/output.tar.gz"
+            artifacts: "${WORKSPACE}/artifacts/output.tar.gz"
             allow-empty: true
             only-if-success: false
             fingerprint: false
             default-excludes: true
             case-sensitive: true
-
-- builder:
-    name: 'integration-test-runner'
-    builders:
-      - shell: |-
-          #!/bin/bash
-          set -ex
-
-          touch build.properties
-          [[ ! -z "${{BOOTSTRAP_SERIES}}" ]] && echo "BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}" >> build.properties
-          [[ ! -z "${{BOOTSTRAP_PROVIDER}}" ]] && echo "BOOTSTRAP_PROVIDER=${{BOOTSTRAP_PROVIDER}}" >> build.properties
-          [[ ! -z "${{BOOTSTRAP_CLOUD}}" ]] && echo "BOOTSTRAP_CLOUD=${{BOOTSTRAP_CLOUD}}" >> build.properties
-          [[ ! -z "${{BOOTSTRAP_REUSE_LOCAL}}" ]] && echo "BOOTSTRAP_REUSE_LOCAL=${{BOOTSTRAP_REUSE_LOCAL}}" >> build.properties
-          echo "BUILD_ARCH=amd64" >> build.properties
-          echo "TEST_RUNNER_NAME={test_name}" >> build.properties
-          echo "TEST_TASK_NAME={task_name}" >> build.properties
-          echo "TEST_SKIP_TASKS={skip_tasks}" >> build.properties
-      - inject:
-          properties-file: build.properties
-      - lxd-src-command-bionic-base:
-          src_command:
-            !include-raw: "common/test-runner.sh"
-          env_file: "build.properties"
-          setup_steps: ""
-
-- builder:
-    name: 'integration-test-runner-focal'
-    builders:
-      - shell: |-
-          #!/bin/bash
-          set -ex
-
-          touch build.properties
-          [[ ! -z "${{BOOTSTRAP_SERIES}}" ]] && echo "BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}" >> build.properties
-          [[ ! -z "${{BOOTSTRAP_PROVIDER}}" ]] && echo "BOOTSTRAP_PROVIDER=${{BOOTSTRAP_PROVIDER}}" >> build.properties
-          [[ ! -z "${{BOOTSTRAP_CLOUD}}" ]] && echo "BOOTSTRAP_CLOUD=${{BOOTSTRAP_CLOUD}}" >> build.properties
-          [[ ! -z "${{BOOTSTRAP_REUSE_LOCAL}}" ]] && echo "BOOTSTRAP_REUSE_LOCAL=${{BOOTSTRAP_REUSE_LOCAL}}" >> build.properties
-          echo "BUILD_ARCH=amd64" >> build.properties
-          echo "TEST_RUNNER_NAME={test_name}" >> build.properties
-          echo "TEST_TASK_NAME={task_name}" >> build.properties
-          echo "TEST_SKIP_TASKS={skip_tasks}" >> build.properties
-      - inject:
-          properties-file: build.properties
-      - lxd-src-command-focal-base:
-          src_command:
-            !include-raw: "common/test-runner.sh"
-          env_file: "build.properties"
-          setup_steps: "{setup_steps}"
-          pre_test_steps: ""
-
-- builder:
-    name: 'integration-test-runner-ephemeral'
-    builders:
-      - shell: |-
-          #!/bin/bash
-          set -ex
-
-          touch build.properties
-          [[ ! -z "${{BOOTSTRAP_SERIES}}" ]] && echo "BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}" >> build.properties
-          [[ ! -z "${{BOOTSTRAP_PROVIDER}}" ]] && echo "BOOTSTRAP_PROVIDER=${{BOOTSTRAP_PROVIDER}}" >> build.properties
-          [[ ! -z "${{BOOTSTRAP_CLOUD}}" ]] && echo "BOOTSTRAP_CLOUD=${{BOOTSTRAP_CLOUD}}" >> build.properties
-          [[ ! -z "${{BOOTSTRAP_REUSE_LOCAL}}" ]] && echo "BOOTSTRAP_REUSE_LOCAL=${{BOOTSTRAP_REUSE_LOCAL}}" >> build.properties
-          echo "BUILD_ARCH=amd64" >> build.properties
-          echo "TEST_RUNNER_NAME={test_name}" >> build.properties
-          echo "TEST_TASK_NAME={task_name}" >> build.properties
-          echo "TEST_SKIP_TASKS={skip_tasks}" >> build.properties
-      - inject:
-          properties-file: build.properties
-      - get-juju-cloud-creds
-      - host-src-command-base:
-          src_command:
-            !include-raw: "common/test-runner-ephemeral.sh"
-          env_file: "build.properties"
-          pre_test_steps: "{pre_test_steps}"
-          setup_steps: "{setup_steps}"

@@ -78,9 +78,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'upgrade'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: ''
             skip_tasks: 'test_upgrade_simplestream_previous'
     publishers:

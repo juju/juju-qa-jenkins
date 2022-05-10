@@ -15,21 +15,14 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - get-build-details
-      - set-test-description
-      - get-s3-build-payload-testing:
-            SHORT_GIT_COMMIT: ${SHORT_GIT_COMMIT}
-            platform: "linux/${BUILD_ARCH}"
-      - get-s3-source-payload
-      - shell: |-
-          #!/bin/bash
-          echo "BOOTSTRAP_PROVIDER=aws" > build.properties
-          echo "BOOTSTRAP_CLOUD=aws" >> build.properties
       - inject:
-          properties-file: build.properties
-      - integration-test-runner:
-            test_name: 'spaces_ec2'
-            task_name: ''
-            skip_tasks: ''
+          properties-content: |-
+            BOOTSTRAP_PROVIDER=aws"
+            BOOTSTRAP_CLOUD=aws"
+      - run-integration-test:
+          test_name: "spaces_ec2"
+          task_name: ''
+          skip_tasks: ''
+          setup_steps: ''
     publishers:
       - integration-artifacts

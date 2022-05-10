@@ -23,10 +23,6 @@
           #!/bin/bash
           set -eu
 
-          # Note: we have direct access to clouds in these nodes, so disable
-          #   for this step.
-          unset http_proxy
-          unset https_proxy
           ENV=parallel-aws
           timeout -s INT 90m ${TESTS_DIR}/assess_model_migration.py \
             $ENV $JUJU_BIN \
@@ -93,10 +89,6 @@
           #!/bin/bash
           set -eu
 
-          # Note: we have direct access to clouds in these nodes, so disable
-          #   for this step.
-          unset http_proxy
-          unset https_proxy
           # azure has a short name length limit
           SHORT_JOB_NAME=nw-model-mig-azure-arm
           ENV=parallel-azure-arm
@@ -137,10 +129,6 @@
           #!/bin/bash
           set -eu
 
-          # Note: we have direct access to clouds in these nodes, so disable
-          # for this step.
-          unset http_proxy
-          unset https_proxy
           ENV=parallel-gce
           timeout -s INT 90m ${TESTS_DIR}/assess_model_migration.py \
             --region $region \
@@ -176,10 +164,6 @@
           #!/bin/bash
           set -eu
 
-          # Note: we have direct access to clouds in these nodes, so disable
-          # for this step.
-          unset http_proxy
-          unset https_proxy
           # A bit gross, need to handle the no_proxy parts for munna better.
           # Boston vsphere and its disks.
           export no_proxy=$no_proxy,10.246.152.100,azalea.internal,domino.internal,fludd.internal,eyerok.internal,chrom.internal,barnacle.internal

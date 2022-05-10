@@ -15,22 +15,17 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - wait-for-cloud-init
-      - set-common-environment
-      - get-build-details
-      - set-test-description
-      - get-s3-build-payload-testing:
-          SHORT_GIT_COMMIT: "${SHORT_GIT_COMMIT}"
-          platform: "linux/${BUILD_ARCH}"
-      - get-s3-source-payload
       - shell: |-
           #!/bin/bash
+          set -eu
+
           echo "BOOTSTRAP_PROVIDER=aws" > build.properties
           echo "BOOTSTRAP_CLOUD=aws" >> build.properties
       - inject:
           properties-file: build.properties
-      - integration-test-runner:
+      - run-integration-test:
             test_name: 'expose_ec2'
+            setup_steps: ''
             task_name: ''
             skip_tasks: ''
     publishers:

@@ -92,9 +92,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'model'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_model_config'
             skip_tasks: 'test_model_metrics,test_model_migration,test_model_multi'
 
@@ -140,9 +140,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'model'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_model_config'
             skip_tasks: 'test_model_metrics,test_model_migration,test_model_multi'
 
@@ -188,9 +188,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'model'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_model_metrics'
             skip_tasks: 'test_model_config,test_model_migration,test_model_multi'
 
@@ -236,9 +236,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'model'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_model_metrics'
             skip_tasks: 'test_model_config,test_model_migration,test_model_multi'
 
@@ -284,9 +284,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'model'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_model_migration'
             skip_tasks: 'test_model_config,test_model_metrics,test_model_multi'
 
@@ -332,9 +332,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'model'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_model_migration'
             skip_tasks: 'test_model_config,test_model_metrics,test_model_multi'
 
@@ -380,9 +380,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'model'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_model_multi'
             skip_tasks: 'test_model_config,test_model_metrics,test_model_migration'
 
@@ -428,9 +428,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'model'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_model_multi'
             skip_tasks: 'test_model_config,test_model_metrics,test_model_migration'
 

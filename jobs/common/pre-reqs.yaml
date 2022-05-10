@@ -1,8 +1,8 @@
-# host-install-docker will install and setup docker on a ubuntu machine.
+# install-docker will install and setup docker on a ubuntu machine.
 # It will also enable cross compilation support and add the current user to the
 # Docker group.
 - builder:
-    name: 'host-install-docker'
+    name: install-docker
     builders:
       - shell:
           !include-raw: scripts/setup_steps-install-docker.sh
@@ -10,7 +10,7 @@
 # docker-login will run the login steps for connecting this host's docker daemon
 # to the Juju docker hub account.
 - builder:
-    name: 'docker-login'
+    name: docker-login
     builders:
       - get-docker-creds
       - host-src-command:
@@ -22,10 +22,28 @@
             echo "Logging into Dockerhub with username ${DOCKERHUB_U}"
             echo "$DOCKERHUB_P" | docker login -u "$DOCKERHUB_U" --password-stdin
 
+- builder:
+    name: apt-install
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -eux
+
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            {packages}
+
+- builder:
+    name: go-get
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -eux
+          GO111MODULE=off go get {modules}
+
 # install-common-tools installs the common set of tools needed between 99% of
 # jobs in this repo. This builder assumes the install target is Ubuntu.
 - builder:
-    name: 'install-common-tools'
+    name: install-common-tools
     builders:
       - shell: |-
           #!/bin/bash
@@ -39,17 +57,41 @@
             make
 
 - builder:
-    name: 'install-go'
+    name: install-go
     builders:
     - shell:
         !include-raw: "scripts/install-go.sh"
+
+- builder:
+    name: install-microk8s
+    builders:
+    - shell: |-
+        #!/bin/bash
+        set -ex
+
+        # Install microk8s and kubectl
+        sudo snap install microk8s --classic
+        sudo microk8s enable dns storage
+        sudo snap install kubectl --classic
+        echo "waiting for microk8s storage to become available"
+        NEXT_WAIT_TIME=0
+        until [ $NEXT_WAIT_TIME -eq 30 ] || microk8s status --yaml | grep -q 'storage: enabled'; do
+        	sleep $(( NEXT_WAIT_TIME++ ))
+        done
+        if [ $NEXT_WAIT_TIME == 30 ]; then
+        	echo "microk8s storage is still not enabled"
+            exit 1
+        fi
+
+        sudo getent group microk8s || sudo addgroup microk8s
+        sudo usermod -a -G microk8s $USER
 
 # setup-go-environment is responsible for setting up the basic GO environment
 # needed to build and run go applications related to juju.
 #
 # This builder well set and make the GOPATH
 - builder:
-    name: 'setup-go-environment'
+    name: setup-go-environment
     builders:
       - install-go
       - inject:
@@ -68,7 +110,7 @@
 # It should be safe for any job to add this builder. Preferably placed at the
 # top of a builder list.
 - builder:
-    name: 'set-common-environment'
+    name: set-common-environment
     builders:
       - shell: |-
           #!/bin/bash
@@ -94,7 +136,7 @@
 # If in doubt just add this as the first builder to your job. It won't do any
 # harm.
 - builder:
-    name: 'wait-for-cloud-init'
+    name: wait-for-cloud-init
     builders:
       - shell: |-
           #!/bin/bash
@@ -112,7 +154,7 @@
           done
 
 - builder:
-    name: 'install-s3cmd'
+    name: install-s3cmd
     builders:
     - shell:
         #!/bin/bash
@@ -127,7 +169,26 @@
         echo Using s3cmd "$(command -v s3cmd)"
 
 - builder:
-    name: 'install-simplestreams'
+    name: install-azure-cli
+    builders:
+    - shell:
+        #!/bin/bash
+        # Steps come from https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
+        set -eux
+
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates curl apt-transport-https lsb-release gnupg
+
+        curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
+
+        AZ_REPO=$(lsb_release -cs)
+        echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
+
+        sudo DEBIAN_FRONTEND=noninteractive apt-get update
+
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y azure-cli
+
+- builder:
+    name: install-simplestreams
     builders:
       - shell: |-
           #!/bin/bash
@@ -137,7 +198,7 @@
           sudo DEBIAN_FRONTEND=noninteractive apt install -y simplestreams
 
 - builder:
-    name: 'install-aws-libs'
+    name: install-aws-libs
     builders:
     - shell: |-
         #!/bin/bash
@@ -148,7 +209,7 @@
         sudo pip3 install apache-libcloud;
 
 - builder:
-    name: 'install-gce-libs'
+    name: install-gce-libs
     builders:
     - shell: |-
         #!/bin/bash
@@ -159,7 +220,7 @@
         sudo pip3 install apache-libcloud;
 
 - builder:
-    name: 'install-aks-libs'
+    name: install-aks-libs
     builders:
     - shell: |-
         #!/bin/bash
@@ -173,7 +234,7 @@
         sudo pip3 install msrestazure;
 
 - builder:
-    name: 'install-equinix-libs'
+    name: install-equinix-libs
     builders:
     - shell: |-
         #!/bin/bash
@@ -184,7 +245,7 @@
         sudo pip3 install pytz;
 
 - builder:
-    name: 'install-azure-libs'
+    name: install-azure-libs
     builders:
     - shell: |-
         #!/bin/bash
@@ -201,19 +262,7 @@
         sudo pip3 install pytz;
 
 - builder:
-    name: 'install-azure-s3-libs'
-    builders:
-    - shell: |-
-        #!/bin/bash
-        set -xeu
-
-        sudo DEBIAN_FRONTEND=noninteractive apt update;
-        sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
-        # TODO - need to pin since BlockBlobService replaced by BlockBlocCLient
-        sudo pip3 install azure-storage-blob==2.1.0;
-
-- builder:
-    name: 'get-azure-cleanup-scripts'
+    name: get-azure-cleanup-scripts
     builders:
     - install-azure-libs
     - checkout-qa-repo
@@ -229,23 +278,7 @@
             SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
 
 - builder:
-    name: 'get-azure-publish-script'
-    builders:
-    - install-azure-s3-libs
-    - checkout-qa-repo
-    - shell: |-
-        #!/bin/bash
-        set -eux
-
-        cd scripts
-        git checkout origin/main -- tools/scripts/azure_publish_tools.py
-        cd ${WORKSPACE}
-    - inject:
-        properties-content: |-
-            SCRIPTS_DIR=${WORKSPACE}/scripts/tools/scripts/
-
-- builder:
-    name: 'get-lxd-cleanup-scripts'
+    name: get-lxd-cleanup-scripts
     builders:
     - checkout-qa-repo
     - shell: |-
@@ -260,7 +293,7 @@
             SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
 
 - builder:
-    name: 'get-aks-cleanup-scripts'
+    name: get-aks-cleanup-scripts
     builders:
     - checkout-qa-repo
     - install-aks-libs
@@ -278,7 +311,7 @@
             SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
 
 - builder:
-    name: 'get-aws-cleanup-scripts'
+    name: get-aws-cleanup-scripts
     builders:
     - checkout-qa-repo
     - install-aws-libs
@@ -295,7 +328,7 @@
 
 
 - builder:
-    name: 'get-gce-cleanup-scripts'
+    name: get-gce-cleanup-scripts
     builders:
     - checkout-qa-repo
     - install-gce-libs
@@ -313,7 +346,7 @@
             SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
 
 - builder:
-    name: 'get-maas-cleanup-scripts'
+    name: get-maas-cleanup-scripts
     builders:
     - checkout-qa-repo
     - shell: |-
@@ -328,7 +361,7 @@
             SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/clean_maas
 
 - builder:
-    name: 'get-equinix-cleanup-scripts'
+    name: get-equinix-cleanup-scripts
     builders:
     - checkout-qa-repo
     - install-equinix-libs
@@ -344,7 +377,7 @@
             SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
 
 - builder:
-    name: 'checkout-qa-repo'
+    name: checkout-qa-repo
     builders:
     - shell: |-
         #!/bin/bash

@@ -80,9 +80,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'machine'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: ''
             skip_tasks: ''
     publishers:
@@ -127,9 +127,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'machine'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: ''
             skip_tasks: ''
     publishers:

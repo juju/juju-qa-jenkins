@@ -84,9 +84,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'controller'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_enable_ha'
             skip_tasks: 'test_mongo_memory_profile'
 
@@ -132,9 +132,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'controller'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_enable_ha'
             skip_tasks: 'test_mongo_memory_profile'
 
@@ -180,9 +180,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'controller'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_mongo_memory_profile'
             skip_tasks: 'test_enable_ha'
 
@@ -228,9 +228,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'controller'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_mongo_memory_profile'
             skip_tasks: 'test_enable_ha'
 

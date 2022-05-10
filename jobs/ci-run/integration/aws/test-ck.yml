@@ -40,19 +40,14 @@
       - default-integration-test-wrapper
     builders:
       - wait-for-cloud-init
-      - set-common-environment
-      - prepare-integration-test
-      - get-s3-build-payload-testing:
-          SHORT_GIT_COMMIT: "${SHORT_GIT_COMMIT}"
-          platform: "linux/${BUILD_ARCH}"
-      - prepare-ephemeral-node-for-docker
+      - install-common-tools
+      - install-docker
       - ensure-aws-credentials
-      - integration-test-runner-ephemeral:
-          pre_test_steps:
-                !include-raw: "../../scripts/registry-setup.sh"
+      - run-integration-test:
           test_name: "ck"
-          task_name: ""
-          skip_tasks: ""
-          setup_steps: ""
+          task_name: ''
+          skip_tasks: ''
+          setup_steps:
+                !include-raw: "../common/registry-setup.sh"
     publishers:
       - integration-artifacts
