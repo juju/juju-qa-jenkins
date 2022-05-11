@@ -16,6 +16,7 @@
       - cirun-test-stuck-timeout
     builders:
       - wait-for-cloud-init
+      - functional-python-deps
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-

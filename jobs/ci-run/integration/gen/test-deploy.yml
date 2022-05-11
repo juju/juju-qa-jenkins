@@ -88,9 +88,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'deploy'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_cmr_bundles_export_overlay'
             skip_tasks: 'test_deploy_bundles,test_deploy_charms,test_deploy_os,test_deploy_revision'
 
@@ -136,9 +136,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'deploy'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_cmr_bundles_export_overlay'
             skip_tasks: 'test_deploy_bundles,test_deploy_charms,test_deploy_os,test_deploy_revision'
 
@@ -184,9 +184,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'deploy'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_deploy_bundles'
             skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_charms,test_deploy_os,test_deploy_revision'
 
@@ -232,9 +232,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'deploy'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_deploy_bundles'
             skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_charms,test_deploy_os,test_deploy_revision'
 
@@ -280,9 +280,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'deploy'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_deploy_charms'
             skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_os,test_deploy_revision'
 
@@ -328,9 +328,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'deploy'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_deploy_charms'
             skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_os,test_deploy_revision'
 
@@ -376,9 +376,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'deploy'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_deploy_os'
             skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_revision'
 
@@ -424,9 +424,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'deploy'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_deploy_os'
             skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_revision'
 
@@ -472,9 +472,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'deploy'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_deploy_revision'
             skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_os'
 
@@ -520,9 +520,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'deploy'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_deploy_revision'
             skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_os'
 

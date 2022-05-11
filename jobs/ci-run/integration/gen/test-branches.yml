@@ -84,9 +84,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'branches'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_active_branch_output'
             skip_tasks: 'test_branch'
 
@@ -132,9 +132,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'branches'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_active_branch_output'
             skip_tasks: 'test_branch'
 
@@ -180,9 +180,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'branches'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_branch'
             skip_tasks: 'test_active_branch_output'
 
@@ -228,9 +228,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'branches'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_branch'
             skip_tasks: 'test_active_branch_output'
 

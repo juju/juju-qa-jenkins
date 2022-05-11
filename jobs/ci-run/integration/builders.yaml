@@ -1,0 +1,63 @@
+# utils related to integration tests
+# Prepare things for an integration test
+- builder:
+    name: 'prepare-integration-test'
+    builders:
+    - set-common-environment
+    - get-build-details
+    - setup-go-environment
+    - get-s3-source-payload
+    - set-test-description
+
+- builder:
+    name: 'run-integration-test'
+    builders:
+    - wait-for-cloud-init
+    - prepare-integration-test
+    - get-s3-build-payload-testing:
+          SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
+          platform: "linux/${{BUILD_ARCH}}"
+    - integration-test-runner:
+          test_name: "{test_name}"
+          task_name: "{task_name}"
+          skip_tasks: "{skip_tasks}"
+          setup_steps: "{setup_steps}"
+
+- builder:
+    name: 'run-integration-test-microk8s'
+    builders:
+    - prepare-integration-test
+    - install-microk8s
+    - install-docker
+    - get-s3-build-payload-testing:
+          SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
+          platform: "linux/${{BUILD_ARCH}}"
+    - integration-test-runner:
+          test_name: "{test_name}"
+          task_name: "{task_name}"
+          skip_tasks: "{skip_tasks}"
+          setup_steps: ""
+
+- builder:
+    name: 'integration-test-runner'
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -ex
+
+          touch build.properties
+          [[ ! -z "${{BOOTSTRAP_SERIES}}" ]] && echo "BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}" >> build.properties
+          [[ ! -z "${{BOOTSTRAP_PROVIDER}}" ]] && echo "BOOTSTRAP_PROVIDER=${{BOOTSTRAP_PROVIDER}}" >> build.properties
+          [[ ! -z "${{BOOTSTRAP_CLOUD}}" ]] && echo "BOOTSTRAP_CLOUD=${{BOOTSTRAP_CLOUD}}" >> build.properties
+          [[ ! -z "${{BOOTSTRAP_REUSE_LOCAL}}" ]] && echo "BOOTSTRAP_REUSE_LOCAL=${{BOOTSTRAP_REUSE_LOCAL}}" >> build.properties
+          echo "BUILD_ARCH=amd64" >> build.properties
+          echo "TEST_RUNNER_NAME={test_name}" >> build.properties
+          echo "TEST_TASK_NAME={task_name}" >> build.properties
+          echo "TEST_SKIP_TASKS={skip_tasks}" >> build.properties
+      - inject:
+          properties-file: build.properties
+      - get-juju-cloud-creds
+      - host-src-command-with-setup:
+          src_command:
+            !include-raw: "common/test-runner.sh"
+          setup_steps: "{setup_steps}"

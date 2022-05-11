@@ -82,9 +82,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral-microk8s:
+      - run-integration-test-microk8s:
             test_name: 'caasadmission'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_controller_model_admission'
             skip_tasks: 'test_model_chicken_and_egg,test_new_model_admission'
 
@@ -130,9 +130,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral-microk8s:
+      - run-integration-test-microk8s:
             test_name: 'caasadmission'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_model_chicken_and_egg'
             skip_tasks: 'test_controller_model_admission,test_new_model_admission'
 
@@ -178,9 +178,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral-microk8s:
+      - run-integration-test-microk8s:
             test_name: 'caasadmission'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_new_model_admission'
             skip_tasks: 'test_controller_model_admission,test_model_chicken_and_egg'
 

@@ -88,9 +88,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'relations'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_relation_data_exchange'
             skip_tasks: 'test_relation_departing_unit,test_relation_list_app'
 
@@ -136,9 +136,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'relations'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_relation_data_exchange'
             skip_tasks: 'test_relation_departing_unit,test_relation_list_app'
 
@@ -184,9 +184,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'relations'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_relation_departing_unit'
             skip_tasks: 'test_relation_data_exchange,test_relation_list_app'
 
@@ -232,9 +232,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'relations'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_relation_departing_unit'
             skip_tasks: 'test_relation_data_exchange,test_relation_list_app'
 
@@ -280,9 +280,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'relations'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_relation_list_app'
             skip_tasks: 'test_relation_data_exchange,test_relation_departing_unit'
 
@@ -328,9 +328,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'relations'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_relation_list_app'
             skip_tasks: 'test_relation_data_exchange,test_relation_departing_unit'
 

@@ -99,7 +99,6 @@
       - wait-for-cloud-init
       - functional-python-deps:
           modules: pexpect
-      - get-cloud-environments
       - prepare-functional-test-core:
           platform: "linux/${BUILD_ARCH}"
       - shell: |-

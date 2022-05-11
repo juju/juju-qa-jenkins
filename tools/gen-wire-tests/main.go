@@ -399,14 +399,14 @@ const Template = `
         {{- $full_task_name = (printf "test-%s-%s-%s" $.SuiteName (ensureHyphen $task_name) $provider_name) -}}
     {{- end }}
 
-    {{- $builder := "run-integration-test-ephemeral" -}}
+    {{- $builder := "run-integration-test" -}}
     {{- $run_on := "ephemeral-focal-small-amd64" -}}
     {{- if or (eq (index $node.Ephemeral $test_name) true) (eq $provider_name "lxd") }}
-      {{- $builder = "run-integration-test-ephemeral" -}}
+      {{- $builder = "run-integration-test" -}}
       {{- $run_on = "ephemeral-focal-8c-32g-amd64" -}}
     {{- end }}
     {{- if eq $provider_name "microk8s" }}
-      {{- $builder = "run-integration-test-ephemeral-microk8s" -}}
+      {{- $builder = "run-integration-test-microk8s" -}}
       {{- $run_on = "ephemeral-focal-8c-32g-amd64" -}}
     {{- end }}
 
@@ -457,7 +457,7 @@ const Template = `
     builders:
       - {{$builder}}:
             test_name: '{{$.SuiteName}}'
-            pre_test_steps: ''
+            setup_steps: ''
 {{- if gt (len $node.SkipTasks) 1 }}
             task_name: '{{$task_name}}'
             skip_tasks: '{{$skip_tasks}}'

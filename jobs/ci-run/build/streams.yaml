@@ -83,15 +83,16 @@
         description: "Enable sub job to be run individually."
         name: SHORT_GIT_COMMIT
     builders:
+      - wait-for-cloud-init
+      - install-common-tools
       - install-s3cmd
       - get-s3-creds
       - get-build-details
       - set-test-description
       - shell: |-
           #!/bin/bash
-          set -e
+          set -eu
 
-          rm -fr ${WORKSPACE}/agent || true
           mkdir -p ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}/
       - get-s3-agent-payload:
           dest: ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}
@@ -141,6 +142,9 @@
         description: "Enable sub job to be run individually."
         name: SHORT_GIT_COMMIT
     builders:
+      - wait-for-cloud-init
+      - install-common-tools
+      - install-azure-cli
       - get-build-details
       - set-test-description
       - shell: |-
@@ -154,7 +158,6 @@
           platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el windows/amd64
       - retrieve-generated-streams
       - install-stream-patcher
-      - get-azure-publish-script
       - get-azure-creds
       - shell: |-
           #!/bin/bash
@@ -170,16 +173,20 @@
             ${WORKSPACE}/streams \
             ${SHORT_GIT_COMMIT}
 
-          ${SCRIPTS_DIR}/azure_publish_tools.py sync \
-            ${WORKSPACE}/streams \
-            ci-run-streams/builds/build-${SHORT_GIT_COMMIT}/streams
+          set +x
+          az storage blob upload-batch \
+            --account-key=${AZURE_STORAGE_ACCESS_KEY} \
+            --account-name=${AZURE_STORAGE_ACCOUNT} \
+            -d juju-agents \
+            -s ${WORKSPACE}/streams \
+            --destination-path ci-run-streams/builds/build-${SHORT_GIT_COMMIT}/streams
 
-          # NOTE: this sync removes the "build-$SHA" indirection and effectively
-          # pulls the binaries one folder up (under agent/)
-          ${SCRIPTS_DIR}/azure_publish_tools.py sync \
-            ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}/ \
-            ci-run-streams/builds/build-${SHORT_GIT_COMMIT}/agent
-
+          az storage blob upload-batch \
+            --account-key=${AZURE_STORAGE_ACCESS_KEY} \
+            --account-name=${AZURE_STORAGE_ACCOUNT} \
+            -d juju-agents \
+            -s ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT} \
+            --destination-path ci-run-streams/builds/build-${SHORT_GIT_COMMIT}/agent
 
 - builder:
     name: 'retrieve-generated-streams'
@@ -209,14 +216,14 @@
 
           cat  <<EOT > ${WORKSPACE}/stream-patcher.py
           #!/usr/bin/env python3
-          
+
           from argparse import ArgumentParser
           from os import path
           import collections.abc
           import json
           import sys
-          
-          
+
+
           def main():
               parser = ArgumentParser()
               parser.add_argument(

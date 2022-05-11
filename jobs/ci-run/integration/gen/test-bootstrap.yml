@@ -78,9 +78,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'bootstrap'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: ''
             skip_tasks: ''
     publishers:

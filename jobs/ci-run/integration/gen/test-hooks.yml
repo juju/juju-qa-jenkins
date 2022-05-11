@@ -84,9 +84,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'hooks'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_dispatching_script'
             skip_tasks: 'test_start_hook_fires_after_reboot'
 
@@ -132,9 +132,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'hooks'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_dispatching_script'
             skip_tasks: 'test_start_hook_fires_after_reboot'
 
@@ -180,9 +180,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'hooks'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_start_hook_fires_after_reboot'
             skip_tasks: 'test_dispatching_script'
 
@@ -228,9 +228,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'hooks'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_start_hook_fires_after_reboot'
             skip_tasks: 'test_dispatching_script'
 

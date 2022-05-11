@@ -1,7 +1,3 @@
-# Note: Unit test jobs that use LXD will need the 'get-test-results' publisher
-# to pull the tests.xml file into the workspace so the job can generate the
-# report.
-
 - job:
     name: 'unit-tests'
     project-type: 'multijob'
@@ -93,7 +89,7 @@
 
 
 - job:
-    name: 'unit-tests-amd64'
+    name: unit-tests-amd64
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Build and run unit tests for amd64.
@@ -124,26 +120,27 @@
         description: "Go version to use for unit tests"
     builders:
       - wait-for-cloud-init
+      - install-common-tools
+      - apt-install:
+          packages: gcc squashfuse
       - setup-go-environment
-      # Need to populate with which arch we're building for.
-      - shell: echo "BUILD_ARCH=amd64" > build.properties
-      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
-      - shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
-      - inject:
-          properties-file: ${WORKSPACE}/build.properties
+      - go-get:
+          modules: github.com/tebeka/go2xunit
       - get-s3-source-payload
-      - set-test-description
+      - description-setter:
+          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+      # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "xunit-report"
-          JUJU_GOMOD_MODE: "vendor"
+          TEST_TIMEOUT: "${TEST_TIMEOUT}"
+          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
     publishers:
-      - get-test-results
       - junit:
           results: tests.xml
           allow-empty-results: true
 
 - job:
-    name: 'unit-tests-amd64-bionic'
+    name: unit-tests-amd64-bionic
     node: ephemeral-bionic-8c-32g-amd64
     description: |-
       Build and run unit tests for amd64 using mongodb36 and bionic.
@@ -173,20 +170,22 @@
         default: ""
         description: "Go version to use for unit tests"
     builders:
-      - install-go
-      # Need to populate with which arch we're building for.
-      - shell: echo "BUILD_ARCH=amd64" > build.properties
-      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
-      - shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
-      - inject:
-          properties-file: ${WORKSPACE}/build.properties
+      - wait-for-cloud-init
+      - install-common-tools
+      - apt-install:
+          packages: gcc squashfuse
+      - setup-go-environment
+      - go-get:
+          modules: github.com/tebeka/go2xunit
       - get-s3-source-payload
-      - set-test-description
+      - description-setter:
+          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+      # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "xunit-report"
-          JUJU_GOMOD_MODE: "vendor"
+          TEST_TIMEOUT: "${TEST_TIMEOUT}"
+          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
     publishers:
-      - get-test-results
       - junit:
           results: tests.xml
           allow-empty-results: true
@@ -222,20 +221,22 @@
         default: ""
         description: "Go version to use for unit tests"
     builders:
-      - install-go
-      # Need to populate with which arch we're building for.
-      - shell: echo "BUILD_ARCH=arm64" > build.properties
-      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
-      - shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
-      - inject:
-          properties-file: ${WORKSPACE}/build.properties
+      - wait-for-cloud-init
+      - install-common-tools
+      - apt-install:
+          packages: gcc squashfuse
+      - setup-go-environment
+      - go-get:
+          modules: github.com/tebeka/go2xunit
       - get-s3-source-payload
-      - set-test-description
+      - description-setter:
+          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+      # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "xunit-report"
-          JUJU_GOMOD_MODE: "vendor"
+          TEST_TIMEOUT: "${TEST_TIMEOUT}"
+          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
     publishers:
-      - get-test-results
       - junit:
           results: tests.xml
           allow-empty-results: true
@@ -271,24 +272,25 @@
         default: ""
         description: "Go version to use for unit tests"
     builders:
-      - install-go
-      # Need to populate with which arch we're building for.
-      - shell: echo "BUILD_ARCH=arm64" > build.properties
-      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
-      - shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
-      - inject:
-          properties-file: ${WORKSPACE}/build.properties
+      - wait-for-cloud-init
+      - install-common-tools
+      - apt-install:
+          packages: gcc squashfuse
+      - setup-go-environment
+      - go-get:
+          modules: github.com/tebeka/go2xunit
       - get-s3-source-payload
-      - set-test-description
+      - description-setter:
+          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+      # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "xunit-report"
-          JUJU_GOMOD_MODE: "vendor"
+          TEST_TIMEOUT: "${TEST_TIMEOUT}"
+          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
     publishers:
-      - get-test-results
       - junit:
           results: tests.xml
           allow-empty-results: true
-
 
 - job:
     name: 'unit-tests-s390x-bionic'
@@ -317,23 +319,25 @@
         default: ""
         description: "Series to used for bootstrapping"
     builders:
-      # Need to populate with which arch we're building for.
-      - shell: echo "BUILD_ARCH=s390x" > build.properties
-      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
-      - shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
-      - inject:
-          properties-file: ${WORKSPACE}/build.properties
+      - wait-for-cloud-init
+      - install-common-tools
+      - apt-install:
+          packages: gcc squashfuse
+      - setup-go-environment
+      - go-get:
+          modules: github.com/tebeka/go2xunit
       - get-s3-source-payload
-      - set-test-description
-      - run-unit-tests-lxd-bionic:
+      - description-setter:
+          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+      # Need to populate with which arch we're building for.
+      - run-unit-tests-host:
           GOTEST_TYPE: "xunit-report"
-          JUJU_GOMOD_MODE: "vendor"
+          TEST_TIMEOUT: "${TEST_TIMEOUT}"
+          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
     publishers:
-      - get-test-results
       - junit:
           results: tests.xml
           allow-empty-results: true
-
 
 - job:
     name: 'unit-tests-ppc64el-bionic'
@@ -366,20 +370,22 @@
         default: ""
         description: "Series to used for bootstrapping"
     builders:
-      # Need to populate with which arch we're building for.
-      - shell: echo "BUILD_ARCH=ppc64el" > build.properties
-      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
-      #- shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
-      - shell: echo "USE_TMPFS_FOR_MGO=1" >> build.properties
-      - inject:
-          properties-file: ${WORKSPACE}/build.properties
+      - wait-for-cloud-init
+      - install-common-tools
+      - apt-install:
+          packages: gcc squashfuse
+      - setup-go-environment
+      - go-get:
+          modules: github.com/tebeka/go2xunit
       - get-s3-source-payload
-      - set-test-description
-      - run-unit-tests-lxd-bionic:
+      - description-setter:
+          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+      # Need to populate with which arch we're building for.
+      - run-unit-tests-host:
           GOTEST_TYPE: "xunit-report"
-          JUJU_GOMOD_MODE: "vendor"
+          TEST_TIMEOUT: "${TEST_TIMEOUT}"
+          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
     publishers:
-      - get-test-results
       - junit:
           results: tests.xml
           allow-empty-results: true
@@ -416,24 +422,25 @@
         default: ""
         description: "Go version to use for unit tests"
     builders:
-      - install-go
-      # Need to populate with which arch we're building for.
-      - shell: echo "BUILD_ARCH=amd64" > build.properties
-      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
-      - shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
-      - inject:
-          properties-file: ${WORKSPACE}/build.properties
+      - wait-for-cloud-init
+      - install-common-tools
+      - apt-install:
+          packages: gcc squashfuse
+      - setup-go-environment
+      - go-get:
+          modules: github.com/tebeka/go2xunit
       - get-s3-source-payload
-      - set-test-description
+      - description-setter:
+          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+      # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "race"
-          JUJU_GOMOD_MODE: "vendor"
+          TEST_TIMEOUT: "${TEST_TIMEOUT}"
+          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
     publishers:
-        - get-test-results
         - junit:
             results: tests.xml
             allow-empty-results: true
-
 
 - job:
     name: 'unit-tests-race-arm64'
@@ -466,24 +473,25 @@
         default: ""
         description: "Go version to use for unit tests"
     builders:
-      - install-go
-      # Need to populate with which arch we're building for.
-      - shell: echo "BUILD_ARCH=arm64" > build.properties
-      - shell: echo "TEST_TIMEOUT=${TEST_TIMEOUT}" >> build.properties
-      - shell: echo "USE_TMPFS_FOR_MGO=${USE_TMPFS_FOR_MGO}" >> build.properties
-      - inject:
-          properties-file: ${WORKSPACE}/build.properties
+      - wait-for-cloud-init
+      - install-common-tools
+      - apt-install:
+          packages: gcc squashfuse
+      - setup-go-environment
+      - go-get:
+          modules: github.com/tebeka/go2xunit
       - get-s3-source-payload
-      - set-test-description
+      - description-setter:
+          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+      # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "race"
-          JUJU_GOMOD_MODE: "vendor"
+          TEST_TIMEOUT: "${TEST_TIMEOUT}"
+          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
     publishers:
-        - get-test-results
         - junit:
             results: tests.xml
             allow-empty-results: true
-
 
 - job:
     name: 'unit-tests-centos9'
@@ -546,21 +554,6 @@
       - junit:
           results: tests.xml
           allow-empty-results: true
-
-
-# Get the test results report regardless of success/failure
-- publisher:
-    name: 'get-test-results'
-    publishers:
-      - postbuildscript:
-          builders:
-            - role: SLAVE
-              build-on:
-                - SUCCESS
-                - FAILURE
-                - UNSTABLE
-              build-steps:
-              - shell: cp _stash/tests.xml ${WORKSPACE}/ || true
 
 - wrapper:
     name: default-unit-test-wrapper

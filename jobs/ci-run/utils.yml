@@ -203,7 +203,6 @@
         echo "JUJU_VERSION=${JUJU_VERSION}" >> $PROPS_PATH
         echo "JUJU_GOMOD_MODE=${JUJU_GOMOD_MODE}" >> $PROPS_PATH
         echo "JUJU_SRC_TARBALL=juju-source-${JUJU_VERSION}-${SHORT_GIT_COMMIT}.tar.xz" >> $PROPS_PATH
-        echo "JUJU_FTESTS_TARBALL=juju-functional-tests-${JUJU_VERSION}-${SHORT_GIT_COMMIT}.tar.xz" >> $PROPS_PATH
         echo "JUJU_VERSION_MAJOR_MINOR=$(echo ${JUJU_VERSION} | cut -d'-' -f 1 | cut -d'.' -f 1,2)" >> $PROPS_PATH
 
         source ${WORKSPACE}/build.properties
@@ -211,60 +210,20 @@
         tar cfJ ${JUJU_SRC_TARBALL} \
           --exclude .git --exclude .bzr --exclude .hg \
           -C ${GOPATH} ./
-        tar cfJ ${JUJU_FTESTS_TARBALL} \
-          --exclude .git --exclude .bzr --exclude .hg \
-          -C ${full_path} ./acceptancetests
     - inject:
         properties-file: ${WORKSPACE}/build.properties
-
-
-- builder:
-    name: 'get-s3-test-payload'
-    # Grab the tarball, figure out it's name and set the envvar.
-    builders:
-    - install-s3cmd
-    - get-s3-creds
-    - shell: |-
-        # Attempt cleanup.
-        rm juju-functional-tests-*.tar.xz || true
-    - shell: |-
-        s3cmd --config $S3_CFG \
-            --recursive get \
-            --no-progress \
-            --force \
-            --exclude="*" \
-            --include="buildvars" \
-            --include="juju-functional-tests-*" \
-            s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/src/ \
-            ./
-    - inject:
-        properties-file: ${WORKSPACE}/buildvars
-    - shell: |-
-        tar xf ${JUJU_FTESTS_TARBALL}
-    - inject:
-        properties-content: |-
-            TESTS_DIR=${WORKSPACE}/acceptancetests/
-
-
 
 - builder:
     name: 'set-test-description'
     builders:
         - description-setter:
-            description: "${JUJU_VERSION_MAJOR_MINOR}:${SHORT_GIT_COMMIT}"
+            description: "${JUJU_VERSION}:${SHORT_GIT_COMMIT}"
 
 - builder:
     name: 'set-build-description'
     builders:
         - description-setter:
-            description: "${JUJU_VERSION}:${SHORT_GIT_COMMIT}"
-
-- builder:
-    name: 'set-builder-description'
-    builders:
-        - description-setter:
-            description: "${JUJU_VERSION_MAJOR_MINOR}:${SHORT_GIT_COMMIT}:${GOVERSION}"
-
+            description: "${{JUJU_VERSION}}:${{SHORT_GIT_COMMIT}} (go {GOVERSION})"
 
 - publisher:
     name: 'artifact-results'
@@ -276,46 +235,6 @@
             fingerprint: false
             default-excludes: true
             case-sensitive: true
-
-
-# Prepare things for a functional test:
-#   - Get test and binaries from s3
-#   - Cleanup and create directories needed for test.
-#   - Export variables including directories used during test.
-#   - Ensure all required python deps are installed.
-- builder:
-    name: 'prepare-functional-test-core'
-    builders:
-    - set-common-environment
-    - get-s3-test-payload
-    - get-s3-build-payload-testing:
-          SHORT_GIT_COMMIT: ${{SHORT_GIT_COMMIT}}
-          platform: "{platform}"
-    - get-juju-cloud-creds
-    - set-test-description
-    - inject:
-        properties-content: |-
-            ARTIFACTS=${{WORKSPACE}}/artifacts
-            JUJU_BIN=${{BIN_DIR}}/juju
-            JUJU_REPOSITORY=${{TESTS_DIR}}/repository
-            JUJU_HOME=$JUJU_DATA
-            PLATFORM={platform}
-    - shell: |-
-        rm -fr ${{ARTIFACTS}}/
-        mkdir ${{ARTIFACTS}}
-
-        test -d $JUJU_HOME/juju-homes/$JOB_NAME || mkdir -p $JUJU_HOME/juju-homes/$JOB_NAME
-        test -d $HOME/.local/bin || mkdir -p $HOME/.local/bin
-        export PATH=$PATH:$HOME/.local/bin
-
-
-# Default is assumed to be ubuntu, need to use exotic for mac/win/centos
-- builder:
-    name: 'prepare-functional-test'
-    builders:
-    - prepare-functional-test-core:
-        platform: 
-
 
 - builder:
     name: 'prepare-ephemeral-node-for-k8s-py-tests'
@@ -330,32 +249,6 @@
         pip3 install -r $TESTS_DIR/requirements.txt --no-cache-dir
     - prepare-ephemeral-node-for-microk8s:
         channel: "{channel}"
-
-- builder:
-    name: 'prepare-ephemeral-node-for-docker'
-    builders:
-    - shell: |-
-        #!/bin/bash
-        set -xe
-
-        sudo getent group docker || sudo addgroup docker &&
-        sudo usermod -a -G docker $USER
-
-        # Install docker
-        sudo apt-get install -y \
-            apt-transport-https \
-            ca-certificates \
-            curl \
-            gnupg-agent \
-            software-properties-common
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-        sudo add-apt-repository \
-            "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-            $(lsb_release -cs) \
-            stable"
-        sudo apt-get update -y
-        sudo apt-get install docker-ce docker-ce-cli containerd.io -y
-        sudo systemctl start docker
 
 - builder:
     name: 'prepare-ephemeral-node-for-microk8s'
@@ -383,37 +276,6 @@
         microk8s.kubectl get no
         microk8s.kubectl -n kube-system rollout status ds/calico-node
         microk8s.kubectl get all -A
-
-- builder:
-    name: 'prepare-ephemeral-functional-test-exotic'
-    builders:
-    - shell: |-
-        rm -fr ${{WORKSPACE}}/*
-    - get-s3-test-payload
-    - get-s3-build-payload-testing:
-          SHORT_GIT_COMMIT: ${{SHORT_GIT_COMMIT}}
-          platform: "{platform}"
-    - get-juju-cloud-creds
-    - set-test-description
-    - inject:
-        properties-content: |-
-            ARTIFACTS=${{WORKSPACE}}/artifacts
-            JUJU_BIN=${{BIN_DIR}}/juju
-            JUJU_REPOSITORY=${{TESTS_DIR}}/repository
-            JUJU_HOME=$JUJU_DATA
-            PLATFORM={platform}
-    - prepare-functional-test-core:
-        platform: "{platform}"
-    - shell: |-
-        # NOTE: some of the following pip requirements (e.g. grpcio) need the
-        # python headers installed as they are built from source when running
-        # pip install.
-        test $PLATFORM = "ubuntu" && sudo apt-get -y install python3-dev python3-setuptools || true
-        test $PLATFORM = "centos" && sudo yum -y install python3-devel || true
-        pip3 install -r $TESTS_DIR/requirements.txt --no-cache-dir --user
-
-        # For some reason, .ssh/config has incorrect permissions on centos nodes
-        test -f $HOME/.ssh/config && sudo chmod 600 $HOME/.ssh/config || true
 
 - builder:
     name: 'pip-install'
@@ -511,19 +373,15 @@
 - builder:
     name: host-src-command
     builders:
-      #{src_command} which should be the commands to run within the workspace.
-      - shell:
-          !include-raw: "scripts/host-command.sh"
+      - host-src-command-with-setup:
+          setup_steps: ""
+          src_command: "{src_command}"
 
 - builder:
-    name: 'host-src-command-base'
+    name: host-src-command-with-setup
     builders:
-    # This takes the param:
-    #  {src_command} which should be a the commands to run within the workspace.
-    #  {setup_steps} commands to run before the src_command step (e.g. install things, add to groups)
-    #  {env_file} is a file that will be sourced before src_command and setup_steps (pass a blank string to ignore this step)
-    - shell:
-        !include-raw: "scripts/compat-runner.sh"
+      - shell:
+          !include-raw: "scripts/host-command.sh"
 
 - builder:
     name: 'detect-commit-go-version'

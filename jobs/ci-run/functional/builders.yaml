@@ -1,5 +1,36 @@
 # Common builders needed for functional tests to continue running
 
+# Prepare things for a functional test:
+#   - Get test and binaries from s3
+#   - Cleanup and create directories needed for test.
+#   - Export variables including directories used during test.
+#   - Ensure all required python deps are installed.
+- builder:
+    name: 'prepare-functional-test-core'
+    builders:
+    - set-common-environment
+    - get-s3-functional-payload
+    - get-s3-build-payload-testing:
+          SHORT_GIT_COMMIT: ${{SHORT_GIT_COMMIT}}
+          platform: "{platform}"
+    - get-cloud-environments
+    - get-juju-cloud-creds
+    - set-test-description
+    - inject:
+        properties-content: |-
+            ARTIFACTS=${{WORKSPACE}}/artifacts
+            JUJU_BIN=${{BIN_DIR}}/juju
+            JUJU_REPOSITORY=${{TESTS_DIR}}/repository
+            JUJU_HOME=$JUJU_DATA
+            PLATFORM={platform}
+    - shell: |-
+        rm -fr ${{ARTIFACTS}}/
+        mkdir ${{ARTIFACTS}}
+
+        test -d $JUJU_HOME/juju-homes/$JOB_NAME || mkdir -p $JUJU_HOME/juju-homes/$JOB_NAME
+        test -d $HOME/.local/bin || mkdir -p $HOME/.local/bin
+        export PATH=$PATH:$HOME/.local/bin
+
 - builder:
     name: 'functional-python-deps'
     builders:

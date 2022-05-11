@@ -84,9 +84,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'manual'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_deploy_manual'
             skip_tasks: 'test_spaces_manual'
 
@@ -132,9 +132,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'manual'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_deploy_manual'
             skip_tasks: 'test_spaces_manual'
 
@@ -180,9 +180,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'manual'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_spaces_manual'
             skip_tasks: 'test_deploy_manual'
 
@@ -228,9 +228,9 @@
     wrappers:
       - default-integration-test-wrapper
     builders:
-      - run-integration-test-ephemeral:
+      - run-integration-test:
             test_name: 'manual'
-            pre_test_steps: ''
+            setup_steps: ''
             task_name: 'test_spaces_manual'
             skip_tasks: 'test_deploy_manual'
 
