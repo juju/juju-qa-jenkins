@@ -45,9 +45,6 @@
               current-parameters: true
             - name: nw-deploy-client-macos
               current-parameters: true
-            - name: nw-deploy-bionic-microk8s
-              disabled: true # nameserver fix required on microk8s
-              current-parameters: true
             - name: nw-model-migration-amd64-azure-arm
               current-parameters: true
             - name: nw-model-migration-versions-lxd
