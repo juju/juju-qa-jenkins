@@ -70,11 +70,19 @@
       - multijob:
           name: 'gating-integration-tests-amd64'
           projects:
+            - name: 'test-agents-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: 'test-appdata-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
             - name: 'test-backup-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-bootstrap-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
@@ -119,6 +127,10 @@
               predefined-parameters: |-
                 BUILD_ARCH=amd64
             - name: 'test-machine-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-network-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
@@ -176,24 +188,11 @@
       - multijob:
           name: proving-grounds-integration-tests-amd64
           projects:
-            - name: 'test-agents-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-            - name: 'test-bootstrap-multijob'
-              current-parameters: true
-              enable-condition: '!["2.8"].contains("${JUJU_VERSION_MAJOR_MINOR}")'
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
             - name: 'test-deploy-unstable-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
             - name: 'test-model-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-            - name: 'test-network-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
