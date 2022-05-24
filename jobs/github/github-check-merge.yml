@@ -125,7 +125,7 @@
     triggers:
       - github-pull-request:
           github-hooks: true
-          trigger-phrase: '.*!!.*!!.*'
+          trigger-phrase: '/build'
           status-context: "github-check-merge-juju-{project_name}"
           only-trigger-phrase: false
           auto-close-on-fail: false
@@ -224,7 +224,7 @@
     triggers:
       - github-pull-request:
           github-hooks: true
-          trigger-phrase: '.*\$\$merge\$\$.*'
+          trigger-phrase: '/merge'
           status-context: "github-merge-juju-{project_name}"
           only-trigger-phrase: true
           auto-close-on-fail: false

@@ -26,7 +26,7 @@
     triggers:
       - github-pull-request:
           github-hooks: true
-          trigger-phrase: '.*!!.*!!.*'
+          trigger-phrase: '/build'
           status-context: "check-multi-mgo"
           only-trigger-phrase: false
           auto-close-on-fail: false
@@ -135,7 +135,7 @@
     triggers:
       - github-pull-request:
           github-hooks: true
-          trigger-phrase: '.*\$\$merge\$\$.*'
+          trigger-phrase: '/merge'
           status-context: "merge-multi-mgo"
           only-trigger-phrase: true
           auto-close-on-fail: false
