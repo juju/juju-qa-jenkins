@@ -6,7 +6,7 @@
       # when running inside a privileged container, snapd fails because udevd isn't
       # running, but on the second occurance it is.
       # see: https://github.com/lxc/lxd/issues/4308
-      sudo snap refresh juju-db --channel=4.4 2> /dev/null || sudo snap install juju-db --channel=4.4
+      sudo snap refresh juju-db --channel=4.4 2> /dev/null || sudo snap install juju-db --channel=4.4 && echo "Installed:" && which juju-db.mongo && juju-db.mongo --version
     fi
     if [ ! -z "${EXTRA_PACKAGES}" ]; then
       echo "Installing packages ${EXTRA_PACKAGES}"
