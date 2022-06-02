@@ -2,11 +2,13 @@
 
     NEEDS_MGO=$(echo "${NEEDS_MGO}" | tr '[:upper:]' '[:lower:]')
     if [ "${NEEDS_MGO}" = "true" ]; then
+      echo "Cleaning any existing juju-db snap"
+      sudo snap remove juju-db --purge
       echo "Installing juju-db snap."
       # when running inside a privileged container, snapd fails because udevd isn't
       # running, but on the second occurance it is.
       # see: https://github.com/lxc/lxd/issues/4308
-      sudo snap refresh juju-db --channel=4.4 2> /dev/null || sudo snap install juju-db --channel=4.4 && echo "Installed:" && which juju-db.mongo && juju-db.mongo --version
+      sudo snap install juju-db --channel=4.4 && echo "Installed:" && which juju-db.mongo && juju-db.mongo --version
     fi
     if [ ! -z "${EXTRA_PACKAGES}" ]; then
       echo "Installing packages ${EXTRA_PACKAGES}"
