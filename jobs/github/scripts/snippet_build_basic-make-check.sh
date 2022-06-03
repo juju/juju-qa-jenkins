@@ -11,7 +11,7 @@
       # running, but on the second occurance it is.
       # see: https://github.com/lxc/lxd/issues/4308
       for i in {1..3}; do
-        echo $action"ing juju-db snap. Attempt ""$i"
+        echo "${action}ing juju-db snap. Attempt ${i}"
         sudo snap $action juju-db --channel=4.4 && echo $action"ed:" && which juju-db.mongo && juju-db.mongo --version && break || sleep 10
       done
     fi
