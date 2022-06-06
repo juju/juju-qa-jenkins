@@ -12,7 +12,12 @@
       # see: https://github.com/lxc/lxd/issues/4308
       for i in {1..3}; do
         echo "${action}ing juju-db snap. Attempt ${i}"
-        sudo snap $action juju-db --channel=4.4 && echo $action"ed:" && which juju-db.mongo && juju-db.mongo --version && break || sleep 10
+        if sudo snap $action juju-db --channel=4.4; then
+          echo $action"ed:"
+          # If juju-db is correctly installed, report the version and stop looping
+          which juju-db.mongod && juju-db.mongod --version && break
+       fi
+        sleep 10
       done
     fi
     if [ ! -z "${EXTRA_PACKAGES}" ]; then
