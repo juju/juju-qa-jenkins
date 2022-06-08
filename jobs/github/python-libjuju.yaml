@@ -29,7 +29,7 @@
     name: github-integration-tests-pylibjuju-{project_name}
     description: |-
       Run python libjuju integration tests
-    node: ephemeral-github-medium-amd64
+    node: ephemeral-github-8c-32g-amd64
     concurrent: false
     parameters:
     - string:
