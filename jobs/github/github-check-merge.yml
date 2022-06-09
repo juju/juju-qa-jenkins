@@ -142,7 +142,11 @@
       - set-common-environment
       - detect-merge-go-version
       - install-common-tools
-      - setup-go-environment
+      - conditional-step:
+          condition-kind: shell
+          condition-command: "[[ -v ${{GOVERSION}} ]]"
+          steps:
+            - setup-go-environment
       - shell: |-
           #!/bin/bash
           set -eu
@@ -238,7 +242,11 @@
       - set-common-environment
       - detect-merge-go-version
       - install-common-tools
-      - setup-go-environment
+      - conditional-step:
+          condition-kind: shell
+          condition-command: "[[ -v ${{GOVERSION}} ]]"
+          steps:
+            - setup-go-environment
       - shell: |-
           # Workaround not being able to black list branches as a job argument
           # (cannot pass a list of strings as a job-template param).

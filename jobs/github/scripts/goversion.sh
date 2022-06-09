@@ -46,7 +46,14 @@ fi
 
 merge_commit=$(jq -r ".\"merge_commit_sha\"" "$tmpname")
 
-gomod=$(curl -s "https://raw.githubusercontent.com/$ghprbGhRepository/$merge_commit/go.mod")
+set +e
+gomod=$(curl -fs "https://raw.githubusercontent.com/$ghprbGhRepository/$merge_commit/go.mod")
+rval=$?
+if [ $rval -ne 0 ]; then
+  touch "${WORKSPACE}/goversion"
+  exit 0
+fi
+set -e
 goversion=$(echo "$gomod" | grep "go 1." | sed 's/^go 1\.\(.*\)$/1.\1/')
 
 if [[ "$goversion" < "1.14" ]]; then
