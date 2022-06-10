@@ -23,6 +23,10 @@ sudo apt-get remove -qy --purge lxd lxd-client
 sudo snap remove lxd
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y git make "python${PYTHON_VERSION}" "python${MAINLINE_PYTHON_VERSION}-distutils" "python3-pip"
 
+if [ "${PY_VERSION}" = "py310" ]; then
+  curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
+fi
+
 PYTHON_PATH=$(which "python${PYTHON_VERSION}")
 $PYTHON_PATH -m pip install --user tox
 
