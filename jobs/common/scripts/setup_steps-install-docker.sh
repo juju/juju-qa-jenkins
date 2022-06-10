@@ -13,21 +13,25 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 
 # Add Dockers gpg keys
 echo "Adding Docker gpg keys"
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 
 # Setup stable repository
 echo "Setting up Docker stable repository"
 echo \
-    "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
       $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 sudo apt-get update
 echo "Installing docker"
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends docker-ce docker-ce-cli containerd.io
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+  docker-ce \
+  docker-ce-cli \
+  containerd.io
 echo "Making sure docker is enabled"
 sudo systemctl start docker
 echo "Adding $USER to the docker group"
 sudo usermod -aG docker $USER
+mkdir -p /home/$USER/.docker/buildx/instances
 
 # Enabled experimental docker features, must be before login.
 # Also add http proxy if we have one
