@@ -58,12 +58,6 @@
               current-parameters: true
             - name: nw-model-migration-amd64-gce
               current-parameters: true
-            - name: nw-network-health-aws
-              current-parameters: true
-            - name: nw-network-health-azure
-              current-parameters: true
-            - name: nw-network-health-gce
-              current-parameters: true
             - name: nw-network-spaces-aws
               current-parameters: true
             - name: nw-upgradeseries-amd64-lxd
