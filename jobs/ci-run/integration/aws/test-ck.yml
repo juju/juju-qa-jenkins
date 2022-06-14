@@ -1,6 +1,6 @@
 - job:
     name: test-ck-aws
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-jammy-8c-32g-amd64
     description: |-
       Test ck suite on aws
     condition: SUCCESSFUL
