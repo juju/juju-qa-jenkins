@@ -217,14 +217,6 @@
               BOOTSTRAP_SERIES=${series}
               SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
               GOVERSION=${GOVERSION}
-          - project: "ci-proving-ground-tests"
-            condition: SUCCESS
-            current-parameters: true
-            predefined-parameters: |-
-              series=${series}
-              BOOTSTRAP_SERIES=${series}
-              SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-              GOVERSION=${GOVERSION}
 
 - job:
     name: "ci-gating-tests"
@@ -282,6 +274,16 @@
                 series=${series}
                 GOVERSION=${GOVERSION}
                 BOOTSTRAP_SERIES=${BOOTSTRAP_SERIES}
+    publishers:
+      - trigger-parameterized-builds:
+          - project: "ci-proving-ground-tests"
+            condition: SUCCESS
+            current-parameters: true
+            predefined-parameters: |-
+              series=${series}
+              BOOTSTRAP_SERIES=${series}
+              SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+              GOVERSION=${GOVERSION}
 
 - job:
     name: "package-juju-source"
