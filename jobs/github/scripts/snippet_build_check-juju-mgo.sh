@@ -6,10 +6,7 @@
         make stopdb
     }
 
-    # work around make lxd-setup creating a ~/.config owned by root
-    mkdir -p ${HOME}/.config
     cd ${GOPATH}/src/github.com/juju/mgo
-    git checkout v2
 
     goversion=$(cat go.mod | grep "go 1." | sed 's/^go 1\.\(.*\)$/1.\1/')
 
