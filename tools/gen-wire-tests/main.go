@@ -42,7 +42,16 @@ type Task struct {
 type Cloud struct {
 	CloudName    string
 	ProviderName string
+	Region       string
 }
+
+var (
+	lxd      = Cloud{CloudName: "lxd", ProviderName: "lxd"}
+	aws      = Cloud{CloudName: "aws", ProviderName: "aws", Region: "us-east-1"}
+	google   = Cloud{CloudName: "google", ProviderName: "google", Region: "us-east1"}
+	azure    = Cloud{CloudName: "azure", ProviderName: "azure", Region: "centralus"}
+	microk8s = Cloud{CloudName: "microk8s", ProviderName: "k8s"}
+)
 
 // Gen-wire-tests will generate the integration test files for the juju
 // integration tests. This will help prevent wire up mistakes or any missing
@@ -124,19 +133,19 @@ func main() {
 
 		clouds := make([]Cloud, 0)
 		if !contains(config.Folders.SkipLXD, suiteName) {
-			clouds = append(clouds, Cloud{CloudName: "lxd", ProviderName: "lxd"})
+			clouds = append(clouds, lxd)
 		}
 		if !contains(config.Folders.SkipAWS, suiteName) {
-			clouds = append(clouds, Cloud{CloudName: "aws", ProviderName: "aws"})
+			clouds = append(clouds, aws)
 		}
 		if !contains(config.Folders.SkipGoogle, suiteName) {
-			clouds = append(clouds, Cloud{CloudName: "google", ProviderName: "google"})
+			clouds = append(clouds, google)
 		}
 		if !contains(config.Folders.SkipAzure, suiteName) {
-			clouds = append(clouds, Cloud{CloudName: "azure", ProviderName: "azure"})
+			clouds = append(clouds, azure)
 		}
 		if !contains(config.Folders.SkipMicrok8s, suiteName) {
-			clouds = append(clouds, Cloud{CloudName: "microk8s", ProviderName: "k8s"})
+			clouds = append(clouds, microk8s)
 		}
 
 		testSuites[suiteName] = Task{
@@ -449,6 +458,12 @@ const Template = `
         default: '{{$cloud.ProviderName}}'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+{{- if $cloud.Region }}
+    - string:
+        default: '{{$cloud.Region}}'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+{{- end }}
     - string:
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
