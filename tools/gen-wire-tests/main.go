@@ -24,6 +24,7 @@ type Config struct {
 		SkipAWS      []string                       `yaml:"skip-aws"`
 		SkipGoogle   []string                       `yaml:"skip-google"`
 		SkipAzure    []string                       `yaml:"skip-azure"`
+		SkipVSphere  []string                       `yaml:"skip-vsphere"`
 		SkipMicrok8s []string                       `yaml:"skip-microk8s"`
 		SkipSubTasks []string                       `yaml:"skip-subtasks"`
 		PreventSplit []string                       `yaml:"prevent-split"`
@@ -50,6 +51,7 @@ var (
 	aws      = Cloud{CloudName: "aws", ProviderName: "aws", Region: "us-east-1"}
 	google   = Cloud{CloudName: "google", ProviderName: "google", Region: "us-east1"}
 	azure    = Cloud{CloudName: "azure", ProviderName: "azure", Region: "centralus"}
+	vsphere  = Cloud{CloudName: "vsphere-boston", ProviderName: "vsphere", Region: "Boston"}
 	microk8s = Cloud{CloudName: "microk8s", ProviderName: "k8s"}
 )
 
@@ -143,6 +145,9 @@ func main() {
 		}
 		if !contains(config.Folders.SkipAzure, suiteName) {
 			clouds = append(clouds, azure)
+		}
+		if !contains(config.Folders.SkipVSphere, suiteName) {
+			clouds = append(clouds, vsphere)
 		}
 		if !contains(config.Folders.SkipMicrok8s, suiteName) {
 			clouds = append(clouds, microk8s)
