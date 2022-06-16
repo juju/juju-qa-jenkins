@@ -53,8 +53,6 @@
               current-parameters: true
               predefined-parameters: |-
                 series=xenial
-            - name: nw-network-health-vsphere
-              current-parameters: true
             - name: nw-resolve
               current-parameters: true
             - name: nw-upgrade-juju-beta
