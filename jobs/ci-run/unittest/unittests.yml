@@ -52,8 +52,6 @@
 #               current-parameters: true
 #             - name: unit-tests-centos9
 #               current-parameters: true
-#             - name: unit-tests-win2012
-#               current-parameters: true
 
 
 - builder:

@@ -51,9 +51,6 @@
               - name: github-make-check-juju
                 current-parameters: true
                 predefined-parameters: GOVERSION=${GOVERSION}
-              - name: github-unit-tests-win2012
-                current-parameters: true
-                predefined-parameters: GOVERSION=${GOVERSION}
 
 
 - job:   # github-juju-merge-jobs
@@ -116,8 +113,6 @@
             - name: github-make-check-juju
               current-parameters: true
               predefined-parameters: GOVERSION=${GOVERSION}
-            #- name: github-unit-tests-win2012
-            #  current-parameters: true
       - get-github-token
       - github-merge:
           merge_comment: |-
