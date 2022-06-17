@@ -74,7 +74,7 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'lxd'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
@@ -130,6 +130,10 @@
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
     - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    - string:
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
@@ -170,7 +174,7 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'lxd'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
@@ -226,6 +230,10 @@
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
     - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    - string:
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
@@ -266,7 +274,7 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'lxd'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
@@ -322,6 +330,10 @@
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
     - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    - string:
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
@@ -362,7 +374,7 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'lxd'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
@@ -417,6 +429,10 @@
         default: 'aws'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     - string:
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'

@@ -33,11 +33,25 @@ type Config struct {
 }
 
 type Task struct {
-	ProviderTypes            []string
+	Clouds                   []Cloud
 	SubTasks                 []string
 	UnstableProviderSubTasks map[string][]string
 	ExcludedTasks            []string
 }
+
+type Cloud struct {
+	CloudName    string
+	ProviderName string
+	Region       string
+}
+
+var (
+	lxd      = Cloud{CloudName: "lxd", ProviderName: "lxd"}
+	aws      = Cloud{CloudName: "aws", ProviderName: "aws", Region: "us-east-1"}
+	google   = Cloud{CloudName: "google", ProviderName: "google", Region: "us-east1"}
+	azure    = Cloud{CloudName: "azure", ProviderName: "azure", Region: "centralus"}
+	microk8s = Cloud{CloudName: "microk8s", ProviderName: "k8s"}
+)
 
 // Gen-wire-tests will generate the integration test files for the juju
 // integration tests. This will help prevent wire up mistakes or any missing
@@ -117,25 +131,25 @@ func main() {
 
 		suiteNames = append(suiteNames, suiteName)
 
-		providerTypes := make([]string, 0)
+		clouds := make([]Cloud, 0)
 		if !contains(config.Folders.SkipLXD, suiteName) {
-			providerTypes = append(providerTypes, "lxd")
+			clouds = append(clouds, lxd)
 		}
 		if !contains(config.Folders.SkipAWS, suiteName) {
-			providerTypes = append(providerTypes, "aws")
+			clouds = append(clouds, aws)
 		}
 		if !contains(config.Folders.SkipGoogle, suiteName) {
-			providerTypes = append(providerTypes, "google")
+			clouds = append(clouds, google)
 		}
 		if !contains(config.Folders.SkipAzure, suiteName) {
-			providerTypes = append(providerTypes, "azure")
+			clouds = append(clouds, azure)
 		}
 		if !contains(config.Folders.SkipMicrok8s, suiteName) {
-			providerTypes = append(providerTypes, "microk8s")
+			clouds = append(clouds, microk8s)
 		}
 
 		testSuites[suiteName] = Task{
-			ProviderTypes:            providerTypes,
+			Clouds:                   clouds,
 			SubTasks:                 taskNames,
 			UnstableProviderSubTasks: config.Folders.Unstable[suiteName],
 			ExcludedTasks:            excluded,
@@ -209,7 +223,7 @@ func writeJobDefinitions(
 
 	if err := t.Execute(f, struct {
 		SuiteName     string
-		Providers     []string
+		Clouds        []Cloud
 		TaskNames     []string
 		SkipTasks     []string
 		ExcludedTasks string
@@ -218,7 +232,7 @@ func writeJobDefinitions(
 		Ephemeral     map[string]bool
 	}{
 		SuiteName:     suiteName,
-		Providers:     testSuites[suiteName].ProviderTypes,
+		Clouds:        testSuites[suiteName].Clouds,
 		TaskNames:     testSuites[suiteName].SubTasks,
 		SkipTasks:     joined,
 		ExcludedTasks: strings.Join(testSuites[suiteName].ExcludedTasks, ","),
@@ -374,15 +388,15 @@ const Template = `
         name: 'IntegrationTests-{{.SuiteName}}'
         projects:
 {{- range $k, $skip_tasks := $node.SkipTasks}}
-{{- range $provider_name := $node.Providers}}
-    {{- $unstableTasks := index $node.UnstableTasks $provider_name -}}
+{{- range $cloud := $node.Clouds}}
+    {{- $unstableTasks := index $node.UnstableTasks $cloud.ProviderName -}}
     {{- $task_name := index $node.TaskNames $k -}}
     {{- if eq (len $node.SkipTasks) 1}}
-        - name: 'test-{{$.SuiteName}}-{{$provider_name}}'
+        - name: 'test-{{$.SuiteName}}-{{$cloud.CloudName}}'
           current-parameters: true
     {{- else}}
       {{- if eq (contains $unstableTasks $task_name) $node.Unstable}}
-        - name: 'test-{{$.SuiteName}}-{{ensureHyphen $task_name}}-{{$provider_name}}'
+        - name: 'test-{{$.SuiteName}}-{{ensureHyphen $task_name}}-{{$cloud.CloudName}}'
           current-parameters: true
       {{- end -}}
     {{- end -}}
@@ -390,22 +404,22 @@ const Template = `
 {{- end}}
 
 {{- range $k, $skip_tasks := $node.SkipTasks -}}
-{{- range $provider_name := $node.Providers -}}
+{{- range $cloud := $node.Clouds -}}
     {{- $task_name := "" -}}
-    {{- $test_name := (printf "%s-%s" $.SuiteName $provider_name) -}}
+    {{- $test_name := (printf "%s-%s" $.SuiteName $cloud.CloudName) -}}
     {{- $full_task_name := (printf "test-%s" $test_name) -}}
     {{- if gt (len $node.SkipTasks) 1 }}
         {{- $task_name = index $node.TaskNames $k -}}
-        {{- $full_task_name = (printf "test-%s-%s-%s" $.SuiteName (ensureHyphen $task_name) $provider_name) -}}
+        {{- $full_task_name = (printf "test-%s-%s-%s" $.SuiteName (ensureHyphen $task_name) $cloud.CloudName) -}}
     {{- end }}
 
     {{- $builder := "run-integration-test" -}}
     {{- $run_on := "ephemeral-focal-small-amd64" -}}
-    {{- if or (eq (index $node.Ephemeral $test_name) true) (eq $provider_name "lxd") }}
+    {{- if or (eq (index $node.Ephemeral $test_name) true) (eq $cloud.ProviderName "lxd") }}
       {{- $builder = "run-integration-test" -}}
       {{- $run_on = "ephemeral-focal-8c-32g-amd64" -}}
     {{- end }}
-    {{- if eq $provider_name "microk8s" }}
+    {{- if eq $cloud.CloudName "microk8s" }}
       {{- $builder = "run-integration-test-microk8s" -}}
       {{- $run_on = "ephemeral-focal-8c-32g-amd64" -}}
     {{- end }}
@@ -417,9 +431,9 @@ const Template = `
     node: {{$run_on}}
     description: |-
     {{- if eq (len $node.SkipTasks) 1 }}
-      Test {{$.SuiteName}} suite on {{$provider_name}}
+      Test {{$.SuiteName}} suite on {{$cloud.CloudName}}
     {{ else }}
-      Test {{$task_name}} in {{$.SuiteName}} suite on {{$provider_name}}
+      Test {{$task_name}} in {{$.SuiteName}} suite on {{$cloud.CloudName}}
     {{ end -}}
     parameters:
     - validating-string:
@@ -437,13 +451,19 @@ const Template = `
         - s390x
         - ppc64el
     - string:
-        default: '{{- if eq $provider_name "lxd" }}localhost{{ else }}{{$provider_name}}{{ end -}}'
+        default: '{{$cloud.CloudName}}'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: '{{- if eq $provider_name "microk8s" }}k8s{{ else }}{{$provider_name}}{{ end -}}'
+        default: '{{$cloud.ProviderName}}'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+{{- if $cloud.Region }}
+    - string:
+        default: '{{$cloud.Region}}'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+{{- end }}
     - string:
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
