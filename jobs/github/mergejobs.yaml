@@ -51,9 +51,6 @@
               - name: github-make-check-juju
                 current-parameters: true
                 predefined-parameters: GOVERSION=${GOVERSION}
-              - name: github-unit-tests-win2012
-                current-parameters: true
-                predefined-parameters: GOVERSION=${GOVERSION}
 
 
 - job:   # github-juju-merge-jobs
@@ -116,8 +113,6 @@
             - name: github-make-check-juju
               current-parameters: true
               predefined-parameters: GOVERSION=${GOVERSION}
-            #- name: github-unit-tests-win2012
-            #  current-parameters: true
       - get-github-token
       - github-merge:
           merge_comment: |-
@@ -202,66 +197,6 @@
           results: tests.xml
           allow-empty-results: true
 
-
-- job:
-    name: github-unit-tests-win2012
-    description: |-
-      Run windows unit tests against PR
-    node: builder-lxd # for now we need cloud city
-    concurrent: false
-    disabled: true
-    parameters:
-    - string:
-        default: ''
-        description: 'Specific git SHA to build (used to overwrite triggered runs).'
-        name: GITHUB_BRANCH_HEAD_SHA
-    - string:
-        default: ''
-        description: 'Go version used for build.'
-        name: GOVERSION
-    properties:
-      - authorization:
-         anonymous:
-             - job-read
-    wrappers:
-      - ansicolor
-      - workspace-cleanup
-      - timestamps
-      - timeout:
-           timeout: 60
-           fail: true
-           type: absolute
-    builders:
-      - description-setter:
-          description: '<a href="${ghprbPullLink}">PR #${ghprbPullId}</a>'
-      - install-go
-      - inject:
-          properties-content: |-
-            PROJECT_DIR="github.com/juju/juju"
-            PR_WINDOWS_TEST=true
-            GOVERSION=${GOVERSION}
-      - shell: |-
-          #!/bin/bash
-          cat >prdate <<EOT
-              PR_WINDOWS_DATE=$(date +%s)
-          EOT
-      - inject:
-          properties-file: /var/lib/jenkins/workspace/github-unit-tests-win2012/prdate
-      - run-build-check-lxd:
-          build_env: ""
-          setup_steps: ""
-          src_command:
-              !include-raw: "./scripts/snippet_build-windows-tarball.sh"
-          checkout_command:
-              !include-raw: "./scripts/checkout.sh"
-          test_command:
-              !include-raw: "./scripts/snippet_clean-test-exit.sh"
-      - shell:
-          !include-raw: "./scripts/windows-unit-test.sh"
-    publishers:
-      - junit:
-          results: tests.xml
-          allow-empty-results: true
 
 ############################################################# PYLIBJUJU TESTS ##
 

@@ -52,8 +52,6 @@
 #               current-parameters: true
 #             - name: unit-tests-centos9
 #               current-parameters: true
-#             - name: unit-tests-win2012
-#               current-parameters: true
 
 
 - builder:
@@ -529,28 +527,6 @@
           !include-raw: ../scripts/centos-unit-test.sh
     publishers:
       # centos-unit-test.sh puts the tests.xml file in the right place, no need to grab it.
-      - junit:
-          results: tests.xml
-          allow-empty-results: true
-
-- job:
-    name: 'unit-tests-win2012'
-    description: |-
-      Build and run unit race tests on win2012 for amd64.
-    node: features
-    wrappers:
-      - default-unit-test-wrapper
-    parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
-    builders:
-      - get-s3-source-payload
-      - set-test-description
-      - shell:
-          !include-raw: ../scripts/windows-unit-test.sh
-    publishers:
       - junit:
           results: tests.xml
           allow-empty-results: true

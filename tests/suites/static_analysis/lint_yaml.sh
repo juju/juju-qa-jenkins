@@ -62,7 +62,6 @@ jobs:
     - unit-tests-ppc64el-bionic
     - unit-tests-race-arm64
     - unit-tests-s390x-bionic
-    - unit-tests-win2012
     - z-clean-resources-azure
     - z-clean-resources-aws
     - z-clean-resources-gce
@@ -77,7 +76,6 @@ jobs:
     - z-clean-resources-ecr
     - run-unit-tests-lxd
     - upload-s3-agent-binaries
-    - unit-tests-win2012
     - unit-tests-s390x-bionic
     - unit-tests-race-arm64
     - unit-tests-ppc64el-bionic
