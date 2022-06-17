@@ -533,28 +533,6 @@
           results: tests.xml
           allow-empty-results: true
 
-- job:
-    name: 'unit-tests-win2012'
-    description: |-
-      Build and run unit race tests on win2012 for amd64.
-    node: features
-    wrappers:
-      - default-unit-test-wrapper
-    parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
-    builders:
-      - get-s3-source-payload
-      - set-test-description
-      - shell:
-          !include-raw: ../scripts/windows-unit-test.sh
-    publishers:
-      - junit:
-          results: tests.xml
-          allow-empty-results: true
-
 - wrapper:
     name: default-unit-test-wrapper
     wrappers:
