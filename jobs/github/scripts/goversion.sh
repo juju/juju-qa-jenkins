@@ -50,7 +50,7 @@ set +e
 gomod=$(curl -fs "https://raw.githubusercontent.com/$ghprbGhRepository/$merge_commit/go.mod")
 rval=$?
 if [ $rval -ne 0 ]; then
-  touch "${WORKSPACE}/goversion"
+  echo "GOVERSION=''" > "${WORKSPACE}/goversion"
   exit 0
 fi
 set -e

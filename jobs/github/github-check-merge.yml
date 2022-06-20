@@ -142,9 +142,14 @@
       - set-common-environment
       - detect-merge-go-version
       - install-common-tools
+      - shell: |-
+          echo "test"
+          echo "test"
+          echo "test"
+          echo "${{GOVERSION}}"
       - conditional-step:
           condition-kind: shell
-          condition-command: "[[ -v ${{GOVERSION}} ]]"
+          condition-command: "test ${{GOVERSION}} != ''"
           steps:
             - setup-go-environment
       - shell: |-
