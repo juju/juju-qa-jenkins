@@ -249,7 +249,7 @@
       - install-common-tools
       - conditional-step:
           condition-kind: shell
-          condition-command: "[[ -v ${{GOVERSION}} ]]"
+          condition-command: "test ${{GOVERSION}} != ''"
           steps:
             - setup-go-environment
       - shell: |-
