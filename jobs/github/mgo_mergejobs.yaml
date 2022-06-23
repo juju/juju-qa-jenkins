@@ -3,7 +3,7 @@
     project-type: 'multijob'
     description: 'Run the various checks for landing from GitHub PRs'
     concurrent: false
-    node: master
+    node: noop-parent-jobs
     wrappers:
       - ansicolor
       - workspace-cleanup
@@ -49,11 +49,6 @@
                 current-parameters: true
                 predefined-parameters: |-
                     CONTAINER_SERIES=bionic
-#              - name: 'github-make-check-mgo'
-#                job-alias: 'xenial'
-#                current-parameters: true
-#                predefined-parameters: |-
-#                    CONTAINER_SERIES=xenial
 
 - job:
     name: github-make-check-mgo
@@ -91,7 +86,7 @@
           description: '<a href="${ghprbPullLink}">PR #${ghprbPullId}</a>'
       - inject:
           properties-content: |-
-            PROJECT_DIR="github.com/juju/mgo/v2"
+            PROJECT_DIR="github.com/juju/mgo"
       - run-build-check-raw:
           build_env: ""
           setup_steps: ""
@@ -106,13 +101,12 @@
           results: tests.xml
           allow-empty-results: true
 
-###########################################
 - job:
     name: 'github-mgo-merge-jobs'
     project-type: 'multijob'
     description: 'On request, run pre-commit checks, and then merge changes for mgo merge jobs'
     concurrent: true
-    node: master
+    node: noop-parent-jobs
     wrappers:
       - ansicolor
       - workspace-cleanup
