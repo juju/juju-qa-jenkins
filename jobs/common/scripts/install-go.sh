@@ -24,6 +24,11 @@ case $(uname -m) in
     ;;
 esac
 
+if [[ -z "${GOVERSION}" ]]; then
+  echo "No GoVersion defined. Skip Go installation."
+  exit 0
+fi
+
 GOTAR=$(curl -s https://go.dev/dl/ | grep -oE "go${GOVERSION}(\.[0-9]+)?\.linux-${GOARCH}.tar.gz" | head -n1)
 
 wget -q "https://golang.org/dl/${GOTAR}"

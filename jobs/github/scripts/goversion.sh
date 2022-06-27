@@ -50,8 +50,7 @@ set +e
 gomod=$(curl -fs "https://raw.githubusercontent.com/$ghprbGhRepository/$merge_commit/go.mod")
 rval=$?
 if [ $rval -ne 0 ]; then
-  echo "Set default Go version to 1.18.2. This should only be done for non-go projects."
-  echo "GOVERSION=1.18.2" > "${WORKSPACE}/goversion"
+  echo "GOVERSION=''" > "${WORKSPACE}/goversion"
   exit 0
 fi
 set -e
