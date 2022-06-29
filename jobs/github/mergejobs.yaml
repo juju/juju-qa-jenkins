@@ -46,11 +46,11 @@
     builders:
       - detect-merge-go-version
       - multijob:
-            name: github-juju-check-jobs
-            projects:
-              - name: github-make-check-juju
-                current-parameters: true
-                predefined-parameters: GOVERSION=${GOVERSION}
+          name: github-juju-check-jobs
+          projects:
+            - name: github-make-check-juju
+              current-parameters: true
+              predefined-parameters: GOVERSION=${GOVERSION}
 
 
 - job:   # github-juju-merge-jobs

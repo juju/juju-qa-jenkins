@@ -38,7 +38,7 @@
     - shell:
         !include-raw: "scripts/goversion.sh"
     - inject:
-          properties-file: ${WORKSPACE}/goversion
+        properties-file: ${WORKSPACE}/goversion
 
 - builder:
     name: github-merge
