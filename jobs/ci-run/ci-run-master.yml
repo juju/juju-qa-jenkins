@@ -100,7 +100,8 @@
             PATH=/snap/bin:$PATH
             series=bionic
       - get-build-details
-      - set-build-description
+      - description-setter:
+          description: "${JUJU_VERSION}:${SHORT_GIT_COMMIT} (go ${GOVERSION})"
       - multijob:
           name: "Building Juju Binaries"
           condition: SUCCESSFUL
@@ -322,7 +323,3 @@
           git --no-pager log -1
       - package-juju-source
       - put-s3-source-payload
-    publishers:
-      - archive:
-          artifacts: "juju-*.tar.xz"
-          only-if-success: true

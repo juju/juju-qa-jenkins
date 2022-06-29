@@ -1,6 +1,6 @@
 ## Jobs and builders for handling agent json
 - job:
-    name: "generate-agent-testing-streams"
+    name: generate-agent-testing-streams
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Build simple streams agent product json
@@ -17,7 +17,7 @@
       - get-build-details
       - get-s3-agent-payload:
           dest: ${WORKSPACE}
-          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el windows/amd64
+          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
       - shell: |-
           #!/bin/bash
           set -e
@@ -29,10 +29,6 @@
       - generate-agent-json:
           platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
           product_name: centos
-          output_dir: "${WORKSPACE}/agent_json"
-      - generate-agent-json:
-          platforms: windows/amd64
-          product_name: windows
           output_dir: "${WORKSPACE}/agent_json"
       - install-simplestreams
       - install-s3cmd
@@ -58,17 +54,17 @@
 
 - builder:
     # Used to generate agent metadata for CI tests
-    name: "generate-agent-json"
+    name: generate-agent-json
     # Note: This builder expects the following parameters
     #  (they are used within the script)
-    # platforms: space seperated list of go style platforms (e.g. linux/arm64 windows/amd64)
-    # product_name: Product name to use (e.g. windows, ubuntu, centos)
+    # platforms: space seperated list of go style platforms (e.g. linux/arm64 centos/amd64)
+    # product_name: Product name to use (e.g. ubuntu, centos)
     # output_dir: The directory in which to place the resulting json files
     builders:
       - shell: !include-raw: ../scripts/generate-agent-json.sh
 
 - job:
-    name: 'publish-testing-streams-aws'
+    name: publish-testing-streams-aws
     description: |-
       Publish stream metadata and agents from this build for use in
       functional testing.
@@ -96,7 +92,7 @@
           mkdir -p ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}/
       - get-s3-agent-payload:
           dest: ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}
-          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el windows/amd64
+          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
       - retrieve-generated-streams
       - install-stream-patcher
       - shell: |-
@@ -127,7 +123,7 @@
 
 
 - job:
-    name: 'publish-testing-streams-azure'
+    name: publish-testing-streams-azure
     description: |-
       Publish stream metadata and agents from this build for use in
       functional testing.
@@ -155,7 +151,7 @@
           mkdir -p ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}/
       - get-s3-agent-payload:
           dest: ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}
-          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el windows/amd64
+          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
       - retrieve-generated-streams
       - install-stream-patcher
       - get-azure-creds
@@ -189,7 +185,7 @@
             --destination-path ci-run-streams/builds/build-${SHORT_GIT_COMMIT}/agent
 
 - builder:
-    name: 'retrieve-generated-streams'
+    name: retrieve-generated-streams
     builders:
     - install-s3cmd
     - get-s3-creds
@@ -202,7 +198,7 @@
         tar xf ${GENERATED_STREAMS_TARBALL}
 
 - builder:
-    name: 'install-stream-patcher'
+    name: install-stream-patcher
     builders:
     - shell: |-
           #!/bin/bash

@@ -41,8 +41,6 @@
           regex: ^\S*$
           msg: Enter a build label
     builders:
-      - description-setter:
-          description: "${SHORT_GIT_COMMIT} (go ${GOVERSION})"
       - wait-for-cloud-init
       - set-common-environment
       - install-common-tools
@@ -71,21 +69,13 @@
           condition-operands:
             - condition-kind: regex-match
               label: "$PLATFORM"
-              regex: "^(?!darwin).*"
+              regex: "^(?!(darwin|windows)).*"
             - condition-kind: strings-match
               condition-string1: "$LABEL"
               condition-string2: ""
           steps:
             - upload-s3-agent-binaries:
                 platform: ${PLATFORM}
-    publishers:
-      - archive:
-          artifacts: "build/**/bin/juju_binaries*.xz"
-          allow-empty: false
-          only-if-success: false
-          fingerprint: false
-          default-excludes: true
-          case-sensitive: true
 
 - builder:
     name: "make-windows-installer"
@@ -175,8 +165,6 @@
           description: "Space seperated list of Go Platforms to build the OCI images for"
           name: BUILD_PLATFORMS
     builders:
-      - description-setter:
-          description: "${SHORT_GIT_COMMIT} (go ${GOVERSION})"
       - wait-for-cloud-init
       - set-common-environment
       - install-common-tools
@@ -223,18 +211,30 @@
             juju_name=juju.exe
           fi
 
-          jujud_name=jujud
-          if [[ -f "${{build_platform_dir}}/jujud.exe" ]]; then
+          jujud_name=
+          if [[ -f "${{build_platform_dir}}/jujud" ]]; then
+            echo "jujud exists for platform {platform}"
+            jujud_name=jujud
+          elif [[ -f "${{build_platform_dir}}/jujud.exe" ]]; then
+            echo "jujud exists for platform {platform}"
             jujud_name=jujud.exe
           fi
 
-          jujuc_name=jujuc
-          if [[ -f "${{build_platform_dir}}/jujuc.exe" ]]; then
+          jujuc_name=
+          if [[ -f "${{build_platform_dir}}/jujuc" ]]; then
+            echo "jujuc exists for platform {platform}"
+            jujuc_name=jujuc
+          elif [[ -f "${{build_platform_dir}}/jujuc.exe" ]]; then
+            echo "jujuc exists for platform {platform}"
             jujuc_name=jujuc.exe
           fi
 
-          juju_metadata_name=juju-metadata
-          if [[ -f "${{build_platform_dir}}/juju-metadata.exe" ]]; then
+          juju_metadata_name=
+          if [[ -f "${{build_platform_dir}}/juju-metadata" ]]; then
+            echo "juju-metadata exists for platform {platform}"
+            juju_metadata_name=juju-metadata
+          elif [[ -f "${{build_platform_dir}}/juju-metadata.exe" ]]; then
+            echo "juju-metadata exists for platform {platform}"
             juju_metadata_name=juju-metadata.exe
           fi
 
@@ -303,6 +303,11 @@
             ${{juju_installer_name}} \
             ${{wait_for_name}}
 
+          if [[ -z "${{jujud_name}}" && -z "${{jujuc_name}}" ]]; then
+            echo "no agent tarball for platform {platform}" 
+            exit 0
+          fi
+          
           agent_tarball_name=juju-${{JUJU_VERSION}}-${{os}}${{FILE_LABEL}}-${{arch}}.tgz
           echo "Creating agent payload for {platform} - ${{agent_tarball_name}}"
 
