@@ -24,7 +24,7 @@ case $(uname -m) in
     ;;
 esac
 
-if [[ "${GOVERSION}" == "\'\'" ]]; then
+if [[ "$GOVERSION" == "''" ]]; then
   echo "No GoVersion defined. Skip Go installation."
   exit 0
 fi
