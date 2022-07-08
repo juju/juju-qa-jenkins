@@ -13,10 +13,6 @@
     - ansicolor
     - workspace-cleanup
     - timestamps
-    - timeout:
-        timeout: 300
-        fail: true
-        type: absolute
     parameters:
     - string:
         default: ''

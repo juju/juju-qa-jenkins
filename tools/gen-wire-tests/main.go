@@ -364,10 +364,6 @@ const Template = `
     - ansicolor
     - workspace-cleanup
     - timestamps
-    - timeout:
-        timeout: 300
-        fail: true
-        type: absolute
     parameters:
     - string:
         default: ''
@@ -474,6 +470,10 @@ const Template = `
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - {{$builder}}:
             test_name: '{{$.SuiteName}}'
