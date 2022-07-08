@@ -13,10 +13,6 @@
     - ansicolor
     - workspace-cleanup
     - timestamps
-    - timeout:
-        timeout: 300
-        fail: true
-        type: absolute
     parameters:
     - string:
         default: ''
@@ -91,6 +87,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test:
             test_name: 'model'
@@ -143,6 +143,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test:
             test_name: 'model'
@@ -191,6 +195,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test:
             test_name: 'model'
@@ -243,6 +251,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test:
             test_name: 'model'
@@ -291,6 +303,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test:
             test_name: 'model'
@@ -343,6 +359,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test:
             test_name: 'model'
@@ -391,6 +411,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test:
             test_name: 'model'
@@ -443,6 +467,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test:
             test_name: 'model'

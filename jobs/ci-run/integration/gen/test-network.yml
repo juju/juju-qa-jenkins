@@ -13,10 +13,6 @@
     - ansicolor
     - workspace-cleanup
     - timestamps
-    - timeout:
-        timeout: 300
-        fail: true
-        type: absolute
     parameters:
     - string:
         default: ''
@@ -83,6 +79,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test:
             test_name: 'network'
@@ -134,6 +134,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test:
             test_name: 'network'
@@ -172,6 +176,10 @@
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
     - string:
+        default: 'us-east1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    - string:
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
@@ -181,6 +189,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test:
             test_name: 'network'
@@ -219,6 +231,10 @@
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
     - string:
+        default: 'centralus'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    - string:
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
@@ -228,6 +244,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test:
             test_name: 'network'

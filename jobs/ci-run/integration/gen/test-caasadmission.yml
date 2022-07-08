@@ -13,10 +13,6 @@
     - ansicolor
     - workspace-cleanup
     - timestamps
-    - timeout:
-        timeout: 300
-        fail: true
-        type: absolute
     parameters:
     - string:
         default: ''
@@ -45,7 +41,7 @@
 
 - job:
     name: test-caasadmission-test-controller-model-admission-microk8s
-    node: ephemeral-jammy-8c-32g-amd64
+    node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test test_controller_model_admission in caasadmission suite on microk8s
     parameters:
@@ -81,6 +77,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test-microk8s:
             test_name: 'caasadmission'
@@ -93,7 +93,7 @@
 
 - job:
     name: test-caasadmission-test-model-chicken-and-egg-microk8s
-    node: ephemeral-jammy-8c-32g-amd64
+    node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test test_model_chicken_and_egg in caasadmission suite on microk8s
     parameters:
@@ -129,6 +129,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test-microk8s:
             test_name: 'caasadmission'
@@ -141,7 +145,7 @@
 
 - job:
     name: test-caasadmission-test-new-model-admission-microk8s
-    node: ephemeral-jammy-8c-32g-amd64
+    node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test test_new_model_admission in caasadmission suite on microk8s
     parameters:
@@ -177,6 +181,10 @@
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
     builders:
       - run-integration-test-microk8s:
             test_name: 'caasadmission'
