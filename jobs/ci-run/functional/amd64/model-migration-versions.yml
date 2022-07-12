@@ -24,7 +24,7 @@
           #!/bin/bash
           set -eu
 
-          sudo snap install juju --classic
+          sudo snap install juju --classic --channel=2.9/edge
 
       - functional-python-deps
       - get-cloud-environments
