@@ -387,3 +387,9 @@
         if [ ! -d "${WORKSPACE}/scripts" ]; then
             git clone git@github.com:juju/juju-qa-jenkins.git --no-checkout --depth 1 scripts
         fi
+
+- builder:
+    name: install-mongo4.4
+    builders:
+    - shell:
+        !include-raw: "scripts/install-mongo4.4.sh"
