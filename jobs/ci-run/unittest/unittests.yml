@@ -402,7 +402,7 @@
         description: "Enable sub job to be run individually."
         name: SHORT_GIT_COMMIT
     - string:
-        default: '3000s'
+        default: '5400s'
         name: TEST_TIMEOUT
     - string:
         name: USE_TMPFS_FOR_MGO
@@ -453,7 +453,7 @@
         description: "Enable sub job to be run individually."
         name: SHORT_GIT_COMMIT
     - string:
-        default: '3000s'
+        default: '5400s'
         name: TEST_TIMEOUT
     - string:
         name: USE_TMPFS_FOR_MGO
