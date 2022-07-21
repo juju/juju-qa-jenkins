@@ -42,8 +42,6 @@
               current-parameters: true
             - name: nw-clouds-display
               current-parameters: true
-            - name: nw-constraints-aws
-              current-parameters: true
             - name: nw-destroy-model-aws
               current-parameters: true
             - name: nw-destroy-model-lxd
