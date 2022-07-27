@@ -12,6 +12,7 @@
       - charmrepo:
           project_dir: "github.com/juju/charmrepo"
           extra_packages: "zip"
+          needs_mgo: true
       - clock:
           project_dir: "github.com/juju/clock"
       - cmd:
