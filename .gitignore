@@ -17,3 +17,9 @@ venv.bak/
 
 # Swap files
 *.swp
+
+# IDE files
+/.idea/
+
+# Compiled Go binaries
+/tools/gen-wire-tests/main
