@@ -58,8 +58,6 @@
               current-parameters: true
             - name: nw-network-spaces-aws
               current-parameters: true
-            - name: nw-upgradeseries-amd64-lxd
-              current-parameters: true
             - name: nw-unregister-controller
               current-parameters: true
 
