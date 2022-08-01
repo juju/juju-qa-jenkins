@@ -32,7 +32,7 @@ $PYTHON_PATH -m pip install --user tox
 
 attempts=0
 while [ $attempts -lt 3 ]; do
-    sudo snap install lxd --channel=4.24/stable && break || true
+    sudo snap install lxd && break || true
     attempts=$((attempts + 1))
 done
 export PATH="/snap/bin:$PATH"
