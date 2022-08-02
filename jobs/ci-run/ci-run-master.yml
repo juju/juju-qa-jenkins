@@ -98,7 +98,7 @@
           properties-content: |-
             OPERATOR_IMAGE_ACCOUNT=jujuqabot
             PATH=/snap/bin:$PATH
-            series=bionic
+            series=focal
       - get-build-details
       - description-setter:
           description: "${JUJU_VERSION}:${SHORT_GIT_COMMIT} (go ${GOVERSION})"
@@ -215,7 +215,6 @@
             current-parameters: true
             predefined-parameters: |-
               series=${series}
-              BOOTSTRAP_SERIES=${series}
               SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
               GOVERSION=${GOVERSION}
 
@@ -282,7 +281,6 @@
             current-parameters: true
             predefined-parameters: |-
               series=${series}
-              BOOTSTRAP_SERIES=${series}
               SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
               GOVERSION=${GOVERSION}
 
