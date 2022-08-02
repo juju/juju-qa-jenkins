@@ -118,6 +118,7 @@ jobs:
     - github-juju-check-jobs:github-juju-check-jobs
     - test-bootstrap-multijob:IntegrationTests-bootstrap
     - test-upgrade-multijob:IntegrationTests-upgrade
+    - test-upgrade_series-multijob:IntegrationTests-upgrade_series
 EOF
 )
   if [ -n "${OUT}" ]; then
