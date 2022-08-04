@@ -247,8 +247,6 @@
     builders:
       - get-build-details
       - set-test-description
-      - shell: |-
-          echo "BUILD_ARCH=amd64" > build.properties
       - inject:
           properties-file: build.properties
       - multijob:
