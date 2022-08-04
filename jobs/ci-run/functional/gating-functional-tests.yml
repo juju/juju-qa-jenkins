@@ -91,33 +91,6 @@
 #          current-parameters: true
 
 - job:
-    name: "gating-functional-tests-arm64"
-    project-type: "multijob"
-    description: |-
-      Run functional tests for arm64 arch
-    node: noop-parent-jobs
-    concurrent: true
-    wrappers:
-      - default-functional-test-wrapper
-    parameters:
-      - string:
-          default: ""
-          description: "Enable sub job to be run individually."
-          name: SHORT_GIT_COMMIT
-      - string:
-          default: ""
-          description: "Series to use as default-series in juju bootstrap and model-config in the functional tests."
-          name: series
-    builders:
-      - get-build-details
-      - set-test-description
-      - multijob:
-          name: FunctionalTestsarm64
-          projects:
-            - name: nw-deploy-xenial-arm64-lxd
-              current-parameters: true
-
-- job:
     name: "gating-functional-tests-ppc64el"
     project-type: "multijob"
     concurrent: true
