@@ -22,6 +22,14 @@ mkdir -p "$HOME"/.local/share/juju
 sudo cp -R "$JUJU_DATA"/. "$HOME"/.local/share/juju
 sudo chown -R "$USER" "$HOME"/.local/share/juju
 
+while sudo lsof /var/lib/dpkg/lock-frontend 2> /dev/null; do
+    echo "Waiting for dpkg lock..."
+    sleep 10
+done
+while sudo lsof /var/lib/apt/lists/lock 2> /dev/null; do
+    echo "Waiting for apt lock..."
+    sleep 10
+done
 sudo apt-get -y update
 
 # Issue around installing a snap within a privileged container on a host
