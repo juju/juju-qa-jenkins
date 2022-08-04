@@ -250,7 +250,11 @@
       - multijob:
           name: 'gating-integration-tests-arm64'
           projects:
-            - name: 'test-deploy-multijob'
+            - name: 'test-deploy-test-deploy-bundles-aws'
+              current-parameters: true
+              predefined-parameters: |-
+                MODEL_ARCH=arm64
+            - name: 'test-deploy-test-deploy-charms-aws'
               current-parameters: true
               predefined-parameters: |-
                 MODEL_ARCH=arm64

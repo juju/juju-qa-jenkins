@@ -48,13 +48,7 @@
               current-parameters: true
             - name: nw-grant-revoke
               current-parameters: true
-            - name: nw-model-migration-amd64-aws
-              current-parameters: true
             - name: nw-model-migration-versions-aws
-              current-parameters: true
-            - name: nw-model-migration-amd64-lxd
-              current-parameters: true
-            - name: nw-model-migration-amd64-gce
               current-parameters: true
             - name: nw-network-spaces-aws
               current-parameters: true
