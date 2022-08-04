@@ -70,3 +70,8 @@
               predefined-parameters: |-
                 BUILD_ARCH=amd64
                 BOOTSTRAP_SERIES=${BOOTSTRAP_SERIES}
+            - name: gating-integration-tests-arm64
+              current-parameters: true
+              predefined-parameters: |-
+                MODEL_ARCH=arm64
+                BOOTSTRAP_SERIES=${BOOTSTRAP_SERIES}
