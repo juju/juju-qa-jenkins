@@ -1,0 +1,11 @@
+[job_builder]
+ignore_cache=True
+keep_descriptions=False
+include_path=.:scripts:~/git/
+recursive=False
+exclude=.*:manual:./development
+allow_duplicates=False
+
+[jenkins]
+url=http://10.131.80.52:8080
+query_plugins_info=True

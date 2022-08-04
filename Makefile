@@ -1,7 +1,7 @@
 STATIC_ANALYSIS_JOB ?=
 PUSH_JOB			?=
 PUSH_TARGET			?= "jobs/ci-run"
-JJB_CONF_PATH		?= ~/cloud-city/jenkins-jjb
+JJB_CONF_PATH		?= jenkins-jjb
 JUJU_REPO_PATH		?= "${GOPATH}/src/github.com/juju/juju"
 
 cwd 			 = $(shell pwd)
