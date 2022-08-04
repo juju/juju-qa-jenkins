@@ -56,10 +56,6 @@
 #              current-parameters: true
 #              predefined-parameters: |- 
 #                BUILD_ARCH=s390x
-            - name: gating-functional-tests-arm64
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=arm64
 # TODO tlm add back in when we have ppc arch support again
 #            - name: gating-functional-tests-ppc64el
 #              current-parameters: true

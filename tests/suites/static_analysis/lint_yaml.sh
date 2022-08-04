@@ -110,7 +110,6 @@ jobs:
     # TODO (stickupkid): Clean these commands up and simplify the following jobs
     # so that they don't require a multi-job for no reason.
     - ci-build-juju:Packaging
-    - gating-functional-tests-arm64:FunctionalTestsarm64
     - github-mgo-check-jobs:github-mgo-check-jobs
     - github-mgo-merge-jobs:github-mgo-merge-jobs
     - github-juju-merge-jobs:github-juju-merge-jobs
