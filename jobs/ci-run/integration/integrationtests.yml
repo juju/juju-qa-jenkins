@@ -250,7 +250,7 @@
       - multijob:
           name: 'gating-integration-tests-arm64'
           projects:
-            - name: 'test-deploy-multijob'
+            - name: 'test-deploy-arm64'
               current-parameters: true
               predefined-parameters: |-
                 MODEL_ARCH=arm64

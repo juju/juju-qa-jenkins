@@ -118,6 +118,7 @@ jobs:
     - test-bootstrap-multijob:IntegrationTests-bootstrap
     - test-upgrade-multijob:IntegrationTests-upgrade
     - test-upgrade_series-multijob:IntegrationTests-upgrade_series
+    - test-deploy-arm64:IntegrationTests-deploy-arm64
     - gating-integration-tests-arm64:gating-integration-tests-arm64
 EOF
 )
