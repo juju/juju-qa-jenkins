@@ -247,8 +247,6 @@
     builders:
       - get-build-details
       - set-test-description
-      - inject:
-          properties-file: build.properties
       - multijob:
           name: 'gating-integration-tests-arm64'
           projects:
