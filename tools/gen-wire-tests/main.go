@@ -471,7 +471,7 @@ const Template = `
     wrappers:
       - default-integration-test-wrapper
       - timeout:
-          timeout: 30
+          timeout: 50
           fail: true
           type: absolute
     builders:
