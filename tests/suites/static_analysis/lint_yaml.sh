@@ -118,6 +118,7 @@ jobs:
     - test-bootstrap-multijob:IntegrationTests-bootstrap
     - test-upgrade-multijob:IntegrationTests-upgrade
     - test-upgrade_series-multijob:IntegrationTests-upgrade_series
+    - gating-integration-tests-arm64:gating-integration-tests-arm64
 EOF
 )
   if [ -n "${OUT}" ]; then
