@@ -45,7 +45,7 @@ for platform in ${{platform_loop[@]}}; do
     "ftype": "tar.gz",
     "item_name": "${{item_name}}",
     "md5": "${{agent_file_md5_sum}}",
-    "path": "${{agent_file_name}}",
+    "path": "agent/${{agent_file_name}}",
     "product_name": "com.ubuntu.juju:${{series_code}}:${{arch}}",
     "release": "${{release_name}}",
     "sha256": "${{agent_file_sha256_sum}}",
