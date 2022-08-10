@@ -40,6 +40,9 @@ while [ $attempts -lt 3 ]; do
     if [ ! "$(which jq >/dev/null 2>&1)" ]; then
         sudo snap install jq || true
     fi
+    if [ ! "$(which yq >/dev/null 2>&1)" ]; then
+        sudo snap install yq || true
+    fi
     if [ ! "$(which shellcheck >/dev/null 2>&1)" ]; then
         sudo snap install shellcheck || true
     fi
