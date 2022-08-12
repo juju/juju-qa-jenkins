@@ -162,6 +162,10 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: 'test-model-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
 
 
 - job:
@@ -200,7 +204,7 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
-            - name: 'test-model-multijob'
+            - name: 'test-model-unstable-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
