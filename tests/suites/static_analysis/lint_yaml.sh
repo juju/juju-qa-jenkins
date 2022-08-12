@@ -66,13 +66,11 @@ jobs:
     - z-clean-resources-ecr
     - run-unit-tests-lxd
     - upload-s3-agent-binaries
-    - unit-tests-s390x-bionic
+    - unit-tests-s390x
     - unit-tests-race-arm64
-    - unit-tests-ppc64el-bionic
+    - unit-tests-ppc64el
     - unit-tests-centos9
-    - unit-tests-arm64-bionic
     - unit-tests-arm64
-    - run-unit-tests-lxd-bionic
     - nw-deploy-xenial-s390x-lxd
     - nw-deploy-xenial-ppc64el-lxd
     - make-windows-installer

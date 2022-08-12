@@ -33,22 +33,18 @@
             projects:
               - name: unit-tests-amd64
                 current-parameters: true
-              - name: unit-tests-amd64-bionic
-                current-parameters: true
               - name: unit-tests-race-amd64
                 current-parameters: true
               - name: unit-tests-arm64
-                current-parameters: true
-              - name: unit-tests-arm64-bionic
                 current-parameters: true
               - name: unit-tests-race-arm64
                 current-parameters: true
 # These unit tests are comment out here as they are currently unable to be run
 # due to our Jenkins setup. They will eventually me added back in with our
 # final Jenkins install (tlm 21/04/2022)
-#             - name: unit-tests-s390x-bionic
+#             - name: unit-tests-s390x
 #               current-parameters: true
-#             - name: unit-tests-ppc64el-bionic
+#             - name: unit-tests-ppc64el
 #               current-parameters: true
 #             - name: unit-tests-centos9
 #               current-parameters: true
@@ -68,17 +64,6 @@
     # Takes parameter: GOTEST_TYPE. 'race' for go test race, 'xunit-report' for
     # make test w/ verbose and generating an xml report and anything else for
     # straight 'make test'
-    name: 'run-unit-tests-lxd-bionic'
-    builders:
-    - lxd-src-command-bionic:
-          src_command:
-              !include-raw: ../scripts/snippet_run-unit-tests.sh
-
-
-- builder:
-    # Takes parameter: GOTEST_TYPE. 'race' for go test race, 'xunit-report' for
-    # make test w/ verbose and generating an xml report and anything else for
-    # straight 'make test'
     name: 'run-unit-tests-host'
     builders:
     - host-src-command:
@@ -91,57 +76,6 @@
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Build and run unit tests for amd64.
-    wrappers:
-      - default-unit-test-wrapper
-    parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
-    - string:
-        default: '2400s'
-        name: TEST_TIMEOUT
-    - string:
-        name: USE_TMPFS_FOR_MGO
-        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: series
-        default: ""
-        description: "Series used for deploying"
-    - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
-    - string:
-        name: GOVERSION
-        default: ""
-        description: "Go version to use for unit tests"
-    builders:
-      - wait-for-cloud-init
-      - install-common-tools
-      - apt-install:
-          packages: gcc squashfuse
-      - setup-go-environment
-      - go-get:
-          modules: github.com/tebeka/go2xunit
-      - get-s3-source-payload
-      - description-setter:
-          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
-      # Need to populate with which arch we're building for.
-      - run-unit-tests-host:
-          GOTEST_TYPE: "xunit-report"
-          TEST_TIMEOUT: "${TEST_TIMEOUT}"
-          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
-    publishers:
-      - junit:
-          results: tests.xml
-          allow-empty-results: true
-
-- job:
-    name: unit-tests-amd64-bionic
-    node: ephemeral-bionic-8c-32g-amd64
-    description: |-
-      Build and run unit tests for amd64 using mongodb36 and bionic.
     wrappers:
       - default-unit-test-wrapper
     parameters:
@@ -240,58 +174,7 @@
           allow-empty-results: true
 
 - job:
-    name: 'unit-tests-arm64-bionic'
-    node: ephemeral-bionic-8c-32g-arm64
-    description: |-
-      Build and run unit tests for arm64 on bionic.
-    wrappers:
-      - default-unit-test-wrapper
-    parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
-    - string:
-        default: '5400s'
-        name: TEST_TIMEOUT
-    - string:
-        name: USE_TMPFS_FOR_MGO
-        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: series
-        default: ""
-        description: "Series used for deploying"
-    - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
-    - string:
-        name: GOVERSION
-        default: ""
-        description: "Go version to use for unit tests"
-    builders:
-      - wait-for-cloud-init
-      - install-common-tools
-      - apt-install:
-          packages: gcc squashfuse
-      - setup-go-environment
-      - go-get:
-          modules: github.com/tebeka/go2xunit
-      - get-s3-source-payload
-      - description-setter:
-          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
-      # Need to populate with which arch we're building for.
-      - run-unit-tests-host:
-          GOTEST_TYPE: "xunit-report"
-          TEST_TIMEOUT: "${TEST_TIMEOUT}"
-          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
-    publishers:
-      - junit:
-          results: tests.xml
-          allow-empty-results: true
-
-- job:
-    name: 'unit-tests-s390x-bionic'
+    name: unit-tests-s390x
     description: |-
       Build and run unit tests for s390x on bionic in an lxd container.
     node: s390x
@@ -338,7 +221,7 @@
           allow-empty-results: true
 
 - job:
-    name: 'unit-tests-ppc64el-bionic'
+    name: unit-tests-ppc64el
     description: |-
       Build and run unit tests for ppc64el.
     node: ppc64el
