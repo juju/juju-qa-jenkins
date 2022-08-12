@@ -32,21 +32,9 @@
     - multijob:
         name: 'IntegrationTests-model'
         projects:
-        - name: 'test-model-test-model-config-lxd'
+        - name: 'test-model-test-model-destroy-lxd'
           current-parameters: true
-        - name: 'test-model-test-model-config-aws'
-          current-parameters: true
-        - name: 'test-model-test-model-metrics-lxd'
-          current-parameters: true
-        - name: 'test-model-test-model-metrics-aws'
-          current-parameters: true
-        - name: 'test-model-test-model-migration-lxd'
-          current-parameters: true
-        - name: 'test-model-test-model-migration-aws'
-          current-parameters: true
-        - name: 'test-model-test-model-multi-lxd'
-          current-parameters: true
-        - name: 'test-model-test-model-multi-aws'
+        - name: 'test-model-test-model-destroy-aws'
           current-parameters: true
 
 - job:
@@ -96,7 +84,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_config'
-            skip_tasks: 'test_model_metrics,test_model_migration,test_model_multi'
+            skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_multi'
 
     publishers:
       - integration-artifacts
@@ -152,7 +140,115 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_config'
-            skip_tasks: 'test_model_metrics,test_model_migration,test_model_multi'
+            skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_multi'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-model-test-model-destroy-lxd
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test test_model_destroy in model suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'lxd'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 50
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'model'
+            setup_steps: ''
+            task_name: 'test_model_destroy'
+            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_multi'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-model-test-model-destroy-aws
+    node: ephemeral-focal-small-amd64
+    description: |-
+      Test test_model_destroy in model suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'aws'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 50
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'model'
+            setup_steps: ''
+            task_name: 'test_model_destroy'
+            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_multi'
 
     publishers:
       - integration-artifacts
@@ -204,7 +300,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_metrics'
-            skip_tasks: 'test_model_config,test_model_migration,test_model_multi'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_multi'
 
     publishers:
       - integration-artifacts
@@ -260,7 +356,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_metrics'
-            skip_tasks: 'test_model_config,test_model_migration,test_model_multi'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_multi'
 
     publishers:
       - integration-artifacts
@@ -312,7 +408,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration'
-            skip_tasks: 'test_model_config,test_model_metrics,test_model_multi'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_multi'
 
     publishers:
       - integration-artifacts
@@ -368,7 +464,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration'
-            skip_tasks: 'test_model_config,test_model_metrics,test_model_multi'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_multi'
 
     publishers:
       - integration-artifacts
@@ -420,7 +516,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_multi'
-            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration'
 
     publishers:
       - integration-artifacts
@@ -476,7 +572,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_multi'
-            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration'
 
     publishers:
       - integration-artifacts
