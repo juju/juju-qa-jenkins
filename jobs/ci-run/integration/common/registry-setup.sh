@@ -14,18 +14,16 @@ ECR_TOKEN=$(aws ecr get-login-password --region "${REGION}")
 aws ecr create-repository --repository-name "${REPOSITORY_NAME_PREFIX}/jujud-operator" || true
 aws ecr create-repository --repository-name "${REPOSITORY_NAME_PREFIX}/juju-db" || true
 
-JUJU_BUILD_NUMBER_INC=$((JUJU_BUILD_NUMBER+1))
 JUJU_DB_TAG=$(grep -r 'DefaultJujuDBSnapChannel =' "${JUJU_SRC_PATH}/controller/config.go" | sed -r 's/^\s*DefaultJujuDBSnapChannel = \"([[:digit:]]+\.[[:digit:]]+(\.[[:digit:]]+){0,1})\/.*\"$/\1/')
 
 export OPERATOR_IMAGE_ACCOUNT
-export JUJU_BUILD_NUMBER_INC
 export ECR_TOKEN
 export DOCKER_REGISTRY
 export JUJU_DB_TAG
 
 # Capture env and start a new session to get new groups.
 echo "${ECR_TOKEN}" | docker login -u AWS --password-stdin "${DOCKER_REGISTRY}"
-JUJU_BUILD_NUMBER=${JUJU_BUILD_NUMBER_INC} DOCKER_USERNAME=${OPERATOR_IMAGE_ACCOUNT} make -C "${JUJU_SRC_PATH}" push-release-operator-image
+DOCKER_USERNAME=${OPERATOR_IMAGE_ACCOUNT} make -C "${JUJU_SRC_PATH}" push-release-operator-image
 
 docker pull "jujusolutions/juju-db:${JUJU_DB_TAG}"
 docker tag "jujusolutions/juju-db:${JUJU_DB_TAG}" "${OPERATOR_IMAGE_ACCOUNT}/juju-db:${JUJU_DB_TAG}"

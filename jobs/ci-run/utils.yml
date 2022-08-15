@@ -316,26 +316,6 @@
             src_command: "{src_command}"
 
 - builder:
-    name: 'lxd-src-command-bionic'
-    builders:
-          - lxd-src-command-bionic-base:
-              env_file: ""
-              setup_steps: ""
-              src_command: "{src_command}"
-
-# This takes the param: {src_command} which should be a the commands to run within the workspace.
-- builder:
-    name: 'lxd-src-command-bionic-base'
-    builders:
-      - get-juju-cloud-creds
-      - inject:
-          properties-content: |-
-            JUJU_UNITTEST_IMAGE=ubuntu
-            JUJU_UNITTEST_SERIES=bionic
-      - shell:
-          !include-raw: "scripts/lxd-runner.sh"
-
-- builder:
     name: 'lxd-src-command-focal-base'
     builders:
       - get-juju-cloud-creds
