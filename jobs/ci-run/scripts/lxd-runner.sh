@@ -15,7 +15,7 @@ lxd_env_file_path=/home/ubuntu/juju_lxd_env
 
 # For legacy compatibility, set env variable for series if not already set
 if [ -z "$JUJU_UNITTEST_SERIES" ]; then
-    export JUJU_UNITTEST_SERIES=xenial
+    export JUJU_UNITTEST_SERIES=jammy
 fi
 
 function cleanup {{

@@ -176,7 +176,7 @@
 - job:
     name: unit-tests-s390x
     description: |-
-      Build and run unit tests for s390x on bionic in an lxd container.
+      Build and run unit tests for s390x in an lxd container.
     node: s390x
     wrappers:
       - default-unit-test-wrapper

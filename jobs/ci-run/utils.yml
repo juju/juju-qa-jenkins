@@ -297,7 +297,7 @@
     - inject:
         properties-content: |-
             JUJU_UNITTEST_IMAGE=ubuntu
-            JUJU_UNITTEST_SERIES=xenial
+            JUJU_UNITTEST_SERIES=jammy
     # This takes the param:
     #  {src_command} which should be a the commands to run within the workspace.
     #  {setup_steps} commands to run before the src_command step (e.g. install things, add to groups)

@@ -17,23 +17,21 @@
 
 from __future__ import print_function
 
-import BaseHTTPServer
-import SimpleHTTPServer
-from datetime import datetime
-import multiprocessing
 import hashlib
 import logging
+import multiprocessing
 import os
 import shutil
 import socket
 import subprocess
 import tarfile
-
 from contextlib import contextmanager
+from datetime import datetime
 
-from jujupy.client import (
-    get_version_string_parts
-)
+import BaseHTTPServer
+import SimpleHTTPServer
+
+from jujupy.client import get_version_string_parts
 
 __metaclass__ = type
 
@@ -77,11 +75,9 @@ class _JujuStreamData:
     def generate_stream_data(self):
         """Generate metadata from added products into working dir."""
         # Late import as simplestreams.log overwrites logging handlers.
-        from simplestreams.json2streams import (
-            dict_to_item,
-            write_juju_streams
-        )
         from simplestreams.generate_simplestreams import items2content_trees
+        from simplestreams.json2streams import dict_to_item, write_juju_streams
+
         # The following has been cribbed from simplestreams.json2streams.
         # Doing so saves the need to create json files to then shell out to
         # read those files into memory to generate the resulting json files.
@@ -238,6 +234,8 @@ def _get_series_details(series):
         xenial=16.04,
         artful=17.10,
         bionic=18.04,
+        focal=20.04,
+        jammy=22.04,
     )
     try:
         series_code = _series_lookup[series]

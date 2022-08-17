@@ -13,6 +13,10 @@
         default: 'amd64'
         description: 'Arch to build for.'
         name: BUILD_ARCH
+    - string:
+        default: jammy
+        description: ''
+        name: series
     wrappers:
       - cirun-test-stuck-timeout
     builders:
@@ -30,7 +34,7 @@
           HOSTNAME=$(maas env29 machines read | jq -r '[ .[] | select(.status_name=="Ready")] | .[0] | .hostname')
 
           timeout -s INT 25m ${TESTS_DIR}/assess_bootstrap.py to $ENV $JUJU_BIN $WORKSPACE/artifacts \
-           $JOB_NAME --series xenial --to $HOSTNAME --debug
+           $JOB_NAME --series $series --to $HOSTNAME --debug
     publishers:
       - artifact-results
       - log-panic-check

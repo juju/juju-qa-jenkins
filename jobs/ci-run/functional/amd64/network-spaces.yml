@@ -17,7 +17,7 @@
         description: Which region in aws to run on.
         name: region
     - string:
-        default: bionic
+        default: jammy
         description: ''
         name: series
     wrappers:
@@ -36,7 +36,7 @@
           ENV=parallel-aws
           timeout -s INT 30m ${TESTS_DIR}/assess_network_spaces.py $ENV \
            $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
-           --series $series --region $region
+            --region $region
     publishers:
       - artifact-results
       - log-panic-check

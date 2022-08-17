@@ -1,8 +1,8 @@
-- job:  # nw-deploy-xenial-s390x-lxd
-    name: nw-deploy-xenial-s390x-lxd
+- job:  # nw-deploy-jammy-s390x-lxd
+    name: nw-deploy-jammy-s390x-lxd
     node: s390x
     description: |-
-      Deploy lxd on xenial+s390x using xenial apps.
+      Deploy lxd on jammy+s390x using jammy apps.
     parameters:
     - string:
         default: ""
@@ -12,6 +12,10 @@
         default: 's390x'
         description: 'Arch to build for.'
         name: BUILD_ARCH
+    - string:
+        default: jammy
+        description: ''
+        name: series
     wrappers:
       - cirun-test-stuck-timeout
     builders:
@@ -23,11 +27,11 @@
           CHECK=$(${TESTS_DIR}/deploy_job.py -h | grep "\-\-arch" || echo "NOT FOUND")
           if [ "${CHECK}" = "NOT FOUND" ]; then
             timeout -s INT 60m ${TESTS_DIR}/deploy_job.py \
-              --series xenial \
+              --series $series \
               parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
           else
             timeout -s INT 60m ${TESTS_DIR}/deploy_job.py \
-              --series xenial --arch ${BUILD_ARCH} \
+              --series $series --arch ${BUILD_ARCH} \
               parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
           fi
     publishers:
