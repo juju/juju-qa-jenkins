@@ -40,8 +40,6 @@
               current-parameters: true
             - name: nw-charm-storage
               current-parameters: true
-            - name: nw-clouds-display
-              current-parameters: true
             - name: nw-grant-revoke
               current-parameters: true
             - name: nw-model-migration-versions-aws
