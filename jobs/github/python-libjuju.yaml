@@ -19,9 +19,6 @@
       - python3.6:
           PYTHON_VERSION: "3.6"
           JUJU_CHANNEL: "stable"
-      - python3.5:
-          PYTHON_VERSION: "3.5"
-          JUJU_CHANNEL: "stable"
     jobs:
       - 'github-integration-tests-pylibjuju-{project_name}'
 
