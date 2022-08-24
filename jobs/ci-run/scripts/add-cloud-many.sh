@@ -9,7 +9,7 @@ sshuttle -r munna 10.247.0.0/24 --daemon --pidfile sshuttle-vsphere.pid
 # a manual machine. We append the branch SHA to the container name so
 # multiple test runs can run in parallel.
 SSH_HOST_PUB_KEY="${HOME}/.ssh/id_rsa.pub"
-MANUAL_MACH_DISTROS="xenial bionic focal"
+MANUAL_MACH_DISTROS="focal jammy"
 CONTAINER_NAME_PREFIX="add-cloud-many"
 
 # Make a copy of the template file with the cloud sections so we can append the

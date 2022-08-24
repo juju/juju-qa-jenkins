@@ -13,7 +13,7 @@
         description: 'Arch to build for.'
         name: BUILD_ARCH
     - string:
-        default: bionic
+        default: jammy
         description: ''
         name: series
     wrappers:
@@ -31,8 +31,7 @@
           ENV=parallel-lxd
           export GOCOOKIES=$WORKSPACE/go-cookies
           timeout -s INT 30m ${TESTS_DIR}/assess_user_grant_revoke.py $ENV $JUJU_BIN \
-           $WORKSPACE/artifacts $JOB_NAME \
-           --series $series
+           $WORKSPACE/artifacts $JOB_NAME
     publishers:
       - artifact-results
       - log-panic-check

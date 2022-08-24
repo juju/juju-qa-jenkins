@@ -30,10 +30,10 @@
       - log-panic-check
 
 - job:
-    name: nw-deploy-bionic-amd64-lxd
-    node: ephemeral-bionic-4c-16g-amd64
+    name: nw-deploy-jammy-amd64-lxd
+    node: ephemeral-jammy-4c-16g-amd64
     description: |-
-      Deploy local lxd on bionic+amd64 using bionic apps.
+      Deploy local lxd on jammy+amd64 using jammy apps.
     parameters:
     - string:
         default: ""
@@ -66,7 +66,7 @@
           #!/bin/bash
           set -eu
 
-          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
+          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series jammy \
               parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME --debug \
               --agent-url https://ci-run-streams.s3.amazonaws.com/builds/build-${SHORT_GIT_COMMIT}/ --agent-stream build-${SHORT_GIT_COMMIT}
     publishers:
@@ -78,7 +78,7 @@
     name: nw-deploy-client-centos9
     node: ephemeral-centos9-8c-32g-amd64
     description: |-
-      Deploy local aws on centos9+amd64 using bionic apps.
+      Deploy local aws on centos9+amd64 using jammy apps.
     parameters:
     - validating-string:
         description: The git short hash for the commit you wish to test
@@ -105,7 +105,7 @@
           #!/bin/bash
           set -eu
 
-          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
+          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series jammy \
                 --region $region \
                 parallel-aws $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME --debug \
                 --agent-url https://ci-run-streams.s3.amazonaws.com/builds/build-${SHORT_GIT_COMMIT}/ --agent-stream build-${SHORT_GIT_COMMIT}
@@ -115,10 +115,10 @@
 
 
 - job:
-    name: nw-deploy-bionic-amd64-maas-2-9
+    name: nw-deploy-jammy-amd64-maas-2-9
     node: maas
     description: |-
-      Deploy local maas-2-9 on bionic+amd64 using bionic apps.
+      Deploy local maas-2-9 on jammy+amd64 using jammy apps.
     parameters:
     - string:
         default: ""
@@ -137,17 +137,17 @@
           #!/bin/bash
           set -eu
 
-          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
+          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series jammy \
              parallel-finfolk-vmaas $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
     publishers:
       - artifact-results
       - log-panic-check
 
 - job:
-    name: nw-deploy-bionic-amd64-equinix
-    node: ephemeral-bionic-4c-16g-amd64
+    name: nw-deploy-jammy-amd64-equinix
+    node: ephemeral-jammy-4c-16g-amd64
     description: |-
-      Deploy to equinix cloud bionic+amd64 using bionic apps.
+      Deploy to equinix cloud jammy+amd64 using jammy apps.
     parameters:
     - string:
         default: ""
@@ -171,17 +171,17 @@
           #!/bin/bash
           set -eu
 
-          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
+          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series jammy \
              parallel-equinix $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
     publishers:
       - artifact-results
       - log-panic-check
 
 - job:
-    name: nw-deploy-bionic-vsphere
+    name: nw-deploy-vsphere
     node: vsphere
     description: |-
-      Deploy on vsphere using bionic apps.
+      Deploy on vsphere using jammy apps.
     parameters:
     - string:
         default: ""
@@ -207,7 +207,7 @@
           export no_proxy=$no_proxy,10.246.152.100,azalea.internal,domino.internal,fludd.internal,eyerok.internal,chrom.internal,barnacle.internal
           # Matches the VLAN used for vsphere juju-qa config
           export no_proxy=$no_proxy,10.246.157.0/24
-          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py --series bionic \
+          timeout -s INT 60m ${TESTS_DIR}/deploy_job.py \
              ENV=parallel-vsphere-vmfolder $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
     publishers:
       - artifact-results
@@ -218,7 +218,7 @@
     name: nw-deploy-client-macos
     node: mac
     description: |-
-      Deploy on MacOS using xenial apps.
+      Deploy on MacOS using jammy apps.
     parameters:
     - string:
         default: ""
@@ -244,7 +244,7 @@
 
           ${TESTS_DIR}/deploy_job.py parallel-gce ${JUJU_BIN} artifacts testing-osx-client1 \
           --region $region \
-          --series xenial \
+          --series jammy \
           --agent-url https://ci-run-streams.s3.amazonaws.com/builds/build-${SHORT_GIT_COMMIT} --agent-stream build-${SHORT_GIT_COMMIT}
     publishers:
       - artifact-results
@@ -261,7 +261,7 @@
             type: absolute
         - cirun-test-stuck-timeout
     description: |-
-      Deploy on Windows using xenial apps.
+      Deploy on Windows.
     parameters:
     - string:
         default: ""

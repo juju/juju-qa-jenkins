@@ -30,7 +30,6 @@
 
           ENV=parallel-aws
           timeout -s INT 50m ${TESTS_DIR}/assess_storage.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
-           --series bionic \
            --region $region
     publishers:
       - artifact-results

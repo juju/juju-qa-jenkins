@@ -1,8 +1,8 @@
-- job:  # nw-deploy-xenial-ppc64el-lxd
-    name: nw-deploy-xenial-ppc64el-lxd
+- job:  # nw-deploy-jammy-ppc64el-lxd
+    name: nw-deploy-jammy-ppc64el-lxd
     node: borbein
     description: |-
-      Deploy lxd on xenial+ppc64el using xenial apps.
+      Deploy lxd on jammy+ppc64el using jammy apps.
     parameters:
     - string:
         default: ""
@@ -12,6 +12,10 @@
         default: 'ppc64el'
         description: 'Arch to build for.'
         name: BUILD_ARCH
+    - string:
+        default: jammy
+        description: ''
+        name: series
     wrappers:
       - cirun-test-stuck-timeout
     builders:
@@ -23,11 +27,11 @@
           CHECK=$(${TESTS_DIR}/deploy_job.py -h | grep "\-\-arch" || echo "NOT FOUND")
           if [ "${CHECK}" = "NOT FOUND" ]; then
             timeout -s INT 60m ${TESTS_DIR}/deploy_job.py \
-              --series xenial \
+              --series $series \
               parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
           else
             timeout -s INT 60m ${TESTS_DIR}/deploy_job.py \
-              --series xenial --arch ${BUILD_ARCH} \
+              --series $series --arch ${BUILD_ARCH} \
               parallel-lxd $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME
           fi
     publishers:

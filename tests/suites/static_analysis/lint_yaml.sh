@@ -71,8 +71,8 @@ jobs:
     - unit-tests-ppc64el
     - unit-tests-centos9
     - unit-tests-arm64
-    - nw-deploy-xenial-s390x-lxd
-    - nw-deploy-xenial-ppc64el-lxd
+    - nw-deploy-jammy-s390x-lxd
+    - nw-deploy-jammy-ppc64el-lxd
     - make-windows-installer
     - gating-functional-tests-s390x
     - gating-functional-tests-ppc64el
@@ -87,6 +87,7 @@ jobs:
     - public-clouds
     - lxd-src-command-focal-base
     - nw-deploy-focal-amd64-lxd
+    - nw-deploy-jammy-amd64-lxd
 EOF
 )
   if [ -n "${OUT}" ]; then

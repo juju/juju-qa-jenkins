@@ -12,6 +12,10 @@
         default: 'amd64'
         description: 'Arch to build for.'
         name: BUILD_ARCH
+    - string:
+        default: jammy
+        description: ''
+        name: series
     wrappers:
       - cirun-test-stuck-timeout
     builders:
@@ -23,7 +27,7 @@
 
           ENV=parallel-finfolk-vmaas
           timeout -s INT 45m ${TESTS_DIR}/assess_container_networking.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
-            --series bionic --machine-type=lxd --space-constraint=space1
+            --machine-type=lxd --space-constraint=space1
     publishers:
       - artifact-results
       - log-panic-check

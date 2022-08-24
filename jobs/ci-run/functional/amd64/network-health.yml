@@ -13,7 +13,7 @@
         description: 'Arch to build for.'
         name: BUILD_ARCH
     - string:
-        default: bionic
+        default: jammy
         description: ''
         name: series
     wrappers:
@@ -28,7 +28,6 @@
           ENV=parallel-finfolk-vmaas
 
           timeout -s INT 45m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN ${WORKSPACE}/artifacts $JOB_NAME \
-           --series $series \
            --bundle ${JUJU_REPOSITORY}/network-health-2-machines-bind.yaml \
            --logging-config 'juju.state.txn=TRACE'
     publishers:
@@ -51,7 +50,7 @@
         description: 'Arch to build for.'
         name: BUILD_ARCH
     - string:
-        default: bionic
+        default: jammy
         description: ''
         name: series
     wrappers:
@@ -69,7 +68,6 @@
           ENV=parallel-oracle-oci
 
           timeout -s INT 45m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
-           --series $series
            --bundle 'jenkins' \
            --logging-config 'juju.state.txn=TRACE'
     publishers:
@@ -92,7 +90,7 @@
         description: 'Arch to build for.'
         name: BUILD_ARCH
     - string:
-        default: bionic
+        default: jammy
         description: ''
         name: series
     wrappers:
@@ -107,7 +105,6 @@
           ENV=parallel-vsphere-vmfolder
 
           timeout -s INT 45m ${TESTS_DIR}/assess_network_health.py $ENV $JUJU_BIN $WORKSPACE/artifacts $JOB_NAME \
-           --series $series \
            --bundle 'cs:~juju/bundle/mediawiki-single' \
            --logging-config 'juju.state.txn=TRACE'
     publishers:

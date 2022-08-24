@@ -23,3 +23,6 @@ venv.bak/
 
 # Compiled Go binaries
 /tools/gen-wire-tests/main
+
+.DS_Store
+.vscode
