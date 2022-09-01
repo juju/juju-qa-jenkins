@@ -29,6 +29,7 @@ type Config struct {
 		PreventSplit []string                       `yaml:"prevent-split"`
 		Ephemeral    []string                       `yaml:"ephemeral"`
 		Unstable     map[string]map[string][]string `yaml:"unstable"`
+		Timeout      map[string]map[string]int      `yaml:"timeout"`
 	}
 }
 
@@ -37,6 +38,7 @@ type Task struct {
 	SubTasks                 []string
 	UnstableProviderSubTasks map[string][]string
 	ExcludedTasks            []string
+	Timeout                  map[string]int
 }
 
 type Cloud struct {
@@ -153,6 +155,7 @@ func main() {
 			SubTasks:                 taskNames,
 			UnstableProviderSubTasks: config.Folders.Unstable[suiteName],
 			ExcludedTasks:            excluded,
+			Timeout:                  config.Folders.Timeout[suiteName],
 		}
 	}
 
@@ -172,9 +175,10 @@ func main() {
 	t := template.Must(template.New("integration").Funcs(funcMap).Parse(Template))
 
 	for _, name := range suiteNames {
-		writeJobDefinitions(t, config, outputDir, testSuites, name, false)
-		if len(testSuites[name].UnstableProviderSubTasks) > 0 {
-			writeJobDefinitions(t, config, outputDir, testSuites, name, true)
+		task := testSuites[name]
+		writeJobDefinitions(t, config, outputDir, task, name, false)
+		if len(task.UnstableProviderSubTasks) > 0 {
+			writeJobDefinitions(t, config, outputDir, task, name, true)
 		}
 	}
 }
@@ -183,7 +187,7 @@ func writeJobDefinitions(
 	t *template.Template,
 	config Config,
 	outputDir string,
-	testSuites map[string]Task,
+	task Task,
 	suiteName string,
 	unstable bool,
 ) {
@@ -198,9 +202,9 @@ func writeJobDefinitions(
 	}
 	defer f.Close()
 
-	skipTasks := make([][]string, len(testSuites[suiteName].SubTasks))
-	for k := range testSuites[suiteName].SubTasks {
-		for x, y := range testSuites[suiteName].SubTasks {
+	skipTasks := make([][]string, len(task.SubTasks))
+	for k := range task.SubTasks {
+		for x, y := range task.SubTasks {
 			if k == x {
 				continue
 			}
@@ -212,7 +216,7 @@ func writeJobDefinitions(
 	}
 	joined := make([]string, len(skipTasks))
 	for k, v := range skipTasks {
-		v = append(v, testSuites[suiteName].ExcludedTasks...)
+		v = append(v, task.ExcludedTasks...)
 		joined[k] = strings.Join(v, ",")
 	}
 
@@ -230,15 +234,17 @@ func writeJobDefinitions(
 		UnstableTasks map[string][]string
 		Unstable      bool
 		Ephemeral     map[string]bool
+		Timeout       map[string]int
 	}{
 		SuiteName:     suiteName,
-		Clouds:        testSuites[suiteName].Clouds,
-		TaskNames:     testSuites[suiteName].SubTasks,
+		Clouds:        task.Clouds,
+		TaskNames:     task.SubTasks,
 		SkipTasks:     joined,
-		ExcludedTasks: strings.Join(testSuites[suiteName].ExcludedTasks, ","),
-		UnstableTasks: testSuites[suiteName].UnstableProviderSubTasks,
+		ExcludedTasks: strings.Join(task.ExcludedTasks, ","),
+		UnstableTasks: task.UnstableProviderSubTasks,
 		Unstable:      unstable,
 		Ephemeral:     ephemeral,
+		Timeout:       task.Timeout,
 	}); err != nil {
 		log.Fatalf("unable to execute template %q with error %v", suiteName, err)
 	}
@@ -422,6 +428,7 @@ const Template = `
 
 {{- if eq $node.Unstable false }}
 
+{{$timeout := (index $node.Timeout $task_name)}}
 - job:
     name: {{$full_task_name}}
     node: {{$run_on}}
@@ -471,7 +478,7 @@ const Template = `
     wrappers:
       - default-integration-test-wrapper
       - timeout:
-          timeout: 50
+          timeout: {{- if gt $timeout 0 }} {{$timeout}}{{ else }} 50{{- end}}
           fail: true
           type: absolute
     builders:
