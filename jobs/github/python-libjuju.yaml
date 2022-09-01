@@ -1,7 +1,10 @@
 - project:
     name: github-integration-tests-pylibjuju
     project_name:
-      - edge:
+      - latest-edge:
+          PYTHON_VERSION: "3"
+          JUJU_CHANNEL: "latest/edge"
+      - 2.9-edge:
           PYTHON_VERSION: "3"
           JUJU_CHANNEL: "2.9/edge"
       - python3.10:
@@ -18,9 +21,6 @@
           JUJU_CHANNEL: "stable"
       - python3.6:
           PYTHON_VERSION: "3.6"
-          JUJU_CHANNEL: "stable"
-      - python3.5:
-          PYTHON_VERSION: "3.5"
           JUJU_CHANNEL: "stable"
     jobs:
       - 'github-integration-tests-pylibjuju-{project_name}'
