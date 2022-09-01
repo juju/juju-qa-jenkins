@@ -40,10 +40,6 @@
           current-parameters: true
         - name: 'test-model-test-model-metrics-aws'
           current-parameters: true
-        - name: 'test-model-test-model-migration-lxd'
-          current-parameters: true
-        - name: 'test-model-test-model-migration-aws'
-          current-parameters: true
         - name: 'test-model-test-model-multi-lxd'
           current-parameters: true
         - name: 'test-model-test-model-multi-aws'
