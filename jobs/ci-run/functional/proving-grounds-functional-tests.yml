@@ -31,8 +31,6 @@
               current-parameters: true
             - name: nw-deploy-bionic-eks
               current-parameters: true
-            - name: nw-model-migration-amd64-vsphere
-              current-parameters: true
             - name: nw-deploy-vsphere
               current-parameters: true
             - name: nw-network-health-maas-2-9
@@ -47,10 +45,6 @@
               current-parameters: true
             - name: nw-deploy-client-macos
               current-parameters: true
-            - name: nw-model-migration-amd64-azure-arm
-              current-parameters: true
-            - name: nw-model-migration-versions-lxd
-              current-parameters: true
             - name: nw-network-health-oci
               current-parameters: true
               predefined-parameters: |-
@@ -60,12 +54,6 @@
             - name: nw-resolve
               current-parameters: true
             - name: nw-upgrade-juju-beta
-              current-parameters: true
-            - name: nw-model-migration-amd64-lxd
-              current-parameters: true
-            - name: nw-model-migration-amd64-aws
-              current-parameters: true
-            - name: nw-model-migration-amd64-gce
               current-parameters: true
             - name: nw-deploy-kubeflow
               alias: nw-kubeflow-microk8s-lite-rbac
