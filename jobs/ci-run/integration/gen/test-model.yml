@@ -36,6 +36,10 @@
           current-parameters: true
         - name: 'test-model-test-model-destroy-aws'
           current-parameters: true
+        - name: 'test-model-test-model-migration-lxd'
+          current-parameters: true
+        - name: 'test-model-test-model-migration-aws'
+          current-parameters: true
 
 - job:
     name: test-model-test-model-config-lxd
@@ -400,7 +404,7 @@
     wrappers:
       - default-integration-test-wrapper
       - timeout:
-          timeout: 50
+          timeout: 90
           fail: true
           type: absolute
     builders:
@@ -456,7 +460,7 @@
     wrappers:
       - default-integration-test-wrapper
       - timeout:
-          timeout: 50
+          timeout: 90
           fail: true
           type: absolute
     builders:
