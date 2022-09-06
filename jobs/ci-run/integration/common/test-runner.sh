@@ -49,6 +49,9 @@ while [ $attempts -lt 3 ]; do
     if [ ! "$(which petname >/dev/null 2>&1)" ]; then
         sudo snap install petname || true
     fi
+	if [ ! "$(which grepcidr >/dev/null 2>&1)" ]; then
+		sudo apt install grepcidr -y
+	fi
     # shellcheck disable=SC2193
     if [ "${{BOOTSTRAP_PROVIDER:-}}" = "aws" ]; then
         if [ ! "$(which aws >/dev/null 2>&1)" ]; then
