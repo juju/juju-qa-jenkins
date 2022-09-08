@@ -85,6 +85,8 @@
       - juju-restore:
           project_dir: "github.com/juju/juju-restore"
           needs_mgo: true
+      - viddy:
+          project_dir: "github.com/juju/viddy"
 
     jobs:
       - 'github-check-merge-juju-{project_name}'
