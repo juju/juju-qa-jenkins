@@ -27,23 +27,23 @@ install-deps: ensure-venv
 	find -wholename '*jenkins_jobs/modules/publishers.py' -print0 | xargs -0 sed -i '/info = registry.get_plugin_info("postbuildscript")/!b;n;n;c\    version = pkg_resources.parse_version("3.1.0")'
 
 push: static-analysis
-	. $(virtualenv_dir)/bin/activate; jenkins-jobs --conf ${JJB_CONF_PATH} \
-		--user ${JENKINS_USER} \
-		--password ${JENKINS_ACCESS_TOKEN} \
-		update -r "jobs/common:${PUSH_TARGET}" ${PUSH_JOB}
+	. $(virtualenv_dir)/bin/activate; jenkins-jobs --conf "${JJB_CONF_PATH}" \
+		--user "${JENKINS_USER}" \
+		--password "${JENKINS_ACCESS_TOKEN}" \
+		update -r "jobs/common:${PUSH_TARGET}" "${PUSH_JOB}"
 
 test-push: static-analysis
-	. $(virtualenv_dir)/bin/activate; jenkins-jobs --conf ${JJB_CONF_PATH} \
-		--user ${JENKINS_USER} \
-		--password ${JENKINS_ACCESS_TOKEN} \
-		test "jobs/common:${PUSH_TARGET}" ${PUSH_JOB}
+	. $(virtualenv_dir)/bin/activate; jenkins-jobs --conf "${JJB_CONF_PATH}" \
+		--user "${JENKINS_USER}" \
+		--password "${JENKINS_ACCESS_TOKEN}" \
+		test "jobs/common:${PUSH_TARGET}" "${PUSH_JOB}"
 
 push-local: static-analysis
-	. $(virtualenv_dir)/bin/activate; jenkins-jobs --conf ${LOCAL_JJB_CONF} \
-		update -r "jobs/common:${PUSH_TARGET}" ${PUSH_JOB}
+	. $(virtualenv_dir)/bin/activate; jenkins-jobs --conf "${LOCAL_JJB_CONF}" \
+		update -r "jobs/common:${PUSH_TARGET}" "${PUSH_JOB}"
 
 static-analysis: install-deps
-	. $(virtualenv_dir)/bin/activate; cd tests && ./main.sh static_analysis ${STATIC_ANALYSIS_JOB}
+	. $(virtualenv_dir)/bin/activate; cd tests && ./main.sh static_analysis "${STATIC_ANALYSIS_JOB}"
 
 tests: install-deps
 	. $(virtualenv_dir)/bin/activate; cd tests && ./main.sh
