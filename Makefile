@@ -30,17 +30,17 @@ push: static-analysis
 	. $(virtualenv_dir)/bin/activate; jenkins-jobs --conf "${JJB_CONF_PATH}" \
 		--user "${JENKINS_USER}" \
 		--password "${JENKINS_ACCESS_TOKEN}" \
-		update -r "jobs/common:${PUSH_TARGET}" "${PUSH_JOB}"
+		update -r "jobs/common:${PUSH_TARGET}" ${PUSH_JOB}
 
 test-push: static-analysis
 	. $(virtualenv_dir)/bin/activate; jenkins-jobs --conf "${JJB_CONF_PATH}" \
 		--user "${JENKINS_USER}" \
 		--password "${JENKINS_ACCESS_TOKEN}" \
-		test "jobs/common:${PUSH_TARGET}" "${PUSH_JOB}"
+		test "jobs/common:${PUSH_TARGET}" ${PUSH_JOB}
 
 push-local: static-analysis
 	. $(virtualenv_dir)/bin/activate; jenkins-jobs --conf "${LOCAL_JJB_CONF}" \
-		update -r "jobs/common:${PUSH_TARGET}" "${PUSH_JOB}"
+		update -r "jobs/common:${PUSH_TARGET}" ${PUSH_JOB}
 
 static-analysis: install-deps
 	. $(virtualenv_dir)/bin/activate; cd tests && ./main.sh static_analysis "${STATIC_ANALYSIS_JOB}"
