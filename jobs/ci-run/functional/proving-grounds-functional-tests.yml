@@ -51,8 +51,6 @@
                 series=jammy
             - name: nw-network-health-vsphere
               current-parameters: true
-            - name: nw-resolve
-              current-parameters: true
             - name: nw-upgrade-juju-beta
               current-parameters: true
             - name: nw-deploy-kubeflow
