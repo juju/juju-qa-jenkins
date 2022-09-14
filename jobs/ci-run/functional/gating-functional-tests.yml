@@ -42,8 +42,6 @@
               current-parameters: true
             - name: nw-network-spaces-aws
               current-parameters: true
-            - name: nw-unregister-controller
-              current-parameters: true
 
 
 - job:
