@@ -40,6 +40,10 @@
           current-parameters: true
         - name: 'test-controller-test-mongo-memory-profile-aws'
           current-parameters: true
+        - name: 'test-controller-test-unregister-lxd'
+          current-parameters: true
+        - name: 'test-controller-test-unregister-aws'
+          current-parameters: true
 
 - job:
     name: test-controller-test-enable-ha-lxd
@@ -88,7 +92,7 @@
             test_name: 'controller'
             setup_steps: ''
             task_name: 'test_enable_ha'
-            skip_tasks: 'test_mongo_memory_profile'
+            skip_tasks: 'test_mongo_memory_profile,test_unregister'
 
     publishers:
       - integration-artifacts
@@ -144,7 +148,7 @@
             test_name: 'controller'
             setup_steps: ''
             task_name: 'test_enable_ha'
-            skip_tasks: 'test_mongo_memory_profile'
+            skip_tasks: 'test_mongo_memory_profile,test_unregister'
 
     publishers:
       - integration-artifacts
@@ -196,7 +200,7 @@
             test_name: 'controller'
             setup_steps: ''
             task_name: 'test_mongo_memory_profile'
-            skip_tasks: 'test_enable_ha'
+            skip_tasks: 'test_enable_ha,test_unregister'
 
     publishers:
       - integration-artifacts
@@ -252,7 +256,115 @@
             test_name: 'controller'
             setup_steps: ''
             task_name: 'test_mongo_memory_profile'
-            skip_tasks: 'test_enable_ha'
+            skip_tasks: 'test_enable_ha,test_unregister'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-controller-test-unregister-lxd
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test test_unregister in controller suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'lxd'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 50
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'controller'
+            setup_steps: ''
+            task_name: 'test_unregister'
+            skip_tasks: 'test_enable_ha,test_mongo_memory_profile'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-controller-test-unregister-aws
+    node: ephemeral-focal-small-amd64
+    description: |-
+      Test test_unregister in controller suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'aws'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 50
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'controller'
+            setup_steps: ''
+            task_name: 'test_unregister'
+            skip_tasks: 'test_enable_ha,test_mongo_memory_profile'
 
     publishers:
       - integration-artifacts
