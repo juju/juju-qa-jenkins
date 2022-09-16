@@ -40,8 +40,6 @@
               current-parameters: true
             - name: nw-charm-storage
               current-parameters: true
-            - name: nw-network-spaces-aws
-              current-parameters: true
 
 
 - job:
