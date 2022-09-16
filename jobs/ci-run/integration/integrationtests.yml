@@ -150,6 +150,10 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: 'test-spaces_ec2-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: 'test-unit-multijob'
               current-parameters: true
               predefined-parameters: |-
