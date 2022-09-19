@@ -38,8 +38,6 @@
             - name: nw-deploy-bionic-microk8s
               disabled: true # nameserver fix required on microk8s
               current-parameters: true
-            - name: nw-charm-storage
-              current-parameters: true
 
 
 - job:
