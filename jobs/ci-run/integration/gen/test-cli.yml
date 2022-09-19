@@ -32,8 +32,6 @@
     - multijob:
         name: 'IntegrationTests-cli'
         projects:
-        - name: 'test-cli-test-block-commands-lxd'
-          current-parameters: true
         - name: 'test-cli-test-display-clouds-lxd'
           current-parameters: true
         - name: 'test-cli-test-local-charms-lxd'
@@ -42,58 +40,8 @@
           current-parameters: true
         - name: 'test-cli-test-model-defaults-lxd'
           current-parameters: true
-
-- job:
-    name: test-cli-test-block-commands-lxd
-    node: ephemeral-focal-8c-32g-amd64
-    description: |-
-      Test test_block_commands in cli suite on lxd
-    parameters:
-    - validating-string:
-        name: SHORT_GIT_COMMIT
-        description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
-        msg: Enter a valid 7 char git sha
-    - choice:
-        default: 'amd64'
-        description: 'Build arch used to download the build tar.gz.'
-        name: BUILD_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - string:
-        default: 'lxd'
-        description: 'Cloud to use when bootstrapping Juju'
-        name: BOOTSTRAP_CLOUD
-    - string:
-        default: 'lxd'
-        description: 'Provider to use when bootstrapping Juju'
-        name: BOOTSTRAP_PROVIDER
-    - string:
-        default: ''
-        description: 'Ubuntu series to use when bootstrapping Juju'
-        name: BOOTSTRAP_SERIES
-    - string:
-        default: jujuqabot
-        description: "Operator docker image account name."
-        name: OPERATOR_IMAGE_ACCOUNT
-    wrappers:
-      - default-integration-test-wrapper
-      - timeout:
-          timeout: 50
-          fail: true
-          type: absolute
-    builders:
-      - run-integration-test:
-            test_name: 'cli'
-            setup_steps: ''
-            task_name: 'test_block_commands'
-            skip_tasks: 'test_display_clouds,test_local_charms,test_model_config,test_model_defaults'
-
-    publishers:
-      - integration-artifacts
+        - name: 'test-cli-test-unregister-lxd'
+          current-parameters: true
 
 - job:
     name: test-cli-test-display-clouds-lxd
@@ -142,7 +90,7 @@
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_display_clouds'
-            skip_tasks: 'test_block_commands,test_local_charms,test_model_config,test_model_defaults'
+            skip_tasks: 'test_local_charms,test_model_config,test_model_defaults,test_unregister'
 
     publishers:
       - integration-artifacts
@@ -194,7 +142,7 @@
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_local_charms'
-            skip_tasks: 'test_block_commands,test_display_clouds,test_model_config,test_model_defaults'
+            skip_tasks: 'test_display_clouds,test_model_config,test_model_defaults,test_unregister'
 
     publishers:
       - integration-artifacts
@@ -246,7 +194,7 @@
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_model_config'
-            skip_tasks: 'test_block_commands,test_display_clouds,test_local_charms,test_model_defaults'
+            skip_tasks: 'test_display_clouds,test_local_charms,test_model_defaults,test_unregister'
 
     publishers:
       - integration-artifacts
@@ -298,7 +246,59 @@
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_model_defaults'
-            skip_tasks: 'test_block_commands,test_display_clouds,test_local_charms,test_model_config'
+            skip_tasks: 'test_display_clouds,test_local_charms,test_model_config,test_unregister'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-cli-test-unregister-lxd
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test test_unregister in cli suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'lxd'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 50
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'cli'
+            setup_steps: ''
+            task_name: 'test_unregister'
+            skip_tasks: 'test_display_clouds,test_local_charms,test_model_config,test_model_defaults'
 
     publishers:
       - integration-artifacts
