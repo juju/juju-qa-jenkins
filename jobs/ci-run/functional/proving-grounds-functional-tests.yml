@@ -41,8 +41,6 @@
               current-parameters: true
             - name: nw-bootstrap-constraints-maas-2-9
               current-parameters: true
-            - name: nw-add-credentials-aws
-              current-parameters: true
             - name: nw-deploy-client-macos
               current-parameters: true
             - name: nw-network-health-oci
