@@ -40,6 +40,18 @@
           current-parameters: true
         - name: 'test-model-test-model-migration-aws'
           current-parameters: true
+        - name: 'test-model-test-model-migration-saas-common-lxd'
+          current-parameters: true
+        - name: 'test-model-test-model-migration-saas-common-aws'
+          current-parameters: true
+        - name: 'test-model-test-model-migration-saas-external-lxd'
+          current-parameters: true
+        - name: 'test-model-test-model-migration-saas-external-aws'
+          current-parameters: true
+        - name: 'test-model-test-model-migration-version-lxd'
+          current-parameters: true
+        - name: 'test-model-test-model-migration-version-aws'
+          current-parameters: true
 
 - job:
     name: test-model-test-model-config-lxd
@@ -88,7 +100,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_config'
-            skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_multi'
+            skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
 
     publishers:
       - integration-artifacts
@@ -144,7 +156,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_config'
-            skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_multi'
+            skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
 
     publishers:
       - integration-artifacts
@@ -196,7 +208,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_destroy'
-            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_multi'
+            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
 
     publishers:
       - integration-artifacts
@@ -252,7 +264,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_destroy'
-            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_multi'
+            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
 
     publishers:
       - integration-artifacts
@@ -304,7 +316,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_metrics'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_multi'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
 
     publishers:
       - integration-artifacts
@@ -360,7 +372,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_metrics'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_multi'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
 
     publishers:
       - integration-artifacts
@@ -412,7 +424,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_multi'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
 
     publishers:
       - integration-artifacts
@@ -468,7 +480,331 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_multi'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-model-test-model-migration-saas-common-lxd
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test test_model_migration_saas_common in model suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'lxd'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 50
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'model'
+            setup_steps: ''
+            task_name: 'test_model_migration_saas_common'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-model-test-model-migration-saas-common-aws
+    node: ephemeral-focal-small-amd64
+    description: |-
+      Test test_model_migration_saas_common in model suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'aws'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 50
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'model'
+            setup_steps: ''
+            task_name: 'test_model_migration_saas_common'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-model-test-model-migration-saas-external-lxd
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test test_model_migration_saas_external in model suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'lxd'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 50
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'model'
+            setup_steps: ''
+            task_name: 'test_model_migration_saas_external'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_version,test_model_multi'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-model-test-model-migration-saas-external-aws
+    node: ephemeral-focal-small-amd64
+    description: |-
+      Test test_model_migration_saas_external in model suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'aws'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 50
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'model'
+            setup_steps: ''
+            task_name: 'test_model_migration_saas_external'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_version,test_model_multi'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-model-test-model-migration-version-lxd
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test test_model_migration_version in model suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'lxd'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 50
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'model'
+            setup_steps: ''
+            task_name: 'test_model_migration_version'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_multi'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-model-test-model-migration-version-aws
+    node: ephemeral-focal-small-amd64
+    description: |-
+      Test test_model_migration_version in model suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'aws'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 50
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'model'
+            setup_steps: ''
+            task_name: 'test_model_migration_version'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_multi'
 
     publishers:
       - integration-artifacts
@@ -520,7 +856,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_multi'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version'
 
     publishers:
       - integration-artifacts
@@ -576,7 +912,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_multi'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version'
 
     publishers:
       - integration-artifacts
