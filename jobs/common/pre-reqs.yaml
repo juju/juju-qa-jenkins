@@ -71,11 +71,10 @@
 
         # Install microk8s and kubectl
         sudo snap install microk8s --classic
-        sudo microk8s enable dns storage
         sudo snap install kubectl --classic
         echo "waiting for microk8s storage to become available"
         NEXT_WAIT_TIME=0
-        until [ $NEXT_WAIT_TIME -eq 30 ] || microk8s status --yaml | grep -q 'storage: enabled'; do
+        until [ $NEXT_WAIT_TIME -eq 30 ] || sudo microk8s enable dns hostpath-storage && microk8s status --yaml | grep -q 'storage: enabled'; do
         	sleep $(( NEXT_WAIT_TIME++ ))
         done
         if [ $NEXT_WAIT_TIME == 30 ]; then
