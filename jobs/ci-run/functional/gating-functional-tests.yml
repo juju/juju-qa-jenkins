@@ -29,8 +29,6 @@
           projects:
             # These projects are currently in alphabetical order.
             # Please keep it that way!
-            - name: nw-assess-persistent-storage
-              current-parameters: true
             - name: nw-deploy-bionic-gke
               current-parameters: true
             - name: nw-deploy-bionic-aks
