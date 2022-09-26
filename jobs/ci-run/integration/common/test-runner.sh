@@ -47,7 +47,7 @@ while [ $attempts -lt 3 ]; do
         sudo snap install shellcheck || true
     fi
     if [ ! "$(which expect >/dev/null 2>&1)" ]; then
-        sudo apt install expect || true
+        sudo apt-get -y install expect || true
     fi
     if [ ! "$(which petname >/dev/null 2>&1)" ]; then
         sudo snap install petname || true
