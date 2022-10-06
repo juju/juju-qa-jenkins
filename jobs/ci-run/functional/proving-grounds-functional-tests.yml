@@ -33,8 +33,6 @@
               current-parameters: true
             - name: nw-deploy-vsphere
               current-parameters: true
-            - name: nw-network-health-maas-2-9
-              current-parameters: true
             - name: nw-deploy-jammy-amd64-maas-2-9
               current-parameters: true
             - name: nw-container-networking-maas-2-9
@@ -42,12 +40,6 @@
             - name: nw-bootstrap-constraints-maas-2-9
               current-parameters: true
             - name: nw-deploy-client-macos
-              current-parameters: true
-            - name: nw-network-health-oci
-              current-parameters: true
-              predefined-parameters: |-
-                series=jammy
-            - name: nw-network-health-vsphere
               current-parameters: true
             - name: nw-upgrade-juju-beta
               current-parameters: true
