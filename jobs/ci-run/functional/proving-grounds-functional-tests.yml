@@ -55,7 +55,5 @@
               current-parameters: true
             - name: nw-deploy-client-centos9
               current-parameters: true
-            - name: nw-cross-model-relations
-              current-parameters: true
             - name: nw-deploy-client-windows
               current-parameters: true
