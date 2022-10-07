@@ -224,6 +224,10 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: 'test-user-unstable-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: 'test-relations-multijob'
               current-parameters: true
               predefined-parameters: |-
