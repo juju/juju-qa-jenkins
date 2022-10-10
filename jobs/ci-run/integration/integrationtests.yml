@@ -122,6 +122,10 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: 'test-deploy_caas-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: 'test-expose-ec2'
               current-parameters: true
               predefined-parameters: |-
