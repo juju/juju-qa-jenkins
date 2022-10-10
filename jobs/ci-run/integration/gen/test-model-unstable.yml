@@ -36,11 +36,17 @@
           current-parameters: true
         - name: 'test-model-test-model-config-aws'
           current-parameters: true
+        - name: 'test-model-test-model-config-google'
+          current-parameters: true
         - name: 'test-model-test-model-metrics-lxd'
           current-parameters: true
         - name: 'test-model-test-model-metrics-aws'
           current-parameters: true
+        - name: 'test-model-test-model-metrics-google'
+          current-parameters: true
         - name: 'test-model-test-model-multi-lxd'
           current-parameters: true
         - name: 'test-model-test-model-multi-aws'
+          current-parameters: true
+        - name: 'test-model-test-model-multi-google'
           current-parameters: true
