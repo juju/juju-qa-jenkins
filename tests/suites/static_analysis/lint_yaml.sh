@@ -115,6 +115,7 @@ jobs:
     - github-juju-pylibjuju-jobs:github-juju-pylibjuju-jobs
     - github-juju-check-jobs:github-juju-check-jobs
     - test-bootstrap-multijob:IntegrationTests-bootstrap
+    - test-deploy_caas-multijob:IntegrationTests-deploy_caas
     - test-upgrade-multijob:IntegrationTests-upgrade
     - test-upgrade_series-multijob:IntegrationTests-upgrade_series
 EOF
