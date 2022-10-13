@@ -46,6 +46,9 @@ while [ $attempts -lt 3 ]; do
     if [ ! "$(which shellcheck >/dev/null 2>&1)" ]; then
         sudo snap install shellcheck || true
     fi
+    if [ ! "$(which juju-kubectl >/dev/null 2>&1)" ]; then
+        sudo snap install juju-kubectl --classic || true
+    fi
     if [ ! "$(which expect >/dev/null 2>&1)" ]; then
         sudo apt-get -y install expect || true
     fi
