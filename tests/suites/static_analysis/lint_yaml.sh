@@ -116,9 +116,10 @@ jobs:
     - github-juju-check-jobs:github-juju-check-jobs
     - test-bootstrap-multijob:IntegrationTests-bootstrap
     - test-deploy_caas-multijob:IntegrationTests-deploy_caas
+    - test-expose_ec2-multijob:IntegrationTests-expose_ec2
+    - test-magma-multijob:IntegrationTests-magma
     - test-upgrade-multijob:IntegrationTests-upgrade
     - test-upgrade_series-multijob:IntegrationTests-upgrade_series
-    - test-magma-multijob:IntegrationTests-magma
 EOF
 )
   if [ -n "${OUT}" ]; then
