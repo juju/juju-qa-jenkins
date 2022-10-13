@@ -126,7 +126,7 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
-            - name: 'test-expose-ec2'
+            - name: 'test-expose_ec2-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
@@ -241,15 +241,6 @@
               predefined-parameters: |-
                 BUILD_ARCH=amd64
             - name: 'test-relations-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-            # EC2-only special cases:
-            - name: 'test-spaces-ec2'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-            - name: 'test-network-health-ec2'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
