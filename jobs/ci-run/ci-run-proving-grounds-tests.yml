@@ -79,10 +79,6 @@
 
             def b = build.getPreviousBuild()
             while (b != null) {
-                if (b.number == 22) {
-                    // handle first build
-                    break
-                }
                 if (b.result != Result.SUCCESS) {
                     b = b.getPreviousBuild()
                     continue
