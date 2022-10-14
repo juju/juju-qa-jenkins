@@ -248,6 +248,10 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: 'test-coslite-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
 
 - job:
     name: "gating-integration-tests-arm64"
