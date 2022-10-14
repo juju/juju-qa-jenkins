@@ -41,6 +41,7 @@ jobs:
     - ci-build-juju
     - ci-gating-tests
     - ci-proving-ground-tests
+    - ci-proving-ground-tests-once-daily
     - clean-lxd-environments
     - clean-maas-environments
     - clean-workspaces
