@@ -122,10 +122,6 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
-            - name: 'test-deploy_caas-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
             - name: 'test-expose_ec2-multijob'
               current-parameters: true
               predefined-parameters: |-
@@ -139,10 +135,6 @@
               predefined-parameters: |-
                 BUILD_ARCH=amd64
             - name: 'test-machine-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-            - name: 'test-magma-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
@@ -245,6 +237,14 @@
               predefined-parameters: |-
                 BUILD_ARCH=amd64
             - name: 'test-manual-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-magma-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-deploy_caas-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
