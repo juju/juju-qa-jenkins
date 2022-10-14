@@ -384,7 +384,7 @@
         sudo cp -R "$JUJU_DATA/credentials.yaml" "$juju_data"
         sudo chown -R "$USER" "$juju_data"
 
-        REGION="${REGION:-ap-southeast-2}"
+        REGION="${REGION:-us-east-1}"
 
         mkdir -p "$HOME"/.aws
         echo "[default]" > "$HOME"/.aws/credentials

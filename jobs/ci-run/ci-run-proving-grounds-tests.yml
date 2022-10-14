@@ -24,12 +24,12 @@
           description: "Series to use with charms in the functional tests"
           name: series
       - string:
-          default: ''
-          description: 'Ubuntu series to use when bootstrapping Juju'
+          default: ""
+          description: "Ubuntu series to use when bootstrapping Juju"
           name: BOOTSTRAP_SERIES
       - string:
-          default: ''
-          description: 'Go version used for build.'
+          default: ""
+          description: "Go version used for build."
           name: GOVERSION
     builders:
       - get-build-details
@@ -44,3 +44,62 @@
             - name: proving-grounds-integration-tests-amd64
               current-parameters: true
               predefined-parameters: BUILD_ARCH=arm64
+
+- job:
+    name: "ci-proving-ground-tests-once-daily"
+    project-type: "multijob"
+    description: "Run proving ground tests for a Juju commit once per day"
+    condition: SUCCESSFUL
+    node: noop-parent-jobs
+    concurrent: false
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to test
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+      - string:
+          default: ""
+          description: "Series to use with charms in the functional tests"
+          name: series
+      - string:
+          default: ""
+          description: "Ubuntu series to use when bootstrapping Juju"
+          name: BOOTSTRAP_SERIES
+      - string:
+          default: ""
+          description: "Go version used for build."
+          name: GOVERSION
+    builders:
+      - get-build-details
+      - set-test-description
+      - system-groovy:
+          command: |
+            import hudson.model.*
+
+            def b = build.getPreviousBuild()
+            while (b != null) {
+                if (b.number == 22) {
+                    // handle first build
+                    break
+                }
+                if (b.result != Result.SUCCESS) {
+                    b = b.getPreviousBuild()
+                    continue
+                }
+                if (b.getStartTimeInMillis()+(24*60*60*1000)>build.getStartTimeInMillis()) {
+                    throw new InterruptedException()
+                }
+                break
+            }
+
+            println "It has been one day since last build... triggering job"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: "ci-proving-ground-tests"
+            condition: SUCCESS
+            current-parameters: true
+            predefined-parameters: |-
+              series=${series}
+              SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+              GOVERSION=${GOVERSION}

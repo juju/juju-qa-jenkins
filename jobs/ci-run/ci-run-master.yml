@@ -276,8 +276,8 @@
                 BOOTSTRAP_SERIES=${BOOTSTRAP_SERIES}
     publishers:
       - trigger-parameterized-builds:
-          - project: "ci-proving-ground-tests"
-            condition: SUCCESS
+          - project: "ci-proving-ground-tests-once-daily"
+            condition: ALWAYS
             current-parameters: true
             predefined-parameters: |-
               series=${series}

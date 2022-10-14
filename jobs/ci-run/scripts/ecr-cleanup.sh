@@ -32,11 +32,17 @@ set +x
 export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY}
 export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_KEY}
 
+AWS_CLI_VER=$(aws --version | cut -d " " -f 1 | cut -d / -f 2 | cut -d . -f 1)
+CREATED_AT_SELECTOR=".createdAt"
+if [ $AWS_CLI_VER -ge 2 ]; then
+CREATED_AT_SELECTOR="(.createdAt | strptime(\"%Y-%m-%dT%H:%M:%S%Z\") | mktime )"
+fi
+
 for region in ${REGIONS[@]}; do
     echo "=> checking ECR registries in $region..."
     for name in $(
         aws ecr describe-repositories --region ${region} | 
-        jq ".repositories[] | select( ${NOW} - (.createdAt | strptime(\"%Y-%m-%dT%H:%M:%S%Z\") | mktime ) > (${HOURS} * 3600)  )" | 
+        jq ".repositories[] | select( ${NOW} - ${CREATED_AT_SELECTOR} > (${HOURS} * 3600)  )" | 
         jq -r .repositoryName
     ); do
         IMAGES_TO_DELETE=$(aws ecr list-images --region ${region} --repository-name ${name} --query 'imageIds[*]' --output json)
