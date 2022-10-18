@@ -1,6 +1,13 @@
 # utils related to integration tests
 # Prepare things for an integration test
 - builder:
+    name: 'registry-setup'
+    builders:
+    - host-src-command:
+        src_command:
+          !include-raw: "common/registry-setup.sh"
+
+- builder:
     name: 'prepare-integration-test'
     builders:
     - set-common-environment
@@ -26,9 +33,12 @@
 - builder:
     name: 'run-integration-test-microk8s'
     builders:
+    - wait-for-cloud-init
     - prepare-integration-test
     - install-microk8s
     - install-docker
+    - ensure-aws-credentials
+    - registry-setup
     - get-s3-build-payload-testing:
           SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
           platform: "linux/${{BUILD_ARCH}}"
@@ -36,7 +46,7 @@
           test_name: "{test_name}"
           task_name: "{task_name}"
           skip_tasks: "{skip_tasks}"
-          setup_steps: ""
+          setup_steps: "{setup_steps}"
 
 - builder:
     name: 'integration-test-runner'
