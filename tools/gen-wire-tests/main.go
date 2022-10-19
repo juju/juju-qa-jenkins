@@ -427,7 +427,7 @@ const Template = `
     {{- end }}
 
 {{- if eq $node.Unstable false }}
-{{$timeout := (index $node.Timeout $task_name)}}
+{{$timeout := (index $node.Timeout $task_name)}} {{$d_timeout := (index $node.Timeout "default")}}
 - job:
     name: {{$full_task_name}}
     node: {{$run_on}}
@@ -477,7 +477,7 @@ const Template = `
     wrappers:
       - default-integration-test-wrapper
       - timeout:
-          timeout: {{- if gt $timeout 0 }} {{$timeout}}{{ else }} 50{{- end}}
+          timeout: {{- if gt $timeout 0 }} {{$timeout}}{{ else }} {{- if gt $d_timeout 0 }} {{$d_timeout}}{{ else }} 50{{- end}}{{- end}}
           fail: true
           type: absolute
     builders:
