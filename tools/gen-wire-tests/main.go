@@ -427,7 +427,7 @@ const Template = `
     {{- end }}
 
 {{- if eq $node.Unstable false }}
-{{$timeout := (index $node.Timeout $task_name)}} {{$d_timeout := (index $node.Timeout "default")}}
+{{$timeout := (index $node.Timeout $task_name)}} {{- $d_timeout := (index $node.Timeout "default")}}
 - job:
     name: {{$full_task_name}}
     node: {{$run_on}}
