@@ -57,6 +57,10 @@ while [ $attempts -lt 3 ]; do
     attempts=$((attempts + 1))
 done
 
+# As Juju is now sometimes a strictly confined snap, it needs to be helped
+# out by creating the ~/.local/share dir as it cannot do this itself
+mkdir -p $HOME/.local/share
+
 juju bootstrap localhost test \
     --config 'identity-url=https://api.staging.jujucharms.com/identity' \
     --config 'allow-model-access=true' \
