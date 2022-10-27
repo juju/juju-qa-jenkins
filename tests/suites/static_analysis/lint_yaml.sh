@@ -77,6 +77,7 @@ jobs:
     - make-windows-installer
     - gating-functional-tests-s390x
     - gating-functional-tests-ppc64el
+    - test-refresh-multijob
 
     # TODO (stickupkid): The followng jobs seem to be orphan jobs with in the
     # jenkins suite. We should clean them up to ensure that they do run, or

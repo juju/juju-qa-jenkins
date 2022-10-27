@@ -452,6 +452,24 @@ const Template = `
         - arm64
         - s390x
         - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
     - string:
         default: '{{$cloud.CloudName}}'
         description: 'Cloud to use when bootstrapping Juju'

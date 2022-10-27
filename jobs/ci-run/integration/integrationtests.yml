@@ -284,10 +284,14 @@
             - name: 'test-deploy-test-deploy-bundles-aws'
               current-parameters: true
               predefined-parameters: |-
+                BUILD_ARCH=amd64
+                BOOTSTRAP_ARCH=arm64
                 MODEL_ARCH=arm64
             - name: 'test-deploy-test-deploy-charms-aws'
               current-parameters: true
               predefined-parameters: |-
+                BUILD_ARCH=amd64
+                BOOTSTRAP_ARCH=arm64
                 MODEL_ARCH=arm64
 
 
