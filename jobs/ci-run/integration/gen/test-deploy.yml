@@ -40,6 +40,10 @@
           current-parameters: true
         - name: 'test-deploy-test-deploy-charms-aws'
           current-parameters: true
+        - name: 'test-deploy-test-deploy-default-series-lxd'
+          current-parameters: true
+        - name: 'test-deploy-test-deploy-default-series-aws'
+          current-parameters: true
         - name: 'test-deploy-test-deploy-os-lxd'
           current-parameters: true
         - name: 'test-deploy-test-deploy-revision-lxd'
@@ -65,6 +69,24 @@
         - arm64
         - s390x
         - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
     - string:
         default: 'lxd'
         description: 'Cloud to use when bootstrapping Juju'
@@ -92,7 +114,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_cmr_bundles_export_overlay'
-            skip_tasks: 'test_deploy_bundles,test_deploy_charms,test_deploy_os,test_deploy_revision'
+            skip_tasks: 'test_deploy_bundles,test_deploy_charms,test_deploy_default_series,test_deploy_os,test_deploy_revision'
 
     publishers:
       - integration-artifacts
@@ -117,6 +139,24 @@
         - arm64
         - s390x
         - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
     - string:
         default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
@@ -148,7 +188,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_cmr_bundles_export_overlay'
-            skip_tasks: 'test_deploy_bundles,test_deploy_charms,test_deploy_os,test_deploy_revision'
+            skip_tasks: 'test_deploy_bundles,test_deploy_charms,test_deploy_default_series,test_deploy_os,test_deploy_revision'
 
     publishers:
       - integration-artifacts
@@ -173,6 +213,24 @@
         - arm64
         - s390x
         - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
     - string:
         default: 'lxd'
         description: 'Cloud to use when bootstrapping Juju'
@@ -200,7 +258,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_bundles'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_charms,test_deploy_os,test_deploy_revision'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_charms,test_deploy_default_series,test_deploy_os,test_deploy_revision'
 
     publishers:
       - integration-artifacts
@@ -225,6 +283,24 @@
         - arm64
         - s390x
         - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
     - string:
         default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
@@ -256,7 +332,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_bundles'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_charms,test_deploy_os,test_deploy_revision'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_charms,test_deploy_default_series,test_deploy_os,test_deploy_revision'
 
     publishers:
       - integration-artifacts
@@ -281,6 +357,24 @@
         - arm64
         - s390x
         - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
     - string:
         default: 'lxd'
         description: 'Cloud to use when bootstrapping Juju'
@@ -308,7 +402,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_charms'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_os,test_deploy_revision'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_default_series,test_deploy_os,test_deploy_revision'
 
     publishers:
       - integration-artifacts
@@ -333,6 +427,24 @@
         - arm64
         - s390x
         - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
     - string:
         default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
@@ -364,7 +476,151 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_charms'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_os,test_deploy_revision'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_default_series,test_deploy_os,test_deploy_revision'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-deploy-test-deploy-default-series-lxd
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test test_deploy_default_series in deploy suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'lxd'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 50
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'deploy'
+            setup_steps: ''
+            task_name: 'test_deploy_default_series'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_os,test_deploy_revision'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-deploy-test-deploy-default-series-aws
+    node: ephemeral-focal-small-amd64
+    description: |-
+      Test test_deploy_default_series in deploy suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'aws'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 50
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'deploy'
+            setup_steps: ''
+            task_name: 'test_deploy_default_series'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_os,test_deploy_revision'
 
     publishers:
       - integration-artifacts
@@ -389,6 +645,24 @@
         - arm64
         - s390x
         - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
     - string:
         default: 'lxd'
         description: 'Cloud to use when bootstrapping Juju'
@@ -416,7 +690,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_os'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_revision'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_default_series,test_deploy_revision'
 
     publishers:
       - integration-artifacts
@@ -441,6 +715,24 @@
         - arm64
         - s390x
         - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
     - string:
         default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
@@ -472,7 +764,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_os'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_revision'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_default_series,test_deploy_revision'
 
     publishers:
       - integration-artifacts
@@ -492,6 +784,24 @@
         default: 'amd64'
         description: 'Build arch used to download the build tar.gz.'
         name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
         choices:
         - amd64
         - arm64
@@ -524,7 +834,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_revision'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_os'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_default_series,test_deploy_os'
 
     publishers:
       - integration-artifacts
@@ -544,6 +854,24 @@
         default: 'amd64'
         description: 'Build arch used to download the build tar.gz.'
         name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
         choices:
         - amd64
         - arm64
@@ -580,7 +908,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_revision'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_os'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_default_series,test_deploy_os'
 
     publishers:
       - integration-artifacts
