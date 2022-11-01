@@ -32,9 +32,9 @@
     - multijob:
         name: 'IntegrationTests-agents'
         projects:
-        - name: 'test-agents-lxd'
+        - name: 'test-agents-test-charmrevisionupdater-lxd'
           current-parameters: true
-        - name: 'test-agents-aws'
+        - name: 'test-agents-test-charmrevisionupdater-aws'
           current-parameters: true
 
 - job:

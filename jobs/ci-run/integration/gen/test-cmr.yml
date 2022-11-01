@@ -32,9 +32,9 @@
     - multijob:
         name: 'IntegrationTests-cmr'
         projects:
-        - name: 'test-cmr-lxd'
+        - name: 'test-cmr-test-offer-consume-lxd'
           current-parameters: true
-        - name: 'test-cmr-aws'
+        - name: 'test-cmr-test-offer-consume-aws'
           current-parameters: true
 
 - job:

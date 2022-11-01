@@ -32,7 +32,7 @@
     - multijob:
         name: 'IntegrationTests-upgrade'
         projects:
-        - name: 'test-upgrade-lxd'
+        - name: 'test-upgrade-test-upgrade-simplestream-lxd'
           current-parameters: true
 
 - job:

@@ -32,7 +32,7 @@
     - multijob:
         name: 'IntegrationTests-upgrade_series'
         projects:
-        - name: 'test-upgrade_series-lxd'
+        - name: 'test-upgrade_series-test-upgrade-series-relation-lxd'
           current-parameters: true
 
 - job:

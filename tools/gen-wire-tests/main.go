@@ -393,14 +393,9 @@ const Template = `
 {{- range $cloud := $node.Clouds}}
     {{- $unstableTasks := index $node.UnstableTasks $cloud.ProviderName -}}
     {{- $task_name := index $node.TaskNames $k -}}
-    {{- if eq (len $node.SkipTasks) 1}}
-        - name: 'test-{{$.SuiteName}}-{{$cloud.CloudName}}'
-          current-parameters: true
-    {{- else}}
-      {{- if eq (contains $unstableTasks $task_name) $node.Unstable}}
+    {{- if eq (contains $unstableTasks $task_name) $node.Unstable}}
         - name: 'test-{{$.SuiteName}}-{{ensureHyphen $task_name}}-{{$cloud.CloudName}}'
           current-parameters: true
-      {{- end -}}
     {{- end -}}
 {{- end}}
 {{- end}}

@@ -32,9 +32,9 @@
     - multijob:
         name: 'IntegrationTests-machine'
         projects:
-        - name: 'test-machine-lxd'
+        - name: 'test-machine-test-logs-lxd'
           current-parameters: true
-        - name: 'test-machine-aws'
+        - name: 'test-machine-test-logs-aws'
           current-parameters: true
 
 - job:

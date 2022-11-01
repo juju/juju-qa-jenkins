@@ -32,7 +32,7 @@
     - multijob:
         name: 'IntegrationTests-coslite'
         projects:
-        - name: 'test-coslite-microk8s'
+        - name: 'test-coslite-test-deploy-coslite-microk8s'
           current-parameters: true
 
 - job:

@@ -32,9 +32,9 @@
     - multijob:
         name: 'IntegrationTests-appdata'
         projects:
-        - name: 'test-appdata-lxd'
+        - name: 'test-appdata-test-appdata-int-lxd'
           current-parameters: true
-        - name: 'test-appdata-aws'
+        - name: 'test-appdata-test-appdata-int-aws'
           current-parameters: true
 
 - job:

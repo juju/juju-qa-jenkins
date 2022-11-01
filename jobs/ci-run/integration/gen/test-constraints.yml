@@ -32,9 +32,9 @@
     - multijob:
         name: 'IntegrationTests-constraints'
         projects:
-        - name: 'test-constraints-lxd'
+        - name: 'test-constraints-test-constraints-common-lxd'
           current-parameters: true
-        - name: 'test-constraints-google'
+        - name: 'test-constraints-test-constraints-common-google'
           current-parameters: true
 
 - job:

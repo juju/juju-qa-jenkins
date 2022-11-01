@@ -32,9 +32,9 @@
     - multijob:
         name: 'IntegrationTests-backup'
         projects:
-        - name: 'test-backup-lxd'
+        - name: 'test-backup-test-basic-backup-lxd'
           current-parameters: true
-        - name: 'test-backup-aws'
+        - name: 'test-backup-test-basic-backup-aws'
           current-parameters: true
 
 - job:

@@ -32,7 +32,7 @@
     - multijob:
         name: 'IntegrationTests-magma'
         projects:
-        - name: 'test-magma-microk8s'
+        - name: 'test-magma-test-deploy-magma-microk8s'
           current-parameters: true
 
 - job:

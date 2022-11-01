@@ -32,9 +32,9 @@
     - multijob:
         name: 'IntegrationTests-unit'
         projects:
-        - name: 'test-unit-lxd'
+        - name: 'test-unit-test-unit-series-lxd'
           current-parameters: true
-        - name: 'test-unit-aws'
+        - name: 'test-unit-test-unit-series-aws'
           current-parameters: true
 
 - job:
