@@ -487,7 +487,7 @@ const Template = `
     wrappers:
       - default-integration-test-wrapper
       - timeout:
-          timeout: {{- if gt $timeout 0 }} {{$timeout}}{{ else }} 50{{- end}}
+          timeout: {{- if gt $timeout 0 }} {{$timeout}}{{ else }} 30{{- end}}
           fail: true
           type: absolute
     builders:
