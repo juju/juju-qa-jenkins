@@ -32,13 +32,13 @@
     - multijob:
         name: 'IntegrationTests-agents'
         projects:
-        - name: 'test-agents-lxd'
+        - name: 'test-agents-test-charmrevisionupdater-lxd'
           current-parameters: true
-        - name: 'test-agents-aws'
+        - name: 'test-agents-test-charmrevisionupdater-aws'
           current-parameters: true
 
 - job:
-    name: test-agents-lxd
+    name: test-agents-test-charmrevisionupdater-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test agents suite on lxd
@@ -107,7 +107,7 @@
       - integration-artifacts
 
 - job:
-    name: test-agents-aws
+    name: test-agents-test-charmrevisionupdater-aws
     node: ephemeral-focal-small-amd64
     description: |-
       Test agents suite on aws

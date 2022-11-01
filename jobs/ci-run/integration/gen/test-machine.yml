@@ -32,13 +32,13 @@
     - multijob:
         name: 'IntegrationTests-machine'
         projects:
-        - name: 'test-machine-lxd'
+        - name: 'test-machine-test-logs-lxd'
           current-parameters: true
-        - name: 'test-machine-aws'
+        - name: 'test-machine-test-logs-aws'
           current-parameters: true
 
 - job:
-    name: test-machine-lxd
+    name: test-machine-test-logs-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test machine suite on lxd
@@ -107,7 +107,7 @@
       - integration-artifacts
 
 - job:
-    name: test-machine-aws
+    name: test-machine-test-logs-aws
     node: ephemeral-focal-small-amd64
     description: |-
       Test machine suite on aws

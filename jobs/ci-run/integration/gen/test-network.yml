@@ -32,17 +32,17 @@
     - multijob:
         name: 'IntegrationTests-network'
         projects:
-        - name: 'test-network-lxd'
+        - name: 'test-network-test-network-health-lxd'
           current-parameters: true
-        - name: 'test-network-aws'
+        - name: 'test-network-test-network-health-aws'
           current-parameters: true
-        - name: 'test-network-google'
+        - name: 'test-network-test-network-health-google'
           current-parameters: true
-        - name: 'test-network-azure'
+        - name: 'test-network-test-network-health-azure'
           current-parameters: true
 
 - job:
-    name: test-network-lxd
+    name: test-network-test-network-health-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test network suite on lxd
@@ -111,7 +111,7 @@
       - integration-artifacts
 
 - job:
-    name: test-network-aws
+    name: test-network-test-network-health-aws
     node: ephemeral-focal-small-amd64
     description: |-
       Test network suite on aws
@@ -184,7 +184,7 @@
       - integration-artifacts
 
 - job:
-    name: test-network-google
+    name: test-network-test-network-health-google
     node: ephemeral-focal-small-amd64
     description: |-
       Test network suite on google
@@ -257,7 +257,7 @@
       - integration-artifacts
 
 - job:
-    name: test-network-azure
+    name: test-network-test-network-health-azure
     node: ephemeral-focal-small-amd64
     description: |-
       Test network suite on azure

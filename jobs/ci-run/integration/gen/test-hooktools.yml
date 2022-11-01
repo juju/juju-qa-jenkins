@@ -32,13 +32,13 @@
     - multijob:
         name: 'IntegrationTests-hooktools'
         projects:
-        - name: 'test-hooktools-lxd'
+        - name: 'test-hooktools-test-state-hook-tools-lxd'
           current-parameters: true
-        - name: 'test-hooktools-aws'
+        - name: 'test-hooktools-test-state-hook-tools-aws'
           current-parameters: true
 
 - job:
-    name: test-hooktools-lxd
+    name: test-hooktools-test-state-hook-tools-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test hooktools suite on lxd
@@ -107,7 +107,7 @@
       - integration-artifacts
 
 - job:
-    name: test-hooktools-aws
+    name: test-hooktools-test-state-hook-tools-aws
     node: ephemeral-focal-small-amd64
     description: |-
       Test hooktools suite on aws

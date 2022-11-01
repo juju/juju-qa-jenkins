@@ -32,11 +32,11 @@
     - multijob:
         name: 'IntegrationTests-upgrade'
         projects:
-        - name: 'test-upgrade-lxd'
+        - name: 'test-upgrade-test-upgrade-simplestream-lxd'
           current-parameters: true
 
 - job:
-    name: test-upgrade-lxd
+    name: test-upgrade-test-upgrade-simplestream-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test upgrade suite on lxd

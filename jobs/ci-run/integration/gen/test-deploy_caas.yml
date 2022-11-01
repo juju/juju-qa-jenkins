@@ -32,11 +32,11 @@
     - multijob:
         name: 'IntegrationTests-deploy_caas'
         projects:
-        - name: 'test-deploy_caas-microk8s'
+        - name: 'test-deploy_caas-test-deploy-charm-microk8s'
           current-parameters: true
 
 - job:
-    name: test-deploy_caas-microk8s
+    name: test-deploy_caas-test-deploy-charm-microk8s
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test deploy_caas suite on microk8s

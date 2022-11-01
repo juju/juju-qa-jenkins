@@ -32,11 +32,11 @@
     - multijob:
         name: 'IntegrationTests-bootstrap'
         projects:
-        - name: 'test-bootstrap-lxd'
+        - name: 'test-bootstrap-test-bootstrap-simplestream-lxd'
           current-parameters: true
 
 - job:
-    name: test-bootstrap-lxd
+    name: test-bootstrap-test-bootstrap-simplestream-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test bootstrap suite on lxd
