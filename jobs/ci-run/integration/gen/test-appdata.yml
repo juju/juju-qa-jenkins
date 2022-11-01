@@ -38,7 +38,7 @@
           current-parameters: true
 
 - job:
-    name: test-appdata-lxd
+    name: test-appdata-test-appdata-int-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test appdata suite on lxd
@@ -107,7 +107,7 @@
       - integration-artifacts
 
 - job:
-    name: test-appdata-aws
+    name: test-appdata-test-appdata-int-aws
     node: ephemeral-focal-small-amd64
     description: |-
       Test appdata suite on aws

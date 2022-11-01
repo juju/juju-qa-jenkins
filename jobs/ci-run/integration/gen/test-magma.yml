@@ -36,7 +36,7 @@
           current-parameters: true
 
 - job:
-    name: test-magma-microk8s
+    name: test-magma-test-deploy-magma-microk8s
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test magma suite on microk8s

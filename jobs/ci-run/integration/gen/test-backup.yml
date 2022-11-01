@@ -38,7 +38,7 @@
           current-parameters: true
 
 - job:
-    name: test-backup-lxd
+    name: test-backup-test-basic-backup-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test backup suite on lxd
@@ -107,7 +107,7 @@
       - integration-artifacts
 
 - job:
-    name: test-backup-aws
+    name: test-backup-test-basic-backup-aws
     node: ephemeral-focal-small-amd64
     description: |-
       Test backup suite on aws

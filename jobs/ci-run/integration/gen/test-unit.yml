@@ -38,7 +38,7 @@
           current-parameters: true
 
 - job:
-    name: test-unit-lxd
+    name: test-unit-test-unit-series-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test unit suite on lxd
@@ -107,7 +107,7 @@
       - integration-artifacts
 
 - job:
-    name: test-unit-aws
+    name: test-unit-test-unit-series-aws
     node: ephemeral-focal-small-amd64
     description: |-
       Test unit suite on aws

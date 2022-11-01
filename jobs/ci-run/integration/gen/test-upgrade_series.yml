@@ -36,7 +36,7 @@
           current-parameters: true
 
 - job:
-    name: test-upgrade_series-lxd
+    name: test-upgrade_series-test-upgrade-series-relation-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test upgrade_series suite on lxd

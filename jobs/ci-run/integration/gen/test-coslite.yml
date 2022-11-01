@@ -36,7 +36,7 @@
           current-parameters: true
 
 - job:
-    name: test-coslite-microk8s
+    name: test-coslite-test-deploy-coslite-microk8s
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test coslite suite on microk8s

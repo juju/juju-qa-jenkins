@@ -409,11 +409,8 @@ const Template = `
 {{- range $cloud := $node.Clouds -}}
     {{- $task_name := "" -}}
     {{- $test_name := (printf "%s-%s" $.SuiteName $cloud.CloudName) -}}
-    {{- $full_task_name := (printf "test-%s" $test_name) -}}
-    {{- if gt (len $node.SkipTasks) 1 }}
-        {{- $task_name = index $node.TaskNames $k -}}
-        {{- $full_task_name = (printf "test-%s-%s-%s" $.SuiteName (ensureHyphen $task_name) $cloud.CloudName) -}}
-    {{- end }}
+	{{- $task_name = index $node.TaskNames $k -}}
+	{{- $full_task_name := (printf "test-%s-%s-%s" $.SuiteName (ensureHyphen $task_name) $cloud.CloudName) -}}
 
     {{- $builder := "run-integration-test" -}}
     {{- $run_on := "ephemeral-focal-small-amd64" -}}

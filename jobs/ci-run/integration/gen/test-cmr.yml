@@ -38,7 +38,7 @@
           current-parameters: true
 
 - job:
-    name: test-cmr-lxd
+    name: test-cmr-test-offer-consume-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
       Test cmr suite on lxd
@@ -107,7 +107,7 @@
       - integration-artifacts
 
 - job:
-    name: test-cmr-aws
+    name: test-cmr-test-offer-consume-aws
     node: ephemeral-focal-small-amd64
     description: |-
       Test cmr suite on aws
