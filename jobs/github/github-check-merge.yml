@@ -87,6 +87,7 @@
           needs_mgo: true
       - viddy:
           project_dir: "github.com/juju/viddy"
+          build_script: "scripts/snippet_build_basic-make-test.sh"
 
     jobs:
       - 'github-check-merge-juju-{project_name}'
