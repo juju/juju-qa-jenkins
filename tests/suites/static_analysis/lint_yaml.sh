@@ -123,6 +123,8 @@ jobs:
     - test-magma-multijob:IntegrationTests-magma
     - test-upgrade-multijob:IntegrationTests-upgrade
     - test-upgrade_series-multijob:IntegrationTests-upgrade_series
+    - test-secrets_k8s-multijob:IntegrationTests-secrets_k8s
+    - test-secrets_iaas-multijob:IntegrationTests-secrets_iaas
 EOF
 )
   if [ -n "${OUT}" ]; then
