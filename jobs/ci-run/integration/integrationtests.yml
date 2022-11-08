@@ -118,6 +118,10 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: 'test-credential-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: 'test-deploy-multijob'
               current-parameters: true
               predefined-parameters: |-
@@ -135,6 +139,14 @@
               predefined-parameters: |-
                 BUILD_ARCH=amd64
             - name: 'test-machine-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-manual-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-model-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
@@ -174,15 +186,7 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
-            - name: 'test-model-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
             - name: 'test-user-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-            - name: 'test-credential-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
@@ -233,10 +237,6 @@
               predefined-parameters: |-
                 BUILD_ARCH=amd64
             - name: 'test-relations-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-            - name: 'test-manual-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
