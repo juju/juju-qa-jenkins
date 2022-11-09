@@ -35,7 +35,8 @@
     builders:
     - wait-for-cloud-init
     - prepare-integration-test
-    - install-microk8s
+    - install-microk8s:
+        channel: "latest/stable"
     - install-docker
     - ensure-aws-credentials
     - registry-setup
