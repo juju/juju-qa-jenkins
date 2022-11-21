@@ -32,80 +32,10 @@
     - multijob:
         name: 'IntegrationTests-user'
         projects:
-        - name: 'test-user-test-user-manage-lxd'
-          current-parameters: true
         - name: 'test-user-test-user-manage-aws'
           current-parameters: true
-
-- job:
-    name: test-user-test-user-login-password-lxd
-    node: ephemeral-focal-8c-32g-amd64
-    description: |-
-      Test test_user_login_password in user suite on lxd
-    parameters:
-    - validating-string:
-        name: SHORT_GIT_COMMIT
-        description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
-        msg: Enter a valid 7 char git sha
-    - choice:
-        default: 'amd64'
-        description: 'Build arch used to download the build tar.gz.'
-        name: BUILD_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - choice:
-        default: ''
-        description: 'Arch used to boostrap controller.'
-        name: BOOTSTRAP_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - choice:
-        default: ''
-        description: 'Arch used for hosted models.'
-        name: MODEL_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - string:
-        default: 'lxd'
-        description: 'Cloud to use when bootstrapping Juju'
-        name: BOOTSTRAP_CLOUD
-    - string:
-        default: 'lxd'
-        description: 'Provider to use when bootstrapping Juju'
-        name: BOOTSTRAP_PROVIDER
-    - string:
-        default: ''
-        description: 'Ubuntu series to use when bootstrapping Juju'
-        name: BOOTSTRAP_SERIES
-    - string:
-        default: jujuqabot
-        description: "Operator docker image account name."
-        name: OPERATOR_IMAGE_ACCOUNT
-    wrappers:
-      - default-integration-test-wrapper
-      - timeout:
-          timeout: 30
-          fail: true
-          type: absolute
-    builders:
-      - run-integration-test:
-            test_name: 'user'
-            setup_steps: ''
-            task_name: 'test_user_login_password'
-            skip_tasks: 'test_user_manage'
-
-    publishers:
-      - integration-artifacts
+        - name: 'test-user-test-user-manage-lxd'
+          current-parameters: true
 
 - job:
     name: test-user-test-user-login-password-aws
@@ -182,10 +112,10 @@
       - integration-artifacts
 
 - job:
-    name: test-user-test-user-manage-lxd
+    name: test-user-test-user-login-password-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
-      Test test_user_manage in user suite on lxd
+      Test test_user_login_password in user suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -245,8 +175,8 @@
       - run-integration-test:
             test_name: 'user'
             setup_steps: ''
-            task_name: 'test_user_manage'
-            skip_tasks: 'test_user_login_password'
+            task_name: 'test_user_login_password'
+            skip_tasks: 'test_user_manage'
 
     publishers:
       - integration-artifacts
@@ -301,6 +231,76 @@
         default: 'us-east-1'
         description: 'Cloud Region to use when bootstrapping Juju'
         name: BOOTSTRAP_REGION
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'user'
+            setup_steps: ''
+            task_name: 'test_user_manage'
+            skip_tasks: 'test_user_login_password'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-user-test-user-manage-lxd
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test test_user_manage in user suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'lxd'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
     - string:
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'

@@ -32,112 +32,42 @@
     - multijob:
         name: 'IntegrationTests-model'
         projects:
-        - name: 'test-model-test-model-destroy-lxd'
-          current-parameters: true
         - name: 'test-model-test-model-destroy-aws'
           current-parameters: true
         - name: 'test-model-test-model-destroy-google'
           current-parameters: true
-        - name: 'test-model-test-model-migration-lxd'
+        - name: 'test-model-test-model-destroy-lxd'
           current-parameters: true
         - name: 'test-model-test-model-migration-aws'
           current-parameters: true
         - name: 'test-model-test-model-migration-google'
           current-parameters: true
-        - name: 'test-model-test-model-migration-saas-common-lxd'
+        - name: 'test-model-test-model-migration-lxd'
           current-parameters: true
         - name: 'test-model-test-model-migration-saas-common-aws'
           current-parameters: true
         - name: 'test-model-test-model-migration-saas-common-google'
           current-parameters: true
-        - name: 'test-model-test-model-migration-saas-external-lxd'
+        - name: 'test-model-test-model-migration-saas-common-lxd'
           current-parameters: true
         - name: 'test-model-test-model-migration-saas-external-aws'
           current-parameters: true
         - name: 'test-model-test-model-migration-saas-external-google'
           current-parameters: true
-        - name: 'test-model-test-model-migration-version-lxd'
+        - name: 'test-model-test-model-migration-saas-external-lxd'
           current-parameters: true
         - name: 'test-model-test-model-migration-version-aws'
           current-parameters: true
         - name: 'test-model-test-model-migration-version-google'
           current-parameters: true
-        - name: 'test-model-test-model-status-lxd'
+        - name: 'test-model-test-model-migration-version-lxd'
           current-parameters: true
         - name: 'test-model-test-model-status-aws'
           current-parameters: true
         - name: 'test-model-test-model-status-google'
           current-parameters: true
-
-- job:
-    name: test-model-test-model-config-lxd
-    node: ephemeral-focal-8c-32g-amd64
-    description: |-
-      Test test_model_config in model suite on lxd
-    parameters:
-    - validating-string:
-        name: SHORT_GIT_COMMIT
-        description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
-        msg: Enter a valid 7 char git sha
-    - choice:
-        default: 'amd64'
-        description: 'Build arch used to download the build tar.gz.'
-        name: BUILD_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - choice:
-        default: ''
-        description: 'Arch used to boostrap controller.'
-        name: BOOTSTRAP_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - choice:
-        default: ''
-        description: 'Arch used for hosted models.'
-        name: MODEL_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - string:
-        default: 'lxd'
-        description: 'Cloud to use when bootstrapping Juju'
-        name: BOOTSTRAP_CLOUD
-    - string:
-        default: 'lxd'
-        description: 'Provider to use when bootstrapping Juju'
-        name: BOOTSTRAP_PROVIDER
-    - string:
-        default: ''
-        description: 'Ubuntu series to use when bootstrapping Juju'
-        name: BOOTSTRAP_SERIES
-    - string:
-        default: jujuqabot
-        description: "Operator docker image account name."
-        name: OPERATOR_IMAGE_ACCOUNT
-    wrappers:
-      - default-integration-test-wrapper
-      - timeout:
-          timeout: 30
-          fail: true
-          type: absolute
-    builders:
-      - run-integration-test:
-            test_name: 'model'
-            setup_steps: ''
-            task_name: 'test_model_config'
-            skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
-    publishers:
-      - integration-artifacts
+        - name: 'test-model-test-model-status-lxd'
+          current-parameters: true
 
 - job:
     name: test-model-test-model-config-aws
@@ -288,10 +218,10 @@
       - integration-artifacts
 
 - job:
-    name: test-model-test-model-destroy-lxd
+    name: test-model-test-model-config-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
-      Test test_model_destroy in model suite on lxd
+      Test test_model_config in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -351,8 +281,8 @@
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
-            task_name: 'test_model_destroy'
-            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+            task_name: 'test_model_config'
+            skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
 
     publishers:
       - integration-artifacts
@@ -506,10 +436,10 @@
       - integration-artifacts
 
 - job:
-    name: test-model-test-model-metrics-lxd
+    name: test-model-test-model-destroy-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
-      Test test_model_metrics in model suite on lxd
+      Test test_model_destroy in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -569,8 +499,8 @@
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
-            task_name: 'test_model_metrics'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+            task_name: 'test_model_destroy'
+            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
 
     publishers:
       - integration-artifacts
@@ -724,10 +654,10 @@
       - integration-artifacts
 
 - job:
-    name: test-model-test-model-migration-lxd
+    name: test-model-test-model-metrics-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
-      Test test_model_migration in model suite on lxd
+      Test test_model_metrics in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -780,15 +710,15 @@
     wrappers:
       - default-integration-test-wrapper
       - timeout:
-          timeout: 90
+          timeout: 30
           fail: true
           type: absolute
     builders:
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
-            task_name: 'test_model_migration'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+            task_name: 'test_model_metrics'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
 
     publishers:
       - integration-artifacts
@@ -942,10 +872,10 @@
       - integration-artifacts
 
 - job:
-    name: test-model-test-model-migration-saas-common-lxd
+    name: test-model-test-model-migration-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
-      Test test_model_migration_saas_common in model suite on lxd
+      Test test_model_migration in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -998,15 +928,15 @@
     wrappers:
       - default-integration-test-wrapper
       - timeout:
-          timeout: 30
+          timeout: 90
           fail: true
           type: absolute
     builders:
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
-            task_name: 'test_model_migration_saas_common'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+            task_name: 'test_model_migration'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
 
     publishers:
       - integration-artifacts
@@ -1160,10 +1090,10 @@
       - integration-artifacts
 
 - job:
-    name: test-model-test-model-migration-saas-external-lxd
+    name: test-model-test-model-migration-saas-common-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
-      Test test_model_migration_saas_external in model suite on lxd
+      Test test_model_migration_saas_common in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -1223,8 +1153,8 @@
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
-            task_name: 'test_model_migration_saas_external'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_version,test_model_multi,test_model_status'
+            task_name: 'test_model_migration_saas_common'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
 
     publishers:
       - integration-artifacts
@@ -1378,10 +1308,10 @@
       - integration-artifacts
 
 - job:
-    name: test-model-test-model-migration-version-lxd
+    name: test-model-test-model-migration-saas-external-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
-      Test test_model_migration_version in model suite on lxd
+      Test test_model_migration_saas_external in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -1434,15 +1364,15 @@
     wrappers:
       - default-integration-test-wrapper
       - timeout:
-          timeout: 50
+          timeout: 30
           fail: true
           type: absolute
     builders:
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
-            task_name: 'test_model_migration_version'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_multi,test_model_status'
+            task_name: 'test_model_migration_saas_external'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_version,test_model_multi,test_model_status'
 
     publishers:
       - integration-artifacts
@@ -1596,10 +1526,10 @@
       - integration-artifacts
 
 - job:
-    name: test-model-test-model-multi-lxd
+    name: test-model-test-model-migration-version-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
-      Test test_model_multi in model suite on lxd
+      Test test_model_migration_version in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -1652,15 +1582,15 @@
     wrappers:
       - default-integration-test-wrapper
       - timeout:
-          timeout: 30
+          timeout: 50
           fail: true
           type: absolute
     builders:
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
-            task_name: 'test_model_multi'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_status'
+            task_name: 'test_model_migration_version'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_multi,test_model_status'
 
     publishers:
       - integration-artifacts
@@ -1814,10 +1744,10 @@
       - integration-artifacts
 
 - job:
-    name: test-model-test-model-status-lxd
+    name: test-model-test-model-multi-lxd
     node: ephemeral-focal-8c-32g-amd64
     description: |-
-      Test test_model_status in model suite on lxd
+      Test test_model_multi in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -1877,8 +1807,8 @@
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
-            task_name: 'test_model_status'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
+            task_name: 'test_model_multi'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_status'
 
     publishers:
       - integration-artifacts
@@ -2007,6 +1937,76 @@
         default: 'us-east1'
         description: 'Cloud Region to use when bootstrapping Juju'
         name: BOOTSTRAP_REGION
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'model'
+            setup_steps: ''
+            task_name: 'test_model_status'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-model-test-model-status-lxd
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test test_model_status in model suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'lxd'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
     - string:
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'

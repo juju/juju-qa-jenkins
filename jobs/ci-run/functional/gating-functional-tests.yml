@@ -27,11 +27,9 @@
       - multijob:
           name: GatingFunctionalTestsAmd64
           projects:
-            # These projects are currently in alphabetical order.
-            # Please keep it that way!
-            - name: nw-deploy-bionic-gke
-              current-parameters: true
             - name: nw-deploy-bionic-aks
+              current-parameters: true
+            - name: nw-deploy-bionic-gke
               current-parameters: true
             - name: nw-deploy-bionic-microk8s
               disabled: true # nameserver fix required on microk8s

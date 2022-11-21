@@ -135,6 +135,25 @@ EOF
   fi
 }
 
+run_yaml_alphabetise() {
+  OUT=$(go run tests/suites/static_analysis/alphabetise/main.go "$(pwd)" <<EOF 2>&1 || true
+files:
+  skip:
+    - .github/workflows/static-analysis.yml
+    - .github/workflows/local-deployment.yml
+jobs:
+  ignore: []
+EOF
+)
+  if [ -n "${OUT}" ]; then
+    echo ""
+    echo "$(red 'Found some issues:')"
+    echo "${OUT}"
+    exit 1
+  fi
+
+}
+
 test_static_analysis_yaml() {
   if [ "$(skip 'test_static_analysis_yaml')" ]; then
       echo "==> TEST SKIPPED: static yaml analysis"
@@ -169,6 +188,13 @@ test_static_analysis_yaml() {
       run "run_yaml_simplify"
     else
       echo "go not found, yaml simplify disabled"
+    fi
+
+    # YAML alphabetise
+    if which go >/dev/null 2>&1; then
+      run "run_yaml_alphabetise"
+    else
+      echo "go not found, yaml alphabetise disabled"
     fi
   )
 }

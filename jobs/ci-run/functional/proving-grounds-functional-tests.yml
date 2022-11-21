@@ -22,16 +22,20 @@
       - multijob:
           name: ProvingGroundsFunctionalTestsAmd64
           projects:
-            - name: nw-deploy-jammy-amd64-equinix
-              current-parameters: true
-              enable-condition: '!["2.8"].contains("${JUJU_VERSION_MAJOR_MINOR}")' # Provider support is only available on 2.9+
-            - name: nw-deploy-focal-amd64-lxd
-              current-parameters: true
-            - name: nw-deploy-jammy-amd64-lxd
+            - name: nw-add-cloud-many
               current-parameters: true
             - name: nw-deploy-bionic-eks
               current-parameters: true
-            - name: nw-upgrade-juju-beta
+            - name: nw-deploy-client-centos9
+              current-parameters: true
+            - name: nw-deploy-client-windows
+              current-parameters: true
+            - name: nw-deploy-focal-amd64-lxd
+              current-parameters: true
+            - name: nw-deploy-jammy-amd64-equinix
+              current-parameters: true
+              enable-condition: '!["2.8"].contains("${JUJU_VERSION_MAJOR_MINOR}")' # Provider support is only available on 2.9+
+            - name: nw-deploy-jammy-amd64-lxd
               current-parameters: true
             - name: nw-deploy-kubeflow
               alias: nw-kubeflow-microk8s-lite-rbac
@@ -41,9 +45,5 @@
                 BUNDLE_VERSION=lite
                 BUILD_CHARMS=false
                 ENABLE_RBAC=true
-            - name: nw-add-cloud-many
-              current-parameters: true
-            - name: nw-deploy-client-centos9
-              current-parameters: true
-            - name: nw-deploy-client-windows
+            - name: nw-upgrade-juju-beta
               current-parameters: true
