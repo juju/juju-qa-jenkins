@@ -31,16 +31,6 @@
               current-parameters: true
             - name: nw-deploy-bionic-eks
               current-parameters: true
-            - name: nw-deploy-vsphere
-              current-parameters: true
-            - name: nw-deploy-jammy-amd64-maas-2-9
-              current-parameters: true
-            - name: nw-container-networking-maas-2-9
-              current-parameters: true
-            - name: nw-bootstrap-constraints-maas-2-9
-              current-parameters: true
-            - name: nw-deploy-client-macos
-              current-parameters: true
             - name: nw-upgrade-juju-beta
               current-parameters: true
             - name: nw-deploy-kubeflow
