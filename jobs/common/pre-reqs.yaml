@@ -81,12 +81,23 @@
         sudo snap install microk8s --classic --channel={channel}
         sudo snap install kubectl --classic --channel={channel}
         echo "waiting for microk8s storage to become available"
+
         NEXT_WAIT_TIME=0
-        until [ $NEXT_WAIT_TIME -eq 30 ] || sudo microk8s enable dns hostpath-storage && microk8s status --yaml | grep -q 'storage: enabled'; do
-        	sleep $(( NEXT_WAIT_TIME++ ))
+        until [ $NEXT_WAIT_TIME -eq 30 ] || sudo microk8s enable dns && microk8s status --yaml | grep -q 'dns: enabled'; do
+            sleep $(( NEXT_WAIT_TIME++ ))
         done
         if [ $NEXT_WAIT_TIME == 30 ]; then
-        	echo "microk8s storage is still not enabled"
+            echo "microk8s dns is still not enabled"
+            exit 1
+        fi
+
+        NEXT_WAIT_TIME=0
+        # Required addon hostpath-storage is called storage for older versions of microk8s
+        until [ $NEXT_WAIT_TIME -eq 30 ] || sudo microk8s enable hostpath-storage || sudo microk8s enable storage && microk8s status --yaml | grep -q 'storage: enabled'; do
+            sleep $(( NEXT_WAIT_TIME++ ))
+        done
+        if [ $NEXT_WAIT_TIME == 30 ]; then
+            echo "microk8s storage is still not enabled"
             exit 1
         fi
 
