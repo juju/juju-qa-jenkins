@@ -19,7 +19,7 @@ jobs:
       shell: bash
       run: |
         set -euxo pipefail
-        juju deploy ch:jenkins --config password=password --config plugins=jenkins-multijob-plugin
+        juju deploy ch:jenkins --series=focal --config password=password --config plugins=jenkins-multijob-plugin
         juju wait-for application jenkins --query 'status=="active"'
 
     - name: Deploy juju-qa-jenkins to Jenkins
