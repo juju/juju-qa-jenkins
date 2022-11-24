@@ -287,5 +287,5 @@
               !include-raw: "./scripts/checkout.sh"
           src_command:
               !include-raw: "./scripts/snippet_clean-test-exit.sh"
-          test_command:
-              !include-raw: "./scripts/pylibjuju-schema-test.sh"
+          #test_command:
+          #    !include-raw: "./scripts/pylibjuju-schema-test.sh"
