@@ -200,92 +200,92 @@
 
 ############################################################# PYLIBJUJU TESTS ##
 
-- job:   # github-juju-pylibjuju-jobs
-    name: 'github-juju-pylibjuju-jobs'
-    project-type: 'multijob'
-    description: 'Run the pylibjuju checks for the GitHub PR'
-    concurrent: true
-    node: noop-parent-jobs
-    wrappers:
-      - ansicolor
-      - workspace-cleanup
-      - timestamps
-      - timeout:
-          timeout: 60
-          fail: true
-          type: absolute
-    parameters:
-    - string:
-         default: ''
-         description: 'Enable sub job to be run individually.'
-         name: SHORT_GIT_COMMIT
-    properties:
-      - github:
-          url: https://github.com/juju/juju/
-      - authorization:
-          anonymous:
-            - job-read
-    triggers:
-      - github-pull-request:
-          github-hooks: true
-          trigger-phrase: '.*(jenkins\:.*test.*schema)|(##.*##).*'
-          status-context: "check-multi-pylibjuju-tests"
-          only-trigger-phrase: true
-          auto-close-on-fail: false
-          cancel-builds-on-update: true  # Cancel existing builds if PR updated/re-run.
-          org-list:
-            - juju
-            - CanonicalLtd
-          allow-whitelist-orgs-as-admins: true
-          black-list-labels:
-            - "no-test-run"
-          black-list-target-branches:
-            - master
-            - staging
-            - jucy-lucy
-            - feature-.*
-    builders:
-      - multijob:
-            name: github-juju-pylibjuju-jobs
-            projects:
-              - name: github-schema-tests-pylibjuju
-                current-parameters: true
+# - job:   # github-juju-pylibjuju-jobs
+#     name: 'github-juju-pylibjuju-jobs'
+#     project-type: 'multijob'
+#     description: 'Run the pylibjuju checks for the GitHub PR'
+#     concurrent: true
+#     node: noop-parent-jobs
+#     wrappers:
+#       - ansicolor
+#       - workspace-cleanup
+#       - timestamps
+#       - timeout:
+#           timeout: 60
+#           fail: true
+#           type: absolute
+#     parameters:
+#     - string:
+#          default: ''
+#          description: 'Enable sub job to be run individually.'
+#          name: SHORT_GIT_COMMIT
+#     properties:
+#       - github:
+#           url: https://github.com/juju/juju/
+#       - authorization:
+#           anonymous:
+#             - job-read
+#     triggers:
+#       - github-pull-request:
+#           github-hooks: true
+#           trigger-phrase: '.*(jenkins\:.*test.*schema)|(##.*##).*'
+#           status-context: "check-multi-pylibjuju-tests"
+#           only-trigger-phrase: true
+#           auto-close-on-fail: false
+#           cancel-builds-on-update: true  # Cancel existing builds if PR updated/re-run.
+#           org-list:
+#             - juju
+#             - CanonicalLtd
+#           allow-whitelist-orgs-as-admins: true
+#           black-list-labels:
+#             - "no-test-run"
+#           black-list-target-branches:
+#             - master
+#             - staging
+#             - jucy-lucy
+#             - feature-.*
+#     builders:
+#       - multijob:
+#             name: github-juju-pylibjuju-jobs
+#             projects:
+#               - name: github-schema-tests-pylibjuju
+#                 current-parameters: true
 
-- job:
-    name: github-schema-tests-pylibjuju
-    description: |-
-      Run schema checks against python libjuju against the PR
-    node: ephemeral-github-medium-amd64
-    concurrent: false
-    parameters:
-    - string:
-        default: ''
-        description: 'Specific git SHA to build (used to overwrite triggered runs).'
-        name: GITHUB_BRANCH_HEAD_SHA
-    properties:
-      - authorization:
-         anonymous:
-             - job-read
-    wrappers:
-      - ansicolor
-      - workspace-cleanup
-      - timestamps
-      - timeout:
-           timeout: 60
-           fail: true
-           type: absolute
-    builders:
-      - description-setter:
-          description: '<a href="${ghprbPullLink}">PR #${ghprbPullId}</a>'
-      - inject:
-          properties-content: |-
-            PROJECT_DIR="github.com/juju/juju"
-      - run-build-check-raw:
-          build_env: ""
-          setup_steps: ""
-          checkout_command:
-              !include-raw: "./scripts/checkout.sh"
-          src_command:
-              !include-raw: "./scripts/snippet_clean-test-exit.sh"
-          test_command:
-              !include-raw: "./scripts/pylibjuju-schema-test.sh"
+# - job:
+#     name: github-schema-tests-pylibjuju
+#     description: |-
+#       Run schema checks against python libjuju against the PR
+#     node: ephemeral-github-medium-amd64
+#     concurrent: false
+#     parameters:
+#     - string:
+#         default: ''
+#         description: 'Specific git SHA to build (used to overwrite triggered runs).'
+#         name: GITHUB_BRANCH_HEAD_SHA
+#     properties:
+#       - authorization:
+#          anonymous:
+#              - job-read
+#     wrappers:
+#       - ansicolor
+#       - workspace-cleanup
+#       - timestamps
+#       - timeout:
+#            timeout: 60
+#            fail: true
+#            type: absolute
+#     builders:
+#       - description-setter:
+#           description: '<a href="${ghprbPullLink}">PR #${ghprbPullId}</a>'
+#       - inject:
+#           properties-content: |-
+#             PROJECT_DIR="github.com/juju/juju"
+#       - run-build-check-raw:
+#           build_env: ""
+#           setup_steps: ""
+#           checkout_command:
+#               !include-raw: "./scripts/checkout.sh"
+#           src_command:
+#               !include-raw: "./scripts/snippet_clean-test-exit.sh"
+#           test_command:
+#               !include-raw: "./scripts/pylibjuju-schema-test.sh"

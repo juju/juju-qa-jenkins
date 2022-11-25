@@ -7,33 +7,19 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Install Dependencies
-      shell: bash
-      run: |
-        set -euxo pipefail
-        sudo apt-get remove lxd lxd-client
-        sudo snap install lxd
-        sudo lxd waitready
-        sudo lxd init --auto
-        sudo snap install juju --classic --channel=latest/stable
-        sudo snap install juju-wait --classic --channel=latest/stable
-        sudo chmod a+wr /var/snap/lxd/common/lxd/unix.socket
-        echo "/snap/bin" >> $GITHUB_PATH
-        lxc network set lxdbr0 ipv6.address none
-
-    - name: Bootstrap Juju lxd controller
-      shell: bash
-      run: |
-        set -euxo pipefail
-        juju bootstrap localhost test
+    - name: Bootstrap lxd controller
+      uses: charmed-kubernetes/actions-operator@main
+      with:
+        provider: lxd
+        juju-channel: latest/stable
 
     - name: Deploy a Jenkins master to Juju
       shell: bash
       run: |
         set -euxo pipefail
-        juju deploy ch:jenkins --config password=password --config plugins=jenkins-multijob-plugin
+        juju deploy ch:jenkins --series=focal --config password=password --config plugins=jenkins-multijob-plugin
         juju wait-for application jenkins --query 'status=="active"'
 
     - name: Deploy juju-qa-jenkins to Jenkins

@@ -59,9 +59,12 @@
           needs_mgo: true
       - worker:
           project_dir: "github.com/juju/worker"
-      - python-libjuju:
-          project_dir: "github.com/juju/python-libjuju"
-          build_script: "scripts/snippet_build_check-juju-python-libjuju.sh"
+      # tiradojm
+      # 2022-11-24 Python-libjuju logistics have been moved to
+      # GitHub
+      #   - python-libjuju:
+      #     project_dir: "github.com/juju/python-libjuju"
+      #     build_script: "scripts/snippet_build_check-juju-python-libjuju.sh"
       - schemagen:
           project_dir: "github.com/juju/schemagen"
       - ratelimit:
