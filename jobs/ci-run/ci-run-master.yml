@@ -262,11 +262,6 @@
           name: "Testing"
           condition: SUCCESSFUL
           projects:
-            - name: "unit-tests"
-              current-parameters: true
-              predefined-parameters: |-
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
             - name: "gating-tests"
               current-parameters: true
               predefined-parameters: |-
@@ -274,6 +269,11 @@
                 series=${series}
                 GOVERSION=${GOVERSION}
                 BOOTSTRAP_SERIES=${BOOTSTRAP_SERIES}
+            - name: "unit-tests"
+              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                GOVERSION=${GOVERSION}
     publishers:
       - trigger-parameterized-builds:
           - project: "ci-proving-ground-tests-once-daily"

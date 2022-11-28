@@ -32,96 +32,26 @@
     - multijob:
         name: 'IntegrationTests-refresh'
         projects:
-        - name: 'test-refresh-test-basic-lxd'
-          current-parameters: true
         - name: 'test-refresh-test-basic-aws'
-          current-parameters: true
-        - name: 'test-refresh-test-basic-google'
           current-parameters: true
         - name: 'test-refresh-test-basic-azure'
           current-parameters: true
-        - name: 'test-refresh-test-basic-microk8s'
+        - name: 'test-refresh-test-basic-google'
           current-parameters: true
-        - name: 'test-refresh-test-switch-lxd'
+        - name: 'test-refresh-test-basic-lxd'
+          current-parameters: true
+        - name: 'test-refresh-test-basic-microk8s'
           current-parameters: true
         - name: 'test-refresh-test-switch-aws'
           current-parameters: true
+        - name: 'test-refresh-test-switch-azure'
+          current-parameters: true
         - name: 'test-refresh-test-switch-google'
           current-parameters: true
-        - name: 'test-refresh-test-switch-azure'
+        - name: 'test-refresh-test-switch-lxd'
           current-parameters: true
         - name: 'test-refresh-test-switch-microk8s'
           current-parameters: true
-
-- job:
-    name: test-refresh-test-basic-lxd
-    node: ephemeral-focal-8c-32g-amd64
-    description: |-
-      Test test_basic in refresh suite on lxd
-    parameters:
-    - validating-string:
-        name: SHORT_GIT_COMMIT
-        description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
-        msg: Enter a valid 7 char git sha
-    - choice:
-        default: 'amd64'
-        description: 'Build arch used to download the build tar.gz.'
-        name: BUILD_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - choice:
-        default: ''
-        description: 'Arch used to boostrap controller.'
-        name: BOOTSTRAP_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - choice:
-        default: ''
-        description: 'Arch used for hosted models.'
-        name: MODEL_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - string:
-        default: 'lxd'
-        description: 'Cloud to use when bootstrapping Juju'
-        name: BOOTSTRAP_CLOUD
-    - string:
-        default: 'lxd'
-        description: 'Provider to use when bootstrapping Juju'
-        name: BOOTSTRAP_PROVIDER
-    - string:
-        default: ''
-        description: 'Ubuntu series to use when bootstrapping Juju'
-        name: BOOTSTRAP_SERIES
-    - string:
-        default: jujuqabot
-        description: "Operator docker image account name."
-        name: OPERATOR_IMAGE_ACCOUNT
-    wrappers:
-      - default-integration-test-wrapper
-      - timeout:
-          timeout: 30
-          fail: true
-          type: absolute
-    builders:
-      - run-integration-test:
-            test_name: 'refresh'
-            setup_steps: ''
-            task_name: 'test_basic'
-            skip_tasks: 'test_switch'
-
-    publishers:
-      - integration-artifacts
 
 - job:
     name: test-refresh-test-basic-aws
@@ -171,80 +101,6 @@
         name: BOOTSTRAP_PROVIDER
     - string:
         default: 'us-east-1'
-        description: 'Cloud Region to use when bootstrapping Juju'
-        name: BOOTSTRAP_REGION
-    - string:
-        default: ''
-        description: 'Ubuntu series to use when bootstrapping Juju'
-        name: BOOTSTRAP_SERIES
-    - string:
-        default: jujuqabot
-        description: "Operator docker image account name."
-        name: OPERATOR_IMAGE_ACCOUNT
-    wrappers:
-      - default-integration-test-wrapper
-      - timeout:
-          timeout: 30
-          fail: true
-          type: absolute
-    builders:
-      - run-integration-test:
-            test_name: 'refresh'
-            setup_steps: ''
-            task_name: 'test_basic'
-            skip_tasks: 'test_switch'
-
-    publishers:
-      - integration-artifacts
-
-- job:
-    name: test-refresh-test-basic-google
-    node: ephemeral-focal-small-amd64
-    description: |-
-      Test test_basic in refresh suite on google
-    parameters:
-    - validating-string:
-        name: SHORT_GIT_COMMIT
-        description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
-        msg: Enter a valid 7 char git sha
-    - choice:
-        default: 'amd64'
-        description: 'Build arch used to download the build tar.gz.'
-        name: BUILD_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - choice:
-        default: ''
-        description: 'Arch used to boostrap controller.'
-        name: BOOTSTRAP_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - choice:
-        default: ''
-        description: 'Arch used for hosted models.'
-        name: MODEL_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - string:
-        default: 'google'
-        description: 'Cloud to use when bootstrapping Juju'
-        name: BOOTSTRAP_CLOUD
-    - string:
-        default: 'google'
-        description: 'Provider to use when bootstrapping Juju'
-        name: BOOTSTRAP_PROVIDER
-    - string:
-        default: 'us-east1'
         description: 'Cloud Region to use when bootstrapping Juju'
         name: BOOTSTRAP_REGION
     - string:
@@ -346,6 +202,150 @@
       - integration-artifacts
 
 - job:
+    name: test-refresh-test-basic-google
+    node: ephemeral-focal-small-amd64
+    description: |-
+      Test test_basic in refresh suite on google
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'google'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'google'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'refresh'
+            setup_steps: ''
+            task_name: 'test_basic'
+            skip_tasks: 'test_switch'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-refresh-test-basic-lxd
+    node: ephemeral-focal-8c-32g-amd64
+    description: |-
+      Test test_basic in refresh suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'lxd'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'refresh'
+            setup_steps: ''
+            task_name: 'test_basic'
+            skip_tasks: 'test_switch'
+
+    publishers:
+      - integration-artifacts
+
+- job:
     name: test-refresh-test-basic-microk8s
     node: ephemeral-focal-8c-32g-amd64
     description: |-
@@ -416,76 +416,6 @@
       - integration-artifacts
 
 - job:
-    name: test-refresh-test-switch-lxd
-    node: ephemeral-focal-8c-32g-amd64
-    description: |-
-      Test test_switch in refresh suite on lxd
-    parameters:
-    - validating-string:
-        name: SHORT_GIT_COMMIT
-        description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
-        msg: Enter a valid 7 char git sha
-    - choice:
-        default: 'amd64'
-        description: 'Build arch used to download the build tar.gz.'
-        name: BUILD_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - choice:
-        default: ''
-        description: 'Arch used to boostrap controller.'
-        name: BOOTSTRAP_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - choice:
-        default: ''
-        description: 'Arch used for hosted models.'
-        name: MODEL_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - string:
-        default: 'lxd'
-        description: 'Cloud to use when bootstrapping Juju'
-        name: BOOTSTRAP_CLOUD
-    - string:
-        default: 'lxd'
-        description: 'Provider to use when bootstrapping Juju'
-        name: BOOTSTRAP_PROVIDER
-    - string:
-        default: ''
-        description: 'Ubuntu series to use when bootstrapping Juju'
-        name: BOOTSTRAP_SERIES
-    - string:
-        default: jujuqabot
-        description: "Operator docker image account name."
-        name: OPERATOR_IMAGE_ACCOUNT
-    wrappers:
-      - default-integration-test-wrapper
-      - timeout:
-          timeout: 30
-          fail: true
-          type: absolute
-    builders:
-      - run-integration-test:
-            test_name: 'refresh'
-            setup_steps: ''
-            task_name: 'test_switch'
-            skip_tasks: 'test_basic'
-
-    publishers:
-      - integration-artifacts
-
-- job:
     name: test-refresh-test-switch-aws
     node: ephemeral-focal-small-amd64
     description: |-
@@ -533,6 +463,80 @@
         name: BOOTSTRAP_PROVIDER
     - string:
         default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    - string:
+        default: jujuqabot
+        description: "Operator docker image account name."
+        name: OPERATOR_IMAGE_ACCOUNT
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - run-integration-test:
+            test_name: 'refresh'
+            setup_steps: ''
+            task_name: 'test_switch'
+            skip_tasks: 'test_basic'
+
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-refresh-test-switch-azure
+    node: ephemeral-focal-small-amd64
+    description: |-
+      Test test_switch in refresh suite on azure
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{7}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'azure'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'azure'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'centralus'
         description: 'Cloud Region to use when bootstrapping Juju'
         name: BOOTSTRAP_REGION
     - string:
@@ -634,10 +638,10 @@
       - integration-artifacts
 
 - job:
-    name: test-refresh-test-switch-azure
-    node: ephemeral-focal-small-amd64
+    name: test-refresh-test-switch-lxd
+    node: ephemeral-focal-8c-32g-amd64
     description: |-
-      Test test_switch in refresh suite on azure
+      Test test_switch in refresh suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -672,17 +676,13 @@
         - s390x
         - ppc64el
     - string:
-        default: 'azure'
+        default: 'lxd'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'azure'
+        default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
-    - string:
-        default: 'centralus'
-        description: 'Cloud Region to use when bootstrapping Juju'
-        name: BOOTSTRAP_REGION
     - string:
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'

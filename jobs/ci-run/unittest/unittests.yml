@@ -33,9 +33,9 @@
             projects:
               - name: unit-tests-amd64
                 current-parameters: true
-              - name: unit-tests-race-amd64
-                current-parameters: true
               - name: unit-tests-arm64
+                current-parameters: true
+              - name: unit-tests-race-amd64
                 current-parameters: true
               - name: unit-tests-race-arm64
                 current-parameters: true

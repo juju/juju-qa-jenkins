@@ -134,17 +134,17 @@ func main() {
 		suiteNames = append(suiteNames, suiteName)
 
 		clouds := make([]Cloud, 0)
-		if !contains(config.Folders.SkipLXD, suiteName) {
-			clouds = append(clouds, lxd)
-		}
 		if !contains(config.Folders.SkipAWS, suiteName) {
 			clouds = append(clouds, aws)
+		}
+		if !contains(config.Folders.SkipAzure, suiteName) {
+			clouds = append(clouds, azure)
 		}
 		if !contains(config.Folders.SkipGoogle, suiteName) {
 			clouds = append(clouds, google)
 		}
-		if !contains(config.Folders.SkipAzure, suiteName) {
-			clouds = append(clouds, azure)
+		if !contains(config.Folders.SkipLXD, suiteName) {
+			clouds = append(clouds, lxd)
 		}
 		if !contains(config.Folders.SkipMicrok8s, suiteName) {
 			clouds = append(clouds, microk8s)
