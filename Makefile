@@ -1,8 +1,9 @@
-STATIC_ANALYSIS_JOB ?=
-PUSH_JOB			?=
-PUSH_TARGET			?= "jobs/ci-run"
-JJB_CONF_PATH		?= jenkins-jjb
-JUJU_REPO_PATH		?= "${GOPATH}/src/github.com/juju/juju"
+STATIC_ANALYSIS_JOB 	?=
+IGNORE_STATIC_ANALYSIS	?=
+PUSH_JOB				?=
+PUSH_TARGET				?= "jobs/ci-run"
+JJB_CONF_PATH			?= jenkins-jjb
+JUJU_REPO_PATH			?= "${GOPATH}/src/github.com/juju/juju"
 
 cwd 			 = $(shell pwd)
 virtualenv_dir 	 = $(cwd)/venv
@@ -26,7 +27,11 @@ install-deps: ensure-venv
 	# Replace the last line to override the version.
 	find -wholename '*jenkins_jobs/modules/publishers.py' -print0 | xargs -0 sed -i '/info = registry.get_plugin_info("postbuildscript")/!b;n;n;c\    version = pkg_resources.parse_version("3.1.0")'
 
+ifdef IGNORE_STATIC_ANALYSIS 
+push:
+else
 push: static-analysis
+endif
 	. $(virtualenv_dir)/bin/activate; jenkins-jobs --conf "${JJB_CONF_PATH}" \
 		--user "${JENKINS_USER}" \
 		--password "${JENKINS_ACCESS_TOKEN}" \

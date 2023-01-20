@@ -147,9 +147,6 @@
       - detect-merge-go-version
       - install-common-tools
       - shell: |-
-          echo "test"
-          echo "test"
-          echo "test"
           echo "${{GOVERSION}}"
       - conditional-step:
           condition-kind: shell

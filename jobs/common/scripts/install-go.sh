@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eux
+set -ex
 
 case $(uname -m) in
 
@@ -24,8 +24,8 @@ case $(uname -m) in
     ;;
 esac
 
-if [[ "$GOVERSION" == "''" ]]; then
-  echo "No GoVersion defined. Skip Go installation."
+if [ -z "${GOVERSION}" ]; then
+  echo "No GOVERSION defined. Skip Go installation."
   exit 0
 fi
 
