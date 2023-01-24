@@ -1,0 +1,146 @@
+- job:
+    name: build-dqlite
+    node: noop-parent-jobs
+    project-type: "multijob"
+    concurrent: true
+    description: |-
+      Build dqlite libraries for specified platform
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - build-name:
+          name: build-dqlite
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to build
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+    builders:
+      - get-build-details
+      - set-test-description
+      - multijob:
+          name: build-dqlite-runner
+          projects:
+            - name: build-dqlite-amd64
+              current-parameters: true
+              predefined-parameters: |-
+                GIT_COMMIT=${SHORT_GIT_COMMIT}
+            - name: build-dqlite-arm64
+              current-parameters: true
+              predefined-parameters: |-
+                GIT_COMMIT=${SHORT_GIT_COMMIT}
+
+- job:
+    name: build-dqlite-amd64
+    node: ephemeral-focal-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Build dqlite libraries for specified platform
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - cirun-test-stuck-timeout
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to build
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+    builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - detect-commit-go-version
+      - setup-go-environment
+      - get-s3-source-payload
+      - make-dqlite
+      - upload-s3-dqlite:
+          arch: "amd64"
+
+- job:
+    name: build-dqlite-arm64
+    node: ephemeral-focal-8c-32g-arm64
+    concurrent: true
+    description: |-
+      Build dqlite libraries for specified platform
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - cirun-test-stuck-timeout
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to build
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+    builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - detect-commit-go-version
+      - setup-go-environment
+      - get-s3-source-payload
+      - make-dqlite
+      - upload-s3-dqlite:
+          arch: "arm64"
+
+- builder:
+    name: "make-dqlite"
+    builders:
+      - host-src-command:
+          src_command: !include-raw: ../scripts/snippet_make-dqlite-build.sh
+
+- builder:
+    name: "upload-s3-dqlite"
+    builders:
+      - install-s3cmd
+      - get-s3-creds
+      - shell: |-
+          #!/bin/bash
+          set -eu
+
+          if [ -z "{arch}" ]; then
+              echo "arch var is empty"
+              exit 1
+          fi
+
+          echo "Uploading dqlite binaries for {arch}"
+
+          DQLITE_BUILD_ARCH={arch}
+
+          PROJECT_DIR=${{GOPATH}}/src/github.com/juju/juju
+
+          DQLITE_ARCHIVE_DEPS_PATH=${{PROJECT_DIR}}/scripts/dqlite
+          DQLITE_ARCHIVE_NAME=dqlite-deps
+          DQLITE_ARCHIVE_PATH=${{DQLITE_ARCHIVE_DEPS_PATH}}/${{DQLITE_ARCHIVE_NAME}}.tar.bz2
+
+          DQLITE_S3_BUCKET=s3://dqlite-static-libs
+          DQLITE_S3_ARCHIVE_NAME=$(date -u +"%Y-%m-%d")-dqlite-deps-${{DQLITE_BUILD_ARCH}}.tar.bz2
+          DQLITE_S3_ARCHIVE_PATH=${{DQLITE_S3_BUCKET}}/${{DQLITE_S3_ARCHIVE_NAME}}
+
+          cp ${{DQLITE_ARCHIVE_PATH}} ${{DQLITE_ARCHIVE_PATH}}.latest
+
+          s3cmd --config $S3_CFG ls
+
+          echo "Uploading specific {arch} dqlite binary"
+
+          s3cmd --config $S3_CFG \
+            put \
+            --no-progress \
+            ${{DQLITE_ARCHIVE_PATH}} \
+            ${{DQLITE_S3_ARCHIVE_PATH}}
+
+          mv ${{DQLITE_ARCHIVE_PATH}}.latest ${{DQLITE_ARCHIVE_PATH}}
+
+          echo "Uploading specific latest dqlite binary"
+
+          s3cmd --config $S3_CFG \
+            put \
+            --no-progress \
+            ${{DQLITE_ARCHIVE_PATH}} \
+            ${{DQLITE_S3_BUCKET}}/latest-dqlite-deps-${{DQLITE_BUILD_ARCH}}.tar.bz2
+
