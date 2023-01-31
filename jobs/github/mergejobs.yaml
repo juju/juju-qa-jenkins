@@ -9,7 +9,7 @@
       - workspace-cleanup
       - timestamps
       - timeout:
-          timeout: 60
+          timeout: 120
           fail: true
           type: absolute
     parameters:
@@ -64,7 +64,7 @@
       - workspace-cleanup
       - timestamps
       - timeout:
-          timeout: 60
+          timeout: 120
           fail: true
           type: absolute
     parameters:
@@ -161,7 +161,7 @@
       - workspace-cleanup
       - timestamps
       - timeout:
-           timeout: 60
+           timeout: 120
            fail: true
            type: absolute
     builders:
