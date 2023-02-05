@@ -24,6 +24,7 @@ echo \
 sudo apt-get update
 echo "Installing docker"
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+  docker-buildx-plugin \
   docker-ce \
   docker-ce-cli \
   containerd.io
