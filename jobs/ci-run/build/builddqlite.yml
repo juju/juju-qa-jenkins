@@ -31,6 +31,10 @@
               current-parameters: true
               predefined-parameters: |-
                 GIT_COMMIT=${SHORT_GIT_COMMIT}
+            - name: build-dqlite-ppc64el
+              current-parameters: true
+              predefined-parameters: |-
+                GIT_COMMIT=${SHORT_GIT_COMMIT}
 
 - job:
     name: build-dqlite-amd64
@@ -94,6 +98,41 @@
       - host-src-command:
           src_command: !include-raw: ../scripts/snippet_make-dqlite-build.sh
 
+- job:
+    name: build-dqlite-ppc64el
+    node: ephemeral-focal-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Build dqlite libraries for specified platform
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - cirun-test-stuck-timeout
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to build
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+    builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - install-docker
+      - detect-commit-go-version
+      - setup-go-environment
+      - get-s3-source-payload
+      - cross-make-dqlite
+      - upload-s3-dqlite:
+          arch: "ppc64el"
+
+- builder:
+    name: "cross-make-dqlite"
+    builders:
+      - host-src-command:
+          src_command: !include-raw: ../scripts/snippet_cross-make-dqlite-build.sh
+
 - builder:
     name: "upload-s3-dqlite"
     builders:
@@ -143,4 +182,3 @@
             --no-progress \
             ${{DQLITE_ARCHIVE_PATH}} \
             ${{DQLITE_S3_BUCKET}}/latest-dqlite-deps-${{DQLITE_BUILD_ARCH}}.tar.bz2
-
