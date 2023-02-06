@@ -5,4 +5,4 @@ set -ex
 sudo su
 
 cd ${JUJU_SRC_PATH}
-make -j`nproc` dqlite-local-build
+make -j`nproc` dqlite-build
