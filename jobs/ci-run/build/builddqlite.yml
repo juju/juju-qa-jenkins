@@ -35,6 +35,10 @@
               current-parameters: true
               predefined-parameters: |-
                 GIT_COMMIT=${SHORT_GIT_COMMIT}
+            - name: build-dqlite-s390x
+              current-parameters: true
+              predefined-parameters: |-
+                GIT_COMMIT=${SHORT_GIT_COMMIT}
 
 - job:
     name: build-dqlite-amd64
@@ -123,9 +127,40 @@
       - detect-commit-go-version
       - setup-go-environment
       - get-s3-source-payload
-      - cross-make-dqlite
+      - cross-make-dqlite:
+          arch: "ppc64el"
       - upload-s3-dqlite:
           arch: "ppc64el"
+
+- job:
+    name: build-dqlite-s390x
+    node: ephemeral-focal-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Build dqlite libraries for specified platform
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - cirun-test-stuck-timeout
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to build
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+    builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - install-docker
+      - detect-commit-go-version
+      - setup-go-environment
+      - get-s3-source-payload
+      - cross-make-dqlite:
+          arch: "s390x"
+      - upload-s3-dqlite:
+          arch: "s390x"
 
 - builder:
     name: "cross-make-dqlite"
