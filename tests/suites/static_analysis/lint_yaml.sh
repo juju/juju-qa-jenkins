@@ -39,6 +39,7 @@ files:
 jobs:
   ignore:
     - build-dqlite
+    - build-musl
     - ci-build-juju
     - ci-gating-tests
     - ci-proving-ground-tests
@@ -110,6 +111,7 @@ files:
 jobs:
   ignore:
     - build-dqlite:build-dqlite-runner
+    - build-musl:build-musl-runner
     # TODO (stickupkid): Clean these commands up and simplify the following jobs
     # so that they don't require a multi-job for no reason.
     - ci-build-juju:Packaging
