@@ -15,6 +15,11 @@
     make install-dependencies || make install-dependencies
     make setup-lxd || true
 
+    if [ -d "./scripts/dqlite" ]; then
+        echo `date --rfc-3339=seconds` "installing musl"
+        sudo make MUSL_CROSS_COMPILE=0 musl-install dqlite-install || { echo "Failed to install musl"; exit 1; }
+    fi
+
     if [ -f go.mod ]; then
         go mod download
     fi
