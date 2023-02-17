@@ -1,0 +1,98 @@
+- job:
+    name: build-musl
+    node: noop-parent-jobs
+    project-type: "multijob"
+    concurrent: true
+    description: |-
+      Build musl
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - build-name:
+          name: build-musl
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to build
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+    builders:
+      - get-build-details
+      - set-test-description
+      - multijob:
+          name: build-musl-runner
+          projects:
+            - name: build-musl-amd64
+              current-parameters: true
+              predefined-parameters: |-
+                GIT_COMMIT=${SHORT_GIT_COMMIT}
+
+- job:
+    name: build-musl-amd64
+    node: ephemeral-focal-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Build musl libraries for specified platform
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - cirun-test-stuck-timeout
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to build
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+    builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - detect-commit-go-version
+      - setup-go-environment
+      - get-s3-source-payload
+      - make-musl
+      - upload-s3-musl:
+          arch: "amd64"
+
+- builder:
+    name: "make-musl"
+    builders:
+      - host-src-command:
+          src_command: !include-raw: ../scripts/snippet_make-musl-build.sh
+
+- builder:
+    name: "upload-s3-musl"
+    builders:
+      - install-s3cmd
+      - get-s3-creds
+      - shell: |-
+          #!/bin/bash
+          set -eu
+
+          if [ -z "{arch}" ]; then
+              echo "arch var is empty"
+              exit 1
+          fi
+
+          echo "Uploading musl binaries for {arch}"
+
+          MUSL_BUILD_ARCH={arch}
+
+          DQLITE_S3_BUCKET=s3://dqlite-static-libs
+
+          PROJECT_DIR=${{GOPATH}}/src/github.com/juju/juju
+          DEPS_DIR_PATH=${{PROJECT_DIR}}/_deps
+
+          MUSL_DIR_PATH=${{DEPS_DIR_PATH}}/musl-${{MUSL_BUILD_ARCH}}
+
+          cd ${{DEPS_DIR_PATH}}
+          tar -cjvf musl-${{MUSL_BUILD_ARCH}}.tar.bz2 musl-${{MUSL_BUILD_ARCH}}
+
+          SUM=$(sha256sum musl-${{MUSL_BUILD_ARCH}}.tar.bz2 | cut -d " " -f 1)
+          s3cmd --config $S3_CFG \
+            put \
+            --no-progress \
+            musl-${{MUSL_BUILD_ARCH}}.tar.bz2 \
+            "${{DQLITE_S3_BUCKET}}/musl/$SUM.tar.bz2"
