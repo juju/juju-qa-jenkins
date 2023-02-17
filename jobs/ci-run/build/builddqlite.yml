@@ -212,7 +212,7 @@
 
           echo "Uploading specific latest dqlite binary"
 
-          SUM=$(sha256sum ${FILE} | awk '{print $1}')
+          SUM=$(sha256sum ${{DQLITE_ARCHIVE_PATH}} | cut -d " " -f 1)
           s3cmd --config $S3_CFG \
             put \
             --no-progress \
