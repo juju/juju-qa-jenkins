@@ -18,8 +18,6 @@
           regex: ^\S{7}$
           msg: Enter a valid 7 char git sha
     builders:
-      - get-build-details
-      - set-test-description
       - multijob:
           name: build-dqlite-runner
           projects:
@@ -127,7 +125,7 @@
       - detect-commit-go-version
       - setup-go-environment
       - get-s3-source-payload
-      - cross-make-dqlite:
+      - make-cross-dqlite:
           arch: "ppc64el"
       - upload-s3-dqlite:
           arch: "ppc64el"
@@ -157,16 +155,16 @@
       - detect-commit-go-version
       - setup-go-environment
       - get-s3-source-payload
-      - cross-make-dqlite:
+      - make-cross-dqlite:
           arch: "s390x"
       - upload-s3-dqlite:
           arch: "s390x"
 
 - builder:
-    name: "cross-make-dqlite"
+    name: "make-cross-dqlite"
     builders:
       - host-src-command:
-          src_command: !include-raw: ../scripts/snippet_cross-make-dqlite-build.sh
+          src_command: !include-raw: ../scripts/snippet_make-dqlite-cross-build.sh
 
 - builder:
     name: "upload-s3-dqlite"
@@ -188,15 +186,13 @@
 
           PROJECT_DIR=${{GOPATH}}/src/github.com/juju/juju
 
-          DQLITE_ARCHIVE_DEPS_PATH=${{PROJECT_DIR}}/scripts/dqlite
+          DQLITE_ARCHIVE_DEPS_PATH=${{PROJECT_DIR}}/_build/
           DQLITE_ARCHIVE_NAME=dqlite-deps
           DQLITE_ARCHIVE_PATH=${{DQLITE_ARCHIVE_DEPS_PATH}}/${{DQLITE_ARCHIVE_NAME}}.tar.bz2
 
           DQLITE_S3_BUCKET=s3://dqlite-static-libs
           DQLITE_S3_ARCHIVE_NAME=$(date -u +"%Y-%m-%d")-dqlite-deps-${{DQLITE_BUILD_ARCH}}.tar.bz2
           DQLITE_S3_ARCHIVE_PATH=${{DQLITE_S3_BUCKET}}/${{DQLITE_S3_ARCHIVE_NAME}}
-
-          cp ${{DQLITE_ARCHIVE_PATH}} ${{DQLITE_ARCHIVE_PATH}}.latest
 
           s3cmd --config $S3_CFG ls
 
@@ -208,8 +204,6 @@
             ${{DQLITE_ARCHIVE_PATH}} \
             ${{DQLITE_S3_ARCHIVE_PATH}}
 
-          mv ${{DQLITE_ARCHIVE_PATH}}.latest ${{DQLITE_ARCHIVE_PATH}}
-
           echo "Uploading specific latest dqlite binary"
 
           SUM=$(sha256sum ${{DQLITE_ARCHIVE_PATH}} | cut -d " " -f 1)
@@ -218,8 +212,3 @@
             --no-progress \
             ${{DQLITE_ARCHIVE_PATH}} \
             ${{DQLITE_S3_BUCKET}}/${{SUM}}.tar.bz2
-          s3cmd --config $S3_CFG \
-            put \
-            --no-progress \
-            ${{DQLITE_ARCHIVE_PATH}} \
-            ${{DQLITE_S3_BUCKET}}/latest-dqlite-deps-${{DQLITE_BUILD_ARCH}}.tar.bz2
