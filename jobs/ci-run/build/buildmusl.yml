@@ -50,7 +50,7 @@
       - ansicolor
       - workspace-cleanup
       - timestamps
-      - cirun-test-stuck-timeout
+      - musl-test-stuck-timeout
     parameters:
       - validating-string:
           description: The git short hash for the commit you wish to build
@@ -78,7 +78,7 @@
       - ansicolor
       - workspace-cleanup
       - timestamps
-      - cirun-test-stuck-timeout
+      - musl-test-stuck-timeout
     parameters:
       - validating-string:
           description: The git short hash for the commit you wish to build
@@ -106,7 +106,7 @@
       - ansicolor
       - workspace-cleanup
       - timestamps
-      - cirun-test-stuck-timeout
+      - musl-test-stuck-timeout
     parameters:
       - validating-string:
           description: The git short hash for the commit you wish to build
@@ -136,7 +136,7 @@
       - ansicolor
       - workspace-cleanup
       - timestamps
-      - cirun-test-stuck-timeout
+      - musl-test-stuck-timeout
     parameters:
       - validating-string:
           description: The git short hash for the commit you wish to build
@@ -212,3 +212,11 @@
     builders:
       - host-src-command:
           src_command: !include-raw: ../scripts/snippet_make-musl-cross-build.sh
+
+- wrapper:
+    name: 'musl-test-stuck-timeout'
+    wrappers:
+      - timeout:
+          timeout: 240
+          fail: true
+          type: absolute
