@@ -94,12 +94,6 @@
       - upload-s3-dqlite:
           arch: "arm64"
 
-- builder:
-    name: "make-dqlite"
-    builders:
-      - host-src-command:
-          src_command: !include-raw: ../scripts/snippet_make-dqlite-build.sh
-
 - job:
     name: build-dqlite-ppc64el
     node: ephemeral-focal-8c-32g-amd64
@@ -161,12 +155,6 @@
           arch: "s390x"
 
 - builder:
-    name: "make-cross-dqlite"
-    builders:
-      - host-src-command:
-          src_command: !include-raw: ../scripts/snippet_make-dqlite-cross-build.sh
-
-- builder:
     name: "upload-s3-dqlite"
     builders:
       - install-s3cmd
@@ -191,18 +179,8 @@
           DQLITE_ARCHIVE_PATH=${{DQLITE_ARCHIVE_DEPS_PATH}}/${{DQLITE_ARCHIVE_NAME}}.tar.bz2
 
           DQLITE_S3_BUCKET=s3://dqlite-static-libs
-          DQLITE_S3_ARCHIVE_NAME=$(date -u +"%Y-%m-%d")-dqlite-deps-${{DQLITE_BUILD_ARCH}}.tar.bz2
-          DQLITE_S3_ARCHIVE_PATH=${{DQLITE_S3_BUCKET}}/${{DQLITE_S3_ARCHIVE_NAME}}
 
-          s3cmd --config $S3_CFG ls
-
-          echo "Uploading specific {arch} dqlite binary"
-
-          s3cmd --config $S3_CFG \
-            put \
-            --no-progress \
-            ${{DQLITE_ARCHIVE_PATH}} \
-            ${{DQLITE_S3_ARCHIVE_PATH}}
+          s3cmd --config $S3_CFG ls ${{DQLITE_S3_BUCKET}}
 
           echo "Uploading specific latest dqlite binary"
 
@@ -212,3 +190,21 @@
             --no-progress \
             ${{DQLITE_ARCHIVE_PATH}} \
             ${{DQLITE_S3_BUCKET}}/${{SUM}}.tar.bz2
+
+          echo "Uploaded ${{DQLITE_S3_BUCKET}}/${{SUM}}.tar.bz2"
+          echo " + sha256: ${{SUM}}"
+          echo ""
+
+          s3cmd --config $S3_CFG ls ${{DQLITE_S3_BUCKET}}
+
+- builder:
+    name: "make-dqlite"
+    builders:
+      - host-src-command:
+          src_command: !include-raw: ../scripts/snippet_make-dqlite-build.sh
+
+- builder:
+    name: "make-cross-dqlite"
+    builders:
+      - host-src-command:
+          src_command: !include-raw: ../scripts/snippet_make-dqlite-cross-build.sh

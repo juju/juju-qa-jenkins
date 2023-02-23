@@ -27,6 +27,18 @@
               current-parameters: true
               predefined-parameters: |-
                 GIT_COMMIT=${SHORT_GIT_COMMIT}
+            - name: build-musl-arm64
+              current-parameters: true
+              predefined-parameters: |-
+                GIT_COMMIT=${SHORT_GIT_COMMIT}
+            - name: build-musl-ppc64el
+              current-parameters: true
+              predefined-parameters: |-
+                GIT_COMMIT=${SHORT_GIT_COMMIT}
+            - name: build-musl-s390x
+              current-parameters: true
+              predefined-parameters: |-
+                GIT_COMMIT=${SHORT_GIT_COMMIT}
 
 - job:
     name: build-musl-amd64
@@ -56,11 +68,93 @@
       - upload-s3-musl:
           arch: "amd64"
 
-- builder:
-    name: "make-musl"
+- job:
+    name: build-musl-arm64
+    node: ephemeral-focal-8c-32g-arm64
+    concurrent: true
+    description: |-
+      Build musl libraries for specified platform
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - cirun-test-stuck-timeout
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to build
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
     builders:
-      - host-src-command:
-          src_command: !include-raw: ../scripts/snippet_make-musl-build.sh
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - detect-commit-go-version
+      - setup-go-environment
+      - get-s3-source-payload
+      - make-musl
+      - upload-s3-musl:
+          arch: "arm64"
+
+- job:
+    name: build-musl-ppc64el
+    node: ephemeral-focal-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Build musl libraries for specified platform
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - cirun-test-stuck-timeout
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to build
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+    builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - install-docker
+      - detect-commit-go-version
+      - setup-go-environment
+      - get-s3-source-payload
+      - make-cross-musl:
+          arch: "ppc64el"
+      - upload-s3-musl:
+          arch: "ppc64el"
+
+- job:
+    name: build-musl-s390x
+    node: ephemeral-focal-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Build musl libraries for specified platform
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - cirun-test-stuck-timeout
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to build
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+    builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - install-docker
+      - detect-commit-go-version
+      - setup-go-environment
+      - get-s3-source-payload
+      - make-cross-musl:
+          arch: "s390x"
+      - upload-s3-musl:
+          arch: "s390x"
 
 - builder:
     name: "upload-s3-musl"
@@ -90,9 +184,31 @@
           cd ${{DEPS_DIR_PATH}}
           tar -cjvf musl-${{MUSL_BUILD_ARCH}}.tar.bz2 musl-${{MUSL_BUILD_ARCH}}
 
+          s3cmd --config $S3_CFG ls ${{DQLITE_S3_BUCKET}}/musl
+
+          echo "Uploading specific latest musl binary"
+
           SUM=$(sha256sum musl-${{MUSL_BUILD_ARCH}}.tar.bz2 | cut -d " " -f 1)
           s3cmd --config $S3_CFG \
             put \
             --no-progress \
             musl-${{MUSL_BUILD_ARCH}}.tar.bz2 \
             "${{DQLITE_S3_BUCKET}}/musl/$SUM.tar.bz2"
+
+          echo "Uploaded ${{DQLITE_S3_BUCKET}}/musl/${{SUM}}.tar.bz2"
+          echo " + sha256: ${{SUM}}"
+          echo ""
+
+          s3cmd --config $S3_CFG ls ${{DQLITE_S3_BUCKET}}/musl
+
+- builder:
+    name: "make-musl"
+    builders:
+      - host-src-command:
+          src_command: !include-raw: ../scripts/snippet_make-musl-build.sh
+
+- builder:
+    name: "make-cross-musl"
+    builders:
+      - host-src-command:
+          src_command: !include-raw: ../scripts/snippet_make-musl-cross-build.sh
