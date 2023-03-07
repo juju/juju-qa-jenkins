@@ -27,9 +27,9 @@
       - multijob:
           name: GatingFunctionalTestsAmd64
           projects:
-            - name: nw-deploy-bionic-microk8s
-              disabled: true # nameserver fix required on microk8s
-              current-parameters: true
+#            - name: nw-deploy-bionic-microk8s
+#              disabled: true # nameserver fix required on microk8s
+#              current-parameters: true
 
 
 - job:
