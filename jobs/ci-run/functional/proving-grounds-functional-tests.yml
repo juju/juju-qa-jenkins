@@ -24,9 +24,9 @@
           projects:
             - name: nw-add-cloud-many
               current-parameters: true
-            - name: nw-deploy-bionic-eks
-              current-parameters: true
             - name: nw-deploy-bionic-aks
+              current-parameters: true
+            - name: nw-deploy-bionic-eks
               current-parameters: true
             - name: nw-deploy-bionic-gke
               current-parameters: true
