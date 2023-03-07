@@ -47,20 +47,6 @@
           name: GatingTests
           # Defining BUILD_ARCH ensures the right binaries are pulled down.
           projects:
-            - name: gating-functional-tests-amd64
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-# TODO tlm add back in when we have s390x arch support again
-#            - name: gating-functional-tests-s390x
-#              current-parameters: true
-#              predefined-parameters: |- 
-#                BUILD_ARCH=s390x
-# TODO tlm add back in when we have ppc arch support again
-#            - name: gating-functional-tests-ppc64el
-#              current-parameters: true
-#              predefined-parameters: |-
-#                BUILD_ARCH=ppc64el
             - name: gating-integration-tests-amd64
               current-parameters: true
               predefined-parameters: |-
