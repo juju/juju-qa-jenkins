@@ -26,6 +26,10 @@
               current-parameters: true
             - name: nw-deploy-bionic-eks
               current-parameters: true
+            - name: nw-deploy-bionic-aks
+              current-parameters: true
+            - name: nw-deploy-bionic-gke
+              current-parameters: true
             - name: nw-deploy-client-centos9
               current-parameters: true
             - name: nw-deploy-client-windows
