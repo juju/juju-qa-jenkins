@@ -126,6 +126,10 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: 'test-deploy_aks-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: 'test-expose_ec2-multijob'
               current-parameters: true
               predefined-parameters: |-
