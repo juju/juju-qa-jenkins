@@ -2,36 +2,6 @@
 # Note: Phases are run in serial, but jobs are done in parallel (or can be serial)
 #   this is why we have many sub jobs, an easy way to visually break them up
 #   but keep the ability to run them in parallel
-
-- job:
-    name: "gating-functional-tests-amd64"
-    project-type: "multijob"
-    description: |-
-      Run functional tests for amd64 arch
-    node: noop-parent-jobs
-    concurrent: true
-    wrappers:
-      - default-functional-test-wrapper
-    parameters:
-      - string:
-          default: ""
-          description: "Enable sub job to be run individually."
-          name: SHORT_GIT_COMMIT
-      - string:
-          default: ""
-          description: "Series to use as default-series in juju bootstrap and model-config in the functional tests."
-          name: series
-    builders:
-      - get-build-details
-      - set-test-description
-      - multijob:
-          name: GatingFunctionalTestsAmd64
-          projects: []
-#            - name: nw-deploy-bionic-microk8s
-#              disabled: true # nameserver fix required on microk8s
-#              current-parameters: true
-
-
 - job:
     name: "gating-functional-tests-s390x"
     project-type: "multijob"

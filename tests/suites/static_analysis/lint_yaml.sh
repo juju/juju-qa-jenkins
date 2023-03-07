@@ -122,6 +122,7 @@ jobs:
     - github-juju-check-jobs:github-juju-check-jobs
     - test-bootstrap-multijob:IntegrationTests-bootstrap
     - test-coslite-multijob:IntegrationTests-coslite
+    - test-deploy_aks-multijob:IntegrationTests-deploy_aks
     - test-deploy_caas-multijob:IntegrationTests-deploy_caas
     - test-expose_ec2-multijob:IntegrationTests-expose_ec2
     - test-magma-multijob:IntegrationTests-magma
