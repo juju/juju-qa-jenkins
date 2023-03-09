@@ -69,6 +69,16 @@ while [ $attempts -lt 3 ]; do
         echo -e "[default]\nregion = us-east-1" > "$HOME"/.aws/config
         chmod 600 ~/.aws/*
     fi
+    # shellcheck disable=SC2193
+    if [ "${{BOOTSTRAP_PROVIDER:-}}" = "azure" ]; then
+        if [ ! "$(which az >/dev/null 2>&1)" ]; then
+            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+        fi
+
+        app_id=$(cat "$HOME"/.local/share/juju/credentials.yaml | grep azure: -A 4 | grep application-id: | awk '{print $2}')
+        app_pass=$(cat "$HOME"/.local/share/juju/credentials.yaml | grep azure: -A 4 | grep application-password: | tail -1 | awk '{print $2}')
+        az login --service-principal -u "${app_id}" -p "${app_pass}"
+    fi
     attempts=$((attempts + 1))
 done
 
