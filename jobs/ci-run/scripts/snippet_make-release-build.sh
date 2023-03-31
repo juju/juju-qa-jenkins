@@ -9,7 +9,7 @@ echo AGENT_PACKAGE_PLATFORMS=${{AGENT_PACKAGE_PLATFORMS}}
 echo BUILD_TAGS=${{BUILD_TAGS:-}}
 
 cd ${{JUJU_SRC_PATH}}
-build_type=$(grep "go-agent-build-no-cgo" Makefile >/dev/null && echo "no-cgo")
+build_type=$(grep "go-agent-build-no-cgo" Makefile >/dev/null && echo "no-cgo" || echo "")
 if [ $build_type = "no-cgo" ]; then
     GOOS=$(echo $AGENT_PACKAGE_PLATFORMS | cut -d/ -f 1) \
     GOARCH=$(echo $AGENT_PACKAGE_PLATFORMS | cut -d/ -f 2 | sed "s/ppc64el/ppc64le/") \
