@@ -77,10 +77,7 @@ while [ $attempts -lt 3 ]; do
 
         app_id=$(cat "$HOME"/.local/share/juju/credentials.yaml | grep azure: -A 4 | grep application-id: | awk '{print $2}')
         app_pass=$(cat "$HOME"/.local/share/juju/credentials.yaml | grep azure: -A 4 | grep application-password: | tail -1 | awk '{print $2}')
-        # (anvial) as we can get tenant-id only after we authorize via the browser and check the output of the command:
-        # `az account show`, we need to hardcode it. Taking in consideration that it's constant for our juju-qa azure user.
-        # TODO: (anvial) find a way to get tenant-id automatically
-        tenant_id="40a524d9-f848-46d4-a96f-be6df491fe15"
+        tenant_id="${AZURE_TENANT}"
         az login --service-principal -u "${app_id}" -p "${app_pass}" --tenant "${tenant_id}"
     fi
     attempts=$((attempts + 1))
