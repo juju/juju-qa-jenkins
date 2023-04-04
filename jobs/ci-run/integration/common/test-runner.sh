@@ -75,10 +75,10 @@ while [ $attempts -lt 3 ]; do
             curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
         fi
 
-        app_id=$(cat "$HOME"/.local/share/juju/credentials.yaml | grep azure: -A 4 | grep application-id: | awk '{print $2}')
-        app_pass=$(cat "$HOME"/.local/share/juju/credentials.yaml | grep azure: -A 4 | grep application-password: | tail -1 | awk '{print $2}')
-        tenant_id="${AZURE_TENANT}"
-        az login --service-principal -u "${app_id}" -p "${app_pass}" --tenant "${tenant_id}"
+        az login --service-principal \
+          -u "$(cat "$HOME"/.local/share/juju/credentials.yaml | yq ".credentials.azure.juju-qa.application-id")" \
+          -p "$(cat "$HOME"/.local/share/juju/credentials.yaml | yq ".credentials.azure.juju-qa.application-password")" \
+          --tenant "${{AZURE_TENANT}}"
     fi
     attempts=$((attempts + 1))
 done
