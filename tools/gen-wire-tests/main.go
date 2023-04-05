@@ -12,8 +12,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/mvdan/sh/syntax"
 	"gopkg.in/yaml.v2"
+	"mvdan.cc/sh/v3/syntax"
 )
 
 // Config represents the different ways to config the linter
