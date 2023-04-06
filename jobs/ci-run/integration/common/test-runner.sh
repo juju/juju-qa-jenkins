@@ -76,8 +76,8 @@ while [ $attempts -lt 3 ]; do
         fi
 
         az login --service-principal \
-          -u "$(cat "$HOME"/.local/share/juju/credentials.yaml | yq ".credentials.azure.juju-qa.application-id")" \
-          -p "$(cat "$HOME"/.local/share/juju/credentials.yaml | yq ".credentials.azure.juju-qa.application-password")" \
+          -u "$(cat "$HOME"/.local/share/juju/credentials.yaml | yq ".credentials.azure.credentials.application-id")" \
+          -p "$(cat "$HOME"/.local/share/juju/credentials.yaml | yq ".credentials.azure.credentials.application-password")" \
           --tenant "${{AZURE_TENANT}}"
     fi
     attempts=$((attempts + 1))
