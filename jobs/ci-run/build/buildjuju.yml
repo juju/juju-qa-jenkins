@@ -2,7 +2,7 @@
 
 - job:
     name: build-juju
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-focal-16c-64g-amd64
     concurrent: true
     description: |-
       Build juju binaries for specified platform
@@ -12,6 +12,12 @@
       - timestamps
       - build-name:
           name: build-juju-${BUILD_LABEL}
+    properties:
+      - build-discarder:
+          days-to-keep: 30
+          num-to-keep: 50
+          artifact-days-to-keep: 30
+          artifact-num-to-keep: 50
     parameters:
       - validating-string:
           description: The git short hash for the commit you wish to build
