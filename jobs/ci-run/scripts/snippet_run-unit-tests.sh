@@ -24,23 +24,24 @@ make setup-lxd || true
 # Disable JS support as juju-mongodb doesn't support it.
 export JUJU_NOTEST_MONGOJS=1
 
+set +e  # Will fail in reports gen if any errors occur
+set -o pipefail  # Need to error for make, not tees' success.
 if [[ "{GOTEST_TYPE}" == "race" ]]; then
-    go test -v -race -test.timeout=${{TEST_TIMEOUT}} ./... | tee ${{WORKSPACE}}/go-unittest.out
-    exit_code=$?
-    ${{GOPATH}}/bin/go2xunit -fail -input ${{WORKSPACE}}/go-unittest.out -output ${{WORKSPACE}}/tests.xml
+    if [ "$(make -q race-test > /dev/null 2>&1 || echo $?)" -eq 2 ]; then
+        # if we don't have a race-test target, use go test.
+        go test -v -race -test.timeout=${{TEST_TIMEOUT}} ./... | tee ${{WORKSPACE}}/go-unittest.out
+        exit_code=$?
+    else
+        JUJU_GOMOD_MODE=vendor make race-test VERBOSE_CHECK=1 TEST_TIMEOUT=${{TEST_TIMEOUT}} | tee ${{WORKSPACE}}/go-unittest.out
+        exit_code=$?
+    fi
 elif [[ "{GOTEST_TYPE}" == "xunit-report" ]]; then
-    set +e  # Will fail in reports gen if any errors occur
-    set -o pipefail  # Need to error for make, not tees' success.
-    JUJU_GOMOD_MODE=vendor make test VERBOSE_CHECK=1 JUJU_SKIP_DEP=true TEST_TIMEOUT=${{TEST_TIMEOUT}} | tee ${{WORKSPACE}}/go-unittest.out
+    JUJU_GOMOD_MODE=vendor make test VERBOSE_CHECK=1 TEST_TIMEOUT=${{TEST_TIMEOUT}} | tee ${{WORKSPACE}}/go-unittest.out
     exit_code=$?
-    set +o pipefail
-    ${{GOPATH}}/bin/go2xunit -fail -input ${{WORKSPACE}}/go-unittest.out -output ${{WORKSPACE}}/tests.xml
-    # Sometimes go2xunit doesn't exit non-zero when we would expect it to. Force
-    # this based on make result.
-    exit $exit_code
-else
-    JUJU_GOMOD_MODE=vendor make test
 fi
+set +o pipefail
 
-# Make sure we exit with the right error code and that it's not overwritten by anything.
-exit $?
+${{GOPATH}}/bin/go2xunit -fail -input ${{WORKSPACE}}/go-unittest.out -output ${{WORKSPACE}}/tests.xml
+# Sometimes go2xunit doesn't exit non-zero when we would expect it to. Force
+# this based on make result.
+exit $exit_code
