@@ -53,7 +53,7 @@ while [ $attempts -lt 3 ]; do
         sudo snap install petname || true
     fi
     # shellcheck disable=SC2193
-    if [ "${{BOOTSTRAP_PROVIDER:-}}" = "aws" ]; then
+    if [ "${{BOOTSTRAP_PROVIDER:-}}" = "ec2" ]; then
         if [ ! "$(which aws >/dev/null 2>&1)" ]; then
             sudo snap install aws-cli --classic || true
         fi

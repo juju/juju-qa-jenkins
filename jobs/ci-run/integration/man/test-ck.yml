@@ -25,7 +25,7 @@
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'aws'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
     - string:
