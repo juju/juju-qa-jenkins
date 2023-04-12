@@ -1,8 +1,8 @@
 - job:
-    name: test-ck-aws
+    name: test-ck
     node: ephemeral-jammy-8c-32g-amd64
     description: |-
-      Test ck suite on aws
+      Test ck suite on a cloud
     condition: SUCCESSFUL
     concurrent: true
     parameters:
@@ -21,13 +21,17 @@
         - s390x
         - ppc64le
     - string:
-        default: 'aws'
+        default: 'azure'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'ec2'
+        default: 'azure'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'eastus'
+        description: 'Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     - string:
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'

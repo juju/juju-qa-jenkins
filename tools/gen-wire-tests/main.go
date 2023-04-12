@@ -51,7 +51,7 @@ var (
 	lxd      = Cloud{CloudName: "lxd", ProviderName: "lxd"}
 	aws      = Cloud{CloudName: "aws", ProviderName: "ec2", Region: "us-east-1"}
 	google   = Cloud{CloudName: "google", ProviderName: "gce", Region: "us-east1"}
-	azure    = Cloud{CloudName: "azure", ProviderName: "azure", Region: "centralus"}
+	azure    = Cloud{CloudName: "azure", ProviderName: "azure", Region: "eastus"}
 	microk8s = Cloud{CloudName: "microk8s", ProviderName: "k8s"}
 )
 
