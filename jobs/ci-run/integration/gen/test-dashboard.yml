@@ -163,7 +163,7 @@
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
     - string:
-        default: 'centralus'
+        default: 'eastus'
         description: 'Cloud Region to use when bootstrapping Juju'
         name: BOOTSTRAP_REGION
     - string:

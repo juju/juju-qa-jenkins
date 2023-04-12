@@ -98,7 +98,7 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
-            - name: 'test-ck-aws'
+            - name: 'test-ck'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
