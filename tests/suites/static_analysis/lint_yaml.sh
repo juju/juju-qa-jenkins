@@ -108,6 +108,7 @@ files:
   skip:
     - .github/workflows/static-analysis.yml
     - .github/workflows/local-deployment.yml
+    - jobs/ci-run/integration/gen/*
 jobs:
   ignore:
     - build-dqlite:build-dqlite-runner

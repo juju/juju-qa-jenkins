@@ -190,7 +190,15 @@ func walkDirectory(dir string, fn func(string, os.FileInfo) error) error {
 
 func contains(a []string, b string) bool {
 	for _, v := range a {
-		if strings.TrimSpace(v) == b {
+		trimmed := strings.TrimSpace(v)
+		if trimmed == b {
+			return true
+		}
+		if !strings.HasSuffix(trimmed, "*") {
+			continue
+		}
+		prefix := strings.TrimSuffix(trimmed, "*")
+		if strings.HasPrefix(b, prefix) {
 			return true
 		}
 	}

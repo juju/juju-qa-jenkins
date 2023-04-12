@@ -35,7 +35,7 @@ endif
 	. $(virtualenv_dir)/bin/activate; jenkins-jobs --conf "${JJB_CONF_PATH}" \
 		--user "${JENKINS_USER}" \
 		--password "${JENKINS_ACCESS_TOKEN}" \
-		update -r "jobs/common:${PUSH_TARGET}" ${PUSH_JOB}
+		update --workers $(shell nproc) -r "jobs/common:${PUSH_TARGET}" ${PUSH_JOB}
 
 test-push: static-analysis
 	. $(virtualenv_dir)/bin/activate; jenkins-jobs --conf "${JJB_CONF_PATH}" \
