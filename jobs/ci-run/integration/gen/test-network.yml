@@ -230,7 +230,7 @@
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'google'
+        default: 'gce'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
     - string:
