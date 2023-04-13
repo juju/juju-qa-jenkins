@@ -391,7 +391,7 @@ const Template = `
         projects:
 {{- range $k, $skip_tasks := $node.SkipTasks}}
 {{- range $cloud := $node.Clouds}}
-    {{- $unstableTasks := index $node.UnstableTasks $cloud.ProviderName -}}
+    {{- $unstableTasks := index $node.UnstableTasks $cloud.CloudName -}}
     {{- $task_name := index $node.TaskNames $k -}}
     {{- if eq (contains $unstableTasks $task_name) $node.Unstable}}
         - name: 'test-{{$.SuiteName}}-{{ensureHyphen $task_name}}-{{$cloud.CloudName}}'

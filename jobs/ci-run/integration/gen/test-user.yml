@@ -32,8 +32,6 @@
     - multijob:
         name: 'IntegrationTests-user'
         projects:
-        - name: 'test-user-test-user-login-password-aws'
-          current-parameters: true
         - name: 'test-user-test-user-manage-aws'
           current-parameters: true
         - name: 'test-user-test-user-manage-lxd'
