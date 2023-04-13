@@ -36,3 +36,7 @@
           current-parameters: true
         - name: 'test-deploy-test-deploy-charms-lxd'
           current-parameters: true
+        - name: 'test-deploy-test-deploy-os-aws'
+          current-parameters: true
+        - name: 'test-deploy-test-deploy-revision-aws'
+          current-parameters: true

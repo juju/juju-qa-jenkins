@@ -44,11 +44,7 @@
           current-parameters: true
         - name: 'test-deploy-test-deploy-default-series-lxd'
           current-parameters: true
-        - name: 'test-deploy-test-deploy-os-aws'
-          current-parameters: true
         - name: 'test-deploy-test-deploy-os-lxd'
-          current-parameters: true
-        - name: 'test-deploy-test-deploy-revision-aws'
           current-parameters: true
         - name: 'test-deploy-test-deploy-revision-lxd'
           current-parameters: true
