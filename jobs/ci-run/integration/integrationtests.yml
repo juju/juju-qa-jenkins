@@ -98,10 +98,6 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
-            - name: 'test-ck'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
             - name: 'test-cli-multijob'
               current-parameters: true
               predefined-parameters: |-
@@ -236,6 +232,10 @@
       - multijob:
           name: proving-grounds-integration-tests-amd64
           projects:
+            - name: 'test-ck'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: 'test-coslite-multijob'
               current-parameters: true
               predefined-parameters: |-
