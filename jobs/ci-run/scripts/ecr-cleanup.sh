@@ -45,9 +45,7 @@ for region in ${REGIONS[@]}; do
         jq ".repositories[] | select( ${NOW} - ${CREATED_AT_SELECTOR} > (${HOURS} * 3600)  )" | 
         jq -r .repositoryName
     ); do
-        IMAGES_TO_DELETE=$(aws ecr list-images --region ${region} --repository-name ${name} --query 'imageIds[*]' --output json)
-        aws ecr batch-delete-image --region ${region} --repository-name ${name} --image-ids "$IMAGES_TO_DELETE" || true
-        aws ecr delete-repository --repository-name "${name}" --region ${region}
+        aws ecr delete-repository --repository-name "${name}" --region ${region} --force
         echo "  - ${name} DELETED!"
     done
 done
