@@ -122,12 +122,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_config'
             skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -196,12 +197,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_config'
             skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -266,12 +268,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_config'
             skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -340,12 +343,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_destroy'
             skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -414,12 +418,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_destroy'
             skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -484,12 +489,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_destroy'
             skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -558,12 +564,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_metrics'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -632,12 +639,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_metrics'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -702,12 +710,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_metrics'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -776,12 +785,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -850,12 +860,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -920,12 +931,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -994,12 +1006,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration_saas_common'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -1068,12 +1081,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration_saas_common'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -1138,12 +1152,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration_saas_common'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -1212,12 +1227,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration_saas_external'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -1286,12 +1302,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration_saas_external'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -1356,12 +1373,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration_saas_external'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_version,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -1430,12 +1448,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration_version'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -1504,12 +1523,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration_version'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -1574,12 +1594,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_migration_version'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_multi,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -1648,12 +1669,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_multi'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -1722,12 +1744,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_multi'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -1792,12 +1815,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_multi'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_status'
-
     publishers:
       - integration-artifacts
 
@@ -1866,12 +1890,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_status'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
-
     publishers:
       - integration-artifacts
 
@@ -1940,12 +1965,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_status'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
-
     publishers:
       - integration-artifacts
 
@@ -2010,11 +2036,12 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_status'
             skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
-
     publishers:
       - integration-artifacts

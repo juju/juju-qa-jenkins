@@ -106,12 +106,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'hooks'
             setup_steps: ''
             task_name: 'test_dispatching_script'
             skip_tasks: 'test_start_hook_fires_after_reboot'
-
     publishers:
       - integration-artifacts
 
@@ -176,12 +177,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'hooks'
             setup_steps: ''
             task_name: 'test_dispatching_script'
             skip_tasks: 'test_start_hook_fires_after_reboot'
-
     publishers:
       - integration-artifacts
 
@@ -250,12 +252,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'hooks'
             setup_steps: ''
             task_name: 'test_start_hook_fires_after_reboot'
             skip_tasks: 'test_dispatching_script'
-
     publishers:
       - integration-artifacts
 
@@ -320,11 +323,12 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'hooks'
             setup_steps: ''
             task_name: 'test_start_hook_fires_after_reboot'
             skip_tasks: 'test_dispatching_script'
-
     publishers:
       - integration-artifacts

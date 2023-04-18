@@ -102,12 +102,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'storage'
             setup_steps: ''
             task_name: 'test_charm_storage'
             skip_tasks: 'test_persistent_storage'
-
     publishers:
       - integration-artifacts
 
@@ -176,11 +177,12 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'storage'
             setup_steps: ''
             task_name: 'test_persistent_storage'
             skip_tasks: 'test_charm_storage'
-
     publishers:
       - integration-artifacts

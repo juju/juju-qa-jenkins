@@ -100,6 +100,8 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'deploy_aks'
             setup_steps: ''

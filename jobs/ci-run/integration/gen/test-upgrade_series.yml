@@ -96,6 +96,8 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'upgrade_series'
             setup_steps: ''

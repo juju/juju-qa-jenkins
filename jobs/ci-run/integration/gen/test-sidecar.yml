@@ -98,12 +98,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test-microk8s:
             test_name: 'sidecar'
             setup_steps: ''
             task_name: 'test_deploy_and_force_remove_application'
             skip_tasks: 'test_deploy_and_remove_application'
-
     publishers:
       - integration-artifacts
 
@@ -168,11 +169,12 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test-microk8s:
             test_name: 'sidecar'
             setup_steps: ''
             task_name: 'test_deploy_and_remove_application'
             skip_tasks: 'test_deploy_and_force_remove_application'
-
     publishers:
       - integration-artifacts

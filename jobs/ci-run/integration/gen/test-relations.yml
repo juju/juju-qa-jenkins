@@ -110,12 +110,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'relations'
             setup_steps: ''
             task_name: 'test_relation_data_exchange'
             skip_tasks: 'test_relation_departing_unit,test_relation_list_app'
-
     publishers:
       - integration-artifacts
 
@@ -180,12 +181,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'relations'
             setup_steps: ''
             task_name: 'test_relation_data_exchange'
             skip_tasks: 'test_relation_departing_unit,test_relation_list_app'
-
     publishers:
       - integration-artifacts
 
@@ -254,12 +256,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'relations'
             setup_steps: ''
             task_name: 'test_relation_departing_unit'
             skip_tasks: 'test_relation_data_exchange,test_relation_list_app'
-
     publishers:
       - integration-artifacts
 
@@ -324,12 +327,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'relations'
             setup_steps: ''
             task_name: 'test_relation_departing_unit'
             skip_tasks: 'test_relation_data_exchange,test_relation_list_app'
-
     publishers:
       - integration-artifacts
 
@@ -398,12 +402,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'relations'
             setup_steps: ''
             task_name: 'test_relation_list_app'
             skip_tasks: 'test_relation_data_exchange,test_relation_departing_unit'
-
     publishers:
       - integration-artifacts
 
@@ -468,11 +473,12 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'relations'
             setup_steps: ''
             task_name: 'test_relation_list_app'
             skip_tasks: 'test_relation_data_exchange,test_relation_departing_unit'
-
     publishers:
       - integration-artifacts

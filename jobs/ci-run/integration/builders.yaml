@@ -20,8 +20,6 @@
 - builder:
     name: 'run-integration-test'
     builders:
-    - wait-for-cloud-init
-    - prepare-integration-test
     - get-s3-build-payload-testing:
           SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
           platform: "linux/${{BUILD_ARCH}}"
@@ -34,8 +32,6 @@
 - builder:
     name: 'run-integration-test-microk8s'
     builders:
-    - wait-for-cloud-init
-    - prepare-integration-test
     - install-microk8s:
         channel: "latest/stable"
     - install-docker
