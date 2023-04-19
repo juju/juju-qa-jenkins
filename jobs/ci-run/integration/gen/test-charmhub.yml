@@ -110,12 +110,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'charmhub'
             setup_steps: ''
             task_name: 'test_charmhub_download'
             skip_tasks: 'test_charmhub_find,test_charmhub_info'
-
     publishers:
       - integration-artifacts
 
@@ -180,12 +181,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'charmhub'
             setup_steps: ''
             task_name: 'test_charmhub_download'
             skip_tasks: 'test_charmhub_find,test_charmhub_info'
-
     publishers:
       - integration-artifacts
 
@@ -254,12 +256,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'charmhub'
             setup_steps: ''
             task_name: 'test_charmhub_find'
             skip_tasks: 'test_charmhub_download,test_charmhub_info'
-
     publishers:
       - integration-artifacts
 
@@ -324,12 +327,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'charmhub'
             setup_steps: ''
             task_name: 'test_charmhub_find'
             skip_tasks: 'test_charmhub_download,test_charmhub_info'
-
     publishers:
       - integration-artifacts
 
@@ -398,12 +402,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'charmhub'
             setup_steps: ''
             task_name: 'test_charmhub_info'
             skip_tasks: 'test_charmhub_download,test_charmhub_find'
-
     publishers:
       - integration-artifacts
 
@@ -468,11 +473,12 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'charmhub'
             setup_steps: ''
             task_name: 'test_charmhub_info'
             skip_tasks: 'test_charmhub_download,test_charmhub_find'
-
     publishers:
       - integration-artifacts

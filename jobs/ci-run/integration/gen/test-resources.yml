@@ -106,12 +106,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'resources'
             setup_steps: ''
             task_name: 'test_basic_resources'
             skip_tasks: 'test_upgrade_resources'
-
     publishers:
       - integration-artifacts
 
@@ -176,12 +177,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'resources'
             setup_steps: ''
             task_name: 'test_basic_resources'
             skip_tasks: 'test_upgrade_resources'
-
     publishers:
       - integration-artifacts
 
@@ -250,12 +252,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'resources'
             setup_steps: ''
             task_name: 'test_upgrade_resources'
             skip_tasks: 'test_basic_resources'
-
     publishers:
       - integration-artifacts
 
@@ -320,11 +323,12 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'resources'
             setup_steps: ''
             task_name: 'test_upgrade_resources'
             skip_tasks: 'test_basic_resources'
-
     publishers:
       - integration-artifacts

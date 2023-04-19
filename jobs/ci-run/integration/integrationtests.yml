@@ -126,7 +126,7 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
-            - name: 'test-expose_ec2-multijob'
+            - name: 'test-firewall-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64

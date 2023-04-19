@@ -30,6 +30,7 @@ type Config struct {
 		Ephemeral    []string                       `yaml:"ephemeral"`
 		Unstable     map[string]map[string][]string `yaml:"unstable"`
 		Timeout      map[string]map[string]int      `yaml:"timeout"`
+		Introduced   map[string]string              `yaml:"introduced"`
 	}
 }
 
@@ -54,6 +55,22 @@ var (
 	azure    = Cloud{CloudName: "azure", ProviderName: "azure", Region: "eastus"}
 	microk8s = Cloud{CloudName: "microk8s", ProviderName: "k8s"}
 )
+
+// minVersionRegex is a map from relevant minor semantic version releases
+// to regexps that match versions matching or later. Regexps need to match
+// the entire version string
+//
+// Do this for 3.n versions by:
+// - Matching any major version 4 or later; or
+// - for versions 3.n, match if the minor version has 2+ digits or is a
+//   single digit greater than or equal to n
+var minVersionRegex = map[string]string{
+	"3.0": "^[4-9].*|^3\\\\.([0-9]|\\\\d{2,})(\\\\.|-).*",
+	"3.1": "^[4-9].*|^3\\\\.([1-9]|\\\\d{2,})(\\\\.|-).*",
+	"3.2": "^[4-9].*|^3\\\\.([2-9]|\\\\d{2,})(\\\\.|-).*",
+	"3.3": "^[4-9].*|^3\\\\.([3-9]|\\\\d{2,})(\\\\.|-).*",
+	"3.4": "^[4-9].*|^3\\\\.([4-9]|\\\\d{2,})(\\\\.|-).*",
+}
 
 // Gen-wire-tests will generate the integration test files for the juju
 // integration tests. This will help prevent wire up mistakes or any missing
@@ -225,6 +242,13 @@ func writeJobDefinitions(
 		ephemeral[test] = true
 	}
 
+	minVersions := make(map[string]string)
+	for _, task := range task.SubTasks {
+		if introduced, ok := config.Folders.Introduced[task]; ok {
+			minVersions[task] = minVersionRegex[introduced]
+		}
+	}
+
 	if err := t.Execute(f, struct {
 		SuiteName     string
 		Clouds        []Cloud
@@ -235,6 +259,7 @@ func writeJobDefinitions(
 		Unstable      bool
 		Ephemeral     map[string]bool
 		Timeout       map[string]int
+		MinVersions   map[string]string
 	}{
 		SuiteName:     suiteName,
 		Clouds:        task.Clouds,
@@ -245,6 +270,7 @@ func writeJobDefinitions(
 		Unstable:      unstable,
 		Ephemeral:     ephemeral,
 		Timeout:       task.Timeout,
+		MinVersions:   minVersions,
 	}); err != nil {
 		log.Fatalf("unable to execute template %q with error %v", suiteName, err)
 	}
@@ -491,15 +517,36 @@ const Template = `
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
+{{- if index $.MinVersions $task_name }}
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "{{ index $.MinVersions $task_name }}"
+          label: "${JUJU_VERSION}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - {{$builder}}:
+                  test_name: '{{$.SuiteName}}'
+                  setup_steps: ''
+  {{- if gt (len $node.SkipTasks) 1 }}
+                  task_name: '{{$task_name}}'
+                  skip_tasks: '{{$skip_tasks}}'
+  {{- else }}
+                  task_name: ''
+                  skip_tasks: '{{$node.ExcludedTasks}}'
+  {{- end}}
+{{- else }}
       - {{$builder}}:
             test_name: '{{$.SuiteName}}'
             setup_steps: ''
-{{- if gt (len $node.SkipTasks) 1 }}
+  {{- if gt (len $node.SkipTasks) 1 }}
             task_name: '{{$task_name}}'
             skip_tasks: '{{$skip_tasks}}'
-{{ else }}
+  {{- else }}
             task_name: ''
             skip_tasks: '{{$node.ExcludedTasks}}'
+  {{- end}}
 {{- end}}
     publishers:
       - integration-artifacts

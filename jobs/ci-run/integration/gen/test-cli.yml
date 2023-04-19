@@ -106,12 +106,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_block_commands'
             skip_tasks: 'test_display_clouds,test_local_charms,test_model_config,test_model_defaults,test_unregister'
-
     publishers:
       - integration-artifacts
 
@@ -176,12 +177,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_display_clouds'
             skip_tasks: 'test_block_commands,test_local_charms,test_model_config,test_model_defaults,test_unregister'
-
     publishers:
       - integration-artifacts
 
@@ -246,12 +248,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_local_charms'
             skip_tasks: 'test_block_commands,test_display_clouds,test_model_config,test_model_defaults,test_unregister'
-
     publishers:
       - integration-artifacts
 
@@ -316,12 +319,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_model_config'
             skip_tasks: 'test_block_commands,test_display_clouds,test_local_charms,test_model_defaults,test_unregister'
-
     publishers:
       - integration-artifacts
 
@@ -386,12 +390,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_model_defaults'
             skip_tasks: 'test_block_commands,test_display_clouds,test_local_charms,test_model_config,test_unregister'
-
     publishers:
       - integration-artifacts
 
@@ -456,11 +461,12 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_unregister'
             skip_tasks: 'test_block_commands,test_display_clouds,test_local_charms,test_model_config,test_model_defaults'
-
     publishers:
       - integration-artifacts

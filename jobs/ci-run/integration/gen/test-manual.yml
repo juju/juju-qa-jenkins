@@ -106,12 +106,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'manual'
             setup_steps: ''
             task_name: 'test_deploy_manual'
             skip_tasks: 'test_spaces_manual'
-
     publishers:
       - integration-artifacts
 
@@ -176,12 +177,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'manual'
             setup_steps: ''
             task_name: 'test_deploy_manual'
             skip_tasks: 'test_spaces_manual'
-
     publishers:
       - integration-artifacts
 
@@ -250,12 +252,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'manual'
             setup_steps: ''
             task_name: 'test_spaces_manual'
             skip_tasks: 'test_deploy_manual'
-
     publishers:
       - integration-artifacts
 
@@ -320,11 +323,12 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'manual'
             setup_steps: ''
             task_name: 'test_spaces_manual'
             skip_tasks: 'test_deploy_manual'
-
     publishers:
       - integration-artifacts

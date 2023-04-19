@@ -102,12 +102,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'user'
             setup_steps: ''
             task_name: 'test_user_login_password'
             skip_tasks: 'test_user_manage'
-
     publishers:
       - integration-artifacts
 
@@ -172,12 +173,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'user'
             setup_steps: ''
             task_name: 'test_user_login_password'
             skip_tasks: 'test_user_manage'
-
     publishers:
       - integration-artifacts
 
@@ -246,12 +248,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'user'
             setup_steps: ''
             task_name: 'test_user_manage'
             skip_tasks: 'test_user_login_password'
-
     publishers:
       - integration-artifacts
 
@@ -316,11 +319,12 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'user'
             setup_steps: ''
             task_name: 'test_user_manage'
             skip_tasks: 'test_user_login_password'
-
     publishers:
       - integration-artifacts

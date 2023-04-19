@@ -96,6 +96,8 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test-microk8s:
             test_name: 'magma'
             setup_steps: ''

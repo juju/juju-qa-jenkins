@@ -104,12 +104,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'spaces_ec2'
             setup_steps: ''
             task_name: 'test_juju_bind'
             skip_tasks: 'test_machines_in_spaces,test_upgrade_charm_with_bind'
-
     publishers:
       - integration-artifacts
 
@@ -178,12 +179,13 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'spaces_ec2'
             setup_steps: ''
             task_name: 'test_machines_in_spaces'
             skip_tasks: 'test_juju_bind,test_upgrade_charm_with_bind'
-
     publishers:
       - integration-artifacts
 
@@ -252,11 +254,12 @@
           fail: true
           type: absolute
     builders:
+      - wait-for-cloud-init
+      - prepare-integration-test
       - run-integration-test:
             test_name: 'spaces_ec2'
             setup_steps: ''
             task_name: 'test_upgrade_charm_with_bind'
             skip_tasks: 'test_juju_bind,test_machines_in_spaces'
-
     publishers:
       - integration-artifacts
