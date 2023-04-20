@@ -258,7 +258,7 @@
       - prepare-integration-test
       - conditional-step:
           condition-kind: regex-match
-          regex: "^[4-9]|^3\\.([2-9]|\\d{2,})(\\.|-).*"
+          regex: "^[4-9].*|^3\\.([2-9]|\\d{2,})(\\.|-).*"
           label: "${JUJU_VERSION}"
           on-evaluation-failure: "dont-run"
           steps:
