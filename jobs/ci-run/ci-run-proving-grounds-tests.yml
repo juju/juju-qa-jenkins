@@ -77,9 +77,14 @@
           command: |
             import hudson.model.*
 
+            def desc = build.getDescription().split(":")
+            def jujuVersion = desc[0]
+
+            println "Looking for $jujuVersion in previous builds..."
+
             def b = build.getPreviousBuild()
             while (b != null) {
-                if (b.result != Result.SUCCESS) {
+                if (b.result != Result.SUCCESS || b.getDescription() == null || b.getDescription().indexOf(jujuVersion) == -1) {
                     b = b.getPreviousBuild()
                     continue
                 }
