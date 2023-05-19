@@ -39,18 +39,18 @@
           black-list-labels:
             - "no-test-run"
           black-list-target-branches:
-            - master
-            - staging
-            - jucy-lucy
             - feature-.*
     builders:
+      - resolve-merge-commit
       - detect-merge-go-version
       - multijob:
           name: github-juju-check-jobs
           projects:
             - name: github-make-check-juju
               current-parameters: true
-              predefined-parameters: GOVERSION=${GOVERSION}
+              predefined-parameters: |-
+                GOVERSION=${GOVERSION}
+                MERGE_COMMIT=${MERGE_COMMIT}
 
 
 - job:   # github-juju-merge-jobs
@@ -91,9 +91,6 @@
             - CanonicalLtd
           allow-whitelist-orgs-as-admins: true
           black-list-target-branches:
-            - master
-            - staging
-            - jucy-lucy
             - feature-.*
     builders:
       - shell: |-
@@ -106,13 +103,18 @@
           EOT
       - inject:
           properties-file: ${WORKSPACE}/prdesc
+      - resolve-merge-commit
       - detect-merge-go-version
+      - should-skip-juju-make-check
       - multijob:
           name: github-juju-merge-jobs
           projects:
             - name: github-make-check-juju
+              enable-condition: '!"${SKIP_CHECK}".equals("1")'
               current-parameters: true
-              predefined-parameters: GOVERSION=${GOVERSION}
+              predefined-parameters: |-
+                GOVERSION=${GOVERSION}
+                MERGE_COMMIT=${MERGE_COMMIT}
       - get-github-token
       - github-merge:
           merge_comment: |-
@@ -146,8 +148,8 @@
     parameters:
     - string:
         default: ''
-        description: 'Specific git SHA to build (used to overwrite triggered runs).'
-        name: GITHUB_BRANCH_HEAD_SHA
+        description: 'Pseudo merge commit for this PR check run'
+        name: MERGE_COMMIT
     - string:
         default: ''
         description: 'Go version used for build.'
@@ -165,8 +167,7 @@
            fail: true
            type: absolute
     builders:
-      - description-setter:
-          description: '<a href="${ghprbPullLink}">PR #${ghprbPullId}</a>'
+      - set-check-description
       - install-go
       - shell: |-
           #!/bin/bash
@@ -196,96 +197,3 @@
       - junit:
           results: tests.xml
           allow-empty-results: true
-
-
-############################################################# PYLIBJUJU TESTS ##
-
-# - job:   # github-juju-pylibjuju-jobs
-#     name: 'github-juju-pylibjuju-jobs'
-#     project-type: 'multijob'
-#     description: 'Run the pylibjuju checks for the GitHub PR'
-#     concurrent: true
-#     node: noop-parent-jobs
-#     wrappers:
-#       - ansicolor
-#       - workspace-cleanup
-#       - timestamps
-#       - timeout:
-#           timeout: 60
-#           fail: true
-#           type: absolute
-#     parameters:
-#     - string:
-#          default: ''
-#          description: 'Enable sub job to be run individually.'
-#          name: SHORT_GIT_COMMIT
-#     properties:
-#       - github:
-#           url: https://github.com/juju/juju/
-#       - authorization:
-#           anonymous:
-#             - job-read
-#     triggers:
-#       - github-pull-request:
-#           github-hooks: true
-#           trigger-phrase: '.*(jenkins\:.*test.*schema)|(##.*##).*'
-#           status-context: "check-multi-pylibjuju-tests"
-#           only-trigger-phrase: true
-#           auto-close-on-fail: false
-#           cancel-builds-on-update: true  # Cancel existing builds if PR updated/re-run.
-#           org-list:
-#             - juju
-#             - CanonicalLtd
-#           allow-whitelist-orgs-as-admins: true
-#           black-list-labels:
-#             - "no-test-run"
-#           black-list-target-branches:
-#             - master
-#             - staging
-#             - jucy-lucy
-#             - feature-.*
-#     builders:
-#       - multijob:
-#             name: github-juju-pylibjuju-jobs
-#             projects:
-#               - name: github-schema-tests-pylibjuju
-#                 current-parameters: true
-
-# - job:
-#     name: github-schema-tests-pylibjuju
-#     description: |-
-#       Run schema checks against python libjuju against the PR
-#     node: ephemeral-github-medium-amd64
-#     concurrent: false
-#     parameters:
-#     - string:
-#         default: ''
-#         description: 'Specific git SHA to build (used to overwrite triggered runs).'
-#         name: GITHUB_BRANCH_HEAD_SHA
-#     properties:
-#       - authorization:
-#          anonymous:
-#              - job-read
-#     wrappers:
-#       - ansicolor
-#       - workspace-cleanup
-#       - timestamps
-#       - timeout:
-#            timeout: 60
-#            fail: true
-#            type: absolute
-#     builders:
-#       - description-setter:
-#           description: '<a href="${ghprbPullLink}">PR #${ghprbPullId}</a>'
-#       - inject:
-#           properties-content: |-
-#             PROJECT_DIR="github.com/juju/juju"
-#       - run-build-check-raw:
-#           build_env: ""
-#           setup_steps: ""
-#           checkout_command:
-#               !include-raw: "./scripts/checkout.sh"
-#           src_command:
-#               !include-raw: "./scripts/snippet_clean-test-exit.sh"
-#           test_command:
-#               !include-raw: "./scripts/pylibjuju-schema-test.sh"

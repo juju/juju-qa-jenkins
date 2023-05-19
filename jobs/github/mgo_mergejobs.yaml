@@ -41,6 +41,7 @@
           black-list-target-branches:
             - feature-.*
     builders:
+      - resolve-merge-commit
       - detect-merge-go-version
       - multijob:
           name: github-mgo-check-jobs
@@ -49,6 +50,7 @@
               current-parameters: true
               predefined-parameters: |-
                 GOVERSION=${GOVERSION}
+                MERGE_COMMIT=${MERGE_COMMIT}
 
 - job:
     name: github-make-check-mgo
@@ -58,9 +60,9 @@
     concurrent: true
     parameters:
       - string:
-          default: ""
-          description: "Specific git SHA to build (used to overwrite triggered runs)."
-          name: GITHUB_BRANCH_HEAD_SHA
+          default: ''
+          description: 'Pseudo merge commit for this PR check run'
+          name: MERGE_COMMIT
       - string:
           default: ""
           description: "Specify the OS Series to run on"
@@ -82,8 +84,7 @@
           fail: true
           type: absolute
     builders:
-      - description-setter:
-          description: '<a href="${ghprbPullLink}">PR #${ghprbPullId}</a>'
+      - set-check-description
       - install-go
       - install-mongo4.4
       - inject:
@@ -148,6 +149,7 @@
           EOT
       - inject:
           properties-file: ${WORKSPACE}/prdesc
+      - resolve-merge-commit
       - detect-merge-go-version
       - multijob:
           name: github-mgo-merge-jobs
@@ -156,6 +158,7 @@
               current-parameters: true
               predefined-parameters: |-
                 GOVERSION=${GOVERSION}
+                MERGE_COMMIT=${MERGE_COMMIT}
     publishers:
       - junit:
           results: tests.xml

@@ -238,20 +238,6 @@
         sudo pip3 install apache-libcloud;
 
 - builder:
-    name: install-aks-libs
-    builders:
-    - shell: |-
-        #!/bin/bash
-        set -xeu
-
-        sudo DEBIAN_FRONTEND=noninteractive apt update;
-        sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
-        sudo apt install -y python3-dev
-        sudo pip3 install azure-identity;
-        sudo pip3 install azure-mgmt-containerservice;
-        sudo pip3 install msrestazure;
-
-- builder:
     name: install-equinix-libs
     builders:
     - shell: |-
@@ -272,24 +258,6 @@
 
         cd scripts
         git checkout origin/main -- jobs/z-jobs/scripts/clean_lxd.py
-        cd ${WORKSPACE}
-    - inject:
-        properties-content: |-
-            SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
-
-- builder:
-    name: get-aks-cleanup-scripts
-    builders:
-    - checkout-qa-repo
-    - install-aks-libs
-    - shell: |-
-        #!/bin/bash
-        set -eux
-
-        sudo pip3 install backports-datetime-fromisoformat
-
-        cd scripts
-        git checkout origin/main -- jobs/z-jobs/scripts/aks_cleanup.py
         cd ${WORKSPACE}
     - inject:
         properties-content: |-
