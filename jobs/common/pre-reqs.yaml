@@ -174,7 +174,7 @@
 - builder:
     name: install-s3cmd
     builders:
-    - shell:
+    - shell: |-
         #!/bin/bash
         set -xeu
 
@@ -189,7 +189,7 @@
 - builder:
     name: install-azure-cli
     builders:
-    - shell:
+    - shell: |-
         #!/bin/bash
         # Steps come from https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
         set -eux
@@ -261,39 +261,6 @@
         sudo DEBIAN_FRONTEND=noninteractive apt update;
         sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
         sudo pip3 install pytz;
-
-- builder:
-    name: install-azure-libs
-    builders:
-    - shell: |-
-        #!/bin/bash
-        set -xeu
-
-        sudo DEBIAN_FRONTEND=noninteractive apt update;
-        sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
-        # TODO - need to pin since BlockBlobService replaced by BlockBlocCLient
-        sudo pip3 install azure-mgmt-resource;
-        sudo pip3 install azure-mgmt-compute;
-        sudo pip3 install azure-mgmt-storage;
-        sudo pip3 install azure-mgmt-network;
-        sudo pip3 install azure-identity;
-        sudo pip3 install pytz;
-
-- builder:
-    name: get-azure-cleanup-scripts
-    builders:
-    - install-azure-libs
-    - checkout-qa-repo
-    - shell: |-
-        #!/bin/bash
-        set -eux
-
-        cd scripts
-        git checkout origin/main -- jobs/z-jobs/scripts/winazurearm.py
-        cd ${WORKSPACE}
-    - inject:
-        properties-content: |-
-            SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
 
 - builder:
     name: get-lxd-cleanup-scripts
