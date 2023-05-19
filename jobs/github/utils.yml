@@ -89,7 +89,7 @@
                     if (vars.resolve("ghprbPullLink").equals(pr) &&
                         vars.resolve("GOVERSION").equals(goversion) &&
                         vars.resolve("MERGE_COMMIT").equals(mergecommit)) {
-                        println "Found previous successful build ${build.getAbsoluteUrl()} with the same parameters"
+                        println "Found previous successful build ${current.getAbsoluteUrl()} with the same parameters"
                         build.getAction(EnvInjectPluginAction.class).overrideAll([SKIP_CHECK: '1'])
                         break
                     }
