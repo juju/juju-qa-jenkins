@@ -103,7 +103,7 @@
             - CanonicalLtd
           allow-whitelist-orgs-as-admins: true
           white-list-target-branches:
-            - {branch_name}
+            - '{branch_name}'
     builders:
       - shell: |-
           #!/bin/bash
