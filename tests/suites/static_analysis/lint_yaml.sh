@@ -119,6 +119,7 @@ jobs:
     - github-mgo-check-jobs:github-mgo-check-jobs
     - github-mgo-merge-jobs:github-mgo-merge-jobs
     - github-juju-merge-jobs:github-juju-merge-jobs
+    - github-juju-merge-jobs-{branch_name}:github-juju-merge-jobs
     - github-juju-pylibjuju-jobs:github-juju-pylibjuju-jobs
     - github-juju-check-jobs:github-juju-check-jobs
     - test-bootstrap-multijob:IntegrationTests-bootstrap
