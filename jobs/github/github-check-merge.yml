@@ -144,6 +144,7 @@
     builders:
       - wait-for-cloud-init
       - set-common-environment
+      - resolve-merge-commit
       - detect-merge-go-version
       - install-common-tools
       - shell: |-
@@ -246,6 +247,7 @@
     builders:
       - wait-for-cloud-init
       - set-common-environment
+      - resolve-merge-commit
       - detect-merge-go-version
       - install-common-tools
       - conditional-step:
