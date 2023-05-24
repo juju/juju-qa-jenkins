@@ -53,8 +53,20 @@
                 MERGE_COMMIT=${MERGE_COMMIT}
 
 
-- job:   # github-juju-merge-jobs
-    name: 'github-juju-merge-jobs'
+- project:
+    name: "github-juju-merge-jobs"
+    branch_name:
+      - "main": {}
+      - "2.9": {}
+      - "3.1": {}
+      - "3.2": {}
+      - "3.3": {}
+    jobs:
+      - 'github-juju-merge-jobs-{branch_name}'
+
+
+- job-template:   # github-juju-merge-jobs
+    name: 'github-juju-merge-jobs-{branch_name}'
     project-type: 'multijob'
     description: 'Run the checks and merge the PR if it passes'
     concurrent: false
@@ -82,7 +94,7 @@
       - github-pull-request:
           github-hooks: true
           trigger-phrase: '/merge'
-          status-context: "merge-multi-juju"
+          status-context: "merge-multi-juju-{branch_name}"
           only-trigger-phrase: true
           auto-close-on-fail: false
           cron: 'H/5 * * * *'
@@ -90,8 +102,8 @@
             - juju
             - CanonicalLtd
           allow-whitelist-orgs-as-admins: true
-          black-list-target-branches:
-            - feature-.*
+          white-list-target-branches:
+            - '{branch_name}'
     builders:
       - shell: |-
           #!/bin/bash
@@ -99,10 +111,10 @@
           sudo apt install gh
           # Sanatise the PR description for merge commit message.
           cat >prdesc <<EOT
-              pr_descr=$(echo ${ghprbPullLongDescription} | sed $"s/\\\r//g")
+              pr_descr=$(echo ${{ghprbPullLongDescription}} | sed $"s/\\\r//g")
           EOT
       - inject:
-          properties-file: ${WORKSPACE}/prdesc
+          properties-file: ${{WORKSPACE}}/prdesc
       - resolve-merge-commit
       - detect-merge-go-version
       - should-skip-juju-make-check
@@ -110,11 +122,11 @@
           name: github-juju-merge-jobs
           projects:
             - name: github-make-check-juju
-              enable-condition: '!"${SKIP_CHECK}".equals("1")'
+              enable-condition: '!"${{SKIP_CHECK}}".equals("1")'
               current-parameters: true
               predefined-parameters: |-
-                GOVERSION=${GOVERSION}
-                MERGE_COMMIT=${MERGE_COMMIT}
+                GOVERSION=${{GOVERSION}}
+                MERGE_COMMIT=${{MERGE_COMMIT}}
       - get-github-token
       - github-merge:
           merge_comment: |-
