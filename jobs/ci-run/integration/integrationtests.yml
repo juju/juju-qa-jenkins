@@ -341,7 +341,7 @@
     name: 'integration-artifacts'
     publishers:
         - archive:
-            artifacts: "${WORKSPACE}/artifacts/output.tar.gz"
+            artifacts: "artifacts/output.tar.gz"
             allow-empty: true
             only-if-success: false
             fingerprint: false
