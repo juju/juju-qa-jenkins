@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -61,9 +62,9 @@ var (
 // the entire version string
 //
 // Do this for 3.n versions by:
-// - Matching any major version 4 or later; or
-// - for versions 3.n, match if the minor version has 2+ digits or is a
-//   single digit greater than or equal to n
+//   - Matching any major version 4 or later; or
+//   - for versions 3.n, match if the minor version has 2+ digits or is a
+//     single digit greater than or equal to n
 var minVersionRegex = map[string]string{
 	"3.0": "^[4-9].*|^3\\\\.([0-9]|\\\\d{2,})(\\\\.|-).*",
 	"3.1": "^[4-9].*|^3\\\\.([1-9]|\\\\d{2,})(\\\\.|-).*",
@@ -89,6 +90,11 @@ func main() {
 	}
 	inputDir := os.Args[1]
 	outputDir := os.Args[2]
+	trackingBranch := os.Args[3]
+
+	if !isTrackingBranch(inputDir, trackingBranch) {
+		log.Fatalf("not on the tracking branch %q, or not update to date with HEAD", trackingBranch)
+	}
 
 	if outDir, err := os.Open(outputDir); os.IsNotExist(err) {
 		if err := os.MkdirAll(outputDir, os.ModePerm); err != nil {
@@ -198,6 +204,29 @@ func main() {
 			writeJobDefinitions(t, config, outputDir, task, name, true)
 		}
 	}
+}
+
+func isTrackingBranch(inputDir, trackingBranch string) bool {
+	cmd := exec.Command("git", "-C", inputDir, "branch", "--show-current")
+	result, err := cmd.Output()
+	if err != nil {
+		log.Fatalf("unable to get current branch: %v", err)
+	}
+	if strings.TrimSpace(string(result)) != trackingBranch {
+		return false
+	}
+
+	cmd = exec.Command("git", "-C", inputDir, "fetch", "upstream")
+	if err := cmd.Run(); err != nil {
+		log.Fatalf("unable to fetch: %v", err)
+	}
+
+	cmd = exec.Command("git", "-C", inputDir, "diff", "--quiet", fmt.Sprintf("upstream/%s", trackingBranch))
+	if err := cmd.Run(); err != nil {
+		log.Fatalf("unable to fetch: %v", err)
+	}
+
+	return true
 }
 
 func writeJobDefinitions(

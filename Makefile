@@ -59,9 +59,10 @@ dot-graph:
 
 gen-wire-tests:
 	$(eval config := "./tools/gen-wire-tests/juju.config")
-	@go run ./tools/gen-wire-tests/main.go\
-		"${JUJU_REPO_PATH}/tests/suites"\
-		"./jobs/ci-run/integration/gen"\
+	@go run ./tools/gen-wire-tests/main.go \
+		"${JUJU_REPO_PATH}/tests/suites" \
+		"./jobs/ci-run/integration/gen" \
+		"3.3" \
 		<"${config}"
 
 .PHONY: clean

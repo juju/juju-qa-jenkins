@@ -173,7 +173,11 @@ func extractMultiJobNames(multijob map[interface{}]interface{}) []string {
 	var names []string
 	for k, v := range multijob {
 		if k == "projects" {
-			for _, v := range v.([]interface{}) {
+			slice, ok := v.([]interface{})
+			if !ok {
+				continue
+			}
+			for _, v := range slice {
 				m := v.(map[interface{}]interface{})
 				if name, ok := m["name"]; ok {
 					names = append(names, name.(string))
