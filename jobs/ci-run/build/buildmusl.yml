@@ -27,6 +27,10 @@
               current-parameters: true
               predefined-parameters: |-
                 GIT_COMMIT=${SHORT_GIT_COMMIT}
+            - name: build-musl-arm64
+              current-parameters: true
+              predefined-parameters: |-
+                GIT_COMMIT=${SHORT_GIT_COMMIT}
 
 - job:
     name: build-musl-amd64
@@ -55,6 +59,34 @@
       - make-musl
       - upload-s3-musl:
           arch: "amd64"
+
+- job:
+    name: build-musl-arm64
+    node: ephemeral-focal-8c-32g-arm64
+    concurrent: true
+    description: |-
+      Build musl libraries for specified platform
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - cirun-test-stuck-timeout
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to build
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{7}$
+          msg: Enter a valid 7 char git sha
+    builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - detect-commit-go-version
+      - setup-go-environment
+      - get-s3-source-payload
+      - make-musl
+      - upload-s3-musl:
+          arch: "arm64"
 
 - builder:
     name: "make-musl"
