@@ -17,7 +17,7 @@
           description: "Specify K8s cloud provider to use."
           name: CAAS_PROVIDER
       - string:
-          default: jujuqabot
+          default: docker.io/jujuqabot
           description: "Operator docker image account name."
           name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
@@ -60,7 +60,7 @@
           description: "Specify K8s cloud provider to use."
           name: CAAS_PROVIDER
       - string:
-          default: jujuqabot
+          default: docker.io/jujuqabot
           description: "Operator docker image account name."
           name: OPERATOR_IMAGE_ACCOUNT
     wrappers:
@@ -104,7 +104,7 @@
           description: "Specify K8s cloud provider to use."
           name: CAAS_PROVIDER
       - string:
-          default: jujuqabot
+          default: docker.io/jujuqabot
           description: "Operator docker image account name."
           name: OPERATOR_IMAGE_ACCOUNT
     wrappers:

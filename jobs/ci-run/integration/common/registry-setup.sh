@@ -27,15 +27,15 @@ echo "${ECR_TOKEN}" | docker login -u AWS --password-stdin "${DOCKER_REGISTRY}"
 DOCKER_USERNAME=${OPERATOR_IMAGE_ACCOUNT} make -C "${JUJU_SRC_PATH}" push-release-operator-image
 
 # Copy juju-db from docker
-docker pull "jujusolutions/juju-db:${JUJU_DB_TAG}"
-docker tag "jujusolutions/juju-db:${JUJU_DB_TAG}" "${OPERATOR_IMAGE_ACCOUNT}/juju-db:${JUJU_DB_TAG}"
+docker pull "docker.io/jujusolutions/juju-db:${JUJU_DB_TAG}"
+docker tag "docker.io/jujusolutions/juju-db:${JUJU_DB_TAG}" "${OPERATOR_IMAGE_ACCOUNT}/juju-db:${JUJU_DB_TAG}"
 docker push "${OPERATOR_IMAGE_ACCOUNT}/juju-db:${JUJU_DB_TAG}"
 
 # Copy LTS charm bases from docker
 BASES=(18.04 20.04 22.04)
 for BASE in "${BASES[@]}" ; do
-  docker pull "jujusolutions/charm-base:ubuntu-${BASE}"
-  docker tag "jujusolutions/charm-base:ubuntu-${BASE}" "${OPERATOR_IMAGE_ACCOUNT}/charm-base:ubuntu-${BASE}"
+  docker pull "docker.io/jujusolutions/charm-base:ubuntu-${BASE}"
+  docker tag "docker.io/jujusolutions/charm-base:ubuntu-${BASE}" "${OPERATOR_IMAGE_ACCOUNT}/charm-base:ubuntu-${BASE}"
   docker push "${OPERATOR_IMAGE_ACCOUNT}/charm-base:ubuntu-${BASE}"
 done
 
