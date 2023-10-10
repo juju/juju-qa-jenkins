@@ -536,7 +536,7 @@ const Template = `
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
     - string:
-        default: jujuqabot
+        default: docker.io/jujuqabot
         description: "Operator docker image account name."
         name: OPERATOR_IMAGE_ACCOUNT
     wrappers:

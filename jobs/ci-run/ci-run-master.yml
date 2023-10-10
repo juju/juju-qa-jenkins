@@ -96,7 +96,7 @@
       - get-s3-source-payload
       - inject:
           properties-content: |-
-            OPERATOR_IMAGE_ACCOUNT=jujuqabot
+            OPERATOR_IMAGE_ACCOUNT=docker.io/jujuqabot
             PATH=/snap/bin:$PATH
             series=focal
       - get-build-details

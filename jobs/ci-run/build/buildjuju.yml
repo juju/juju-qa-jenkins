@@ -162,9 +162,9 @@
       - choice:
           name: OPERATOR_IMAGE_ACCOUNT
           choices:
-            - jujuqabot
-            - jujusolutions
-          default: "jujuqabot"
+            - docker.io/jujuqabot
+            - docker.io/jujusolutions
+          default: "docker.io/jujuqabot"
           description: "Operator docker image account name."
       - string:
           default: "linux/amd64 linux/arm64 linux/s390x linux/ppc64el"
