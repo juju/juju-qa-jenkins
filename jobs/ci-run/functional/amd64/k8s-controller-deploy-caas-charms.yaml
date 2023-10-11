@@ -19,7 +19,7 @@
       - string:
           default: docker.io/jujuqabot
           description: "Operator docker image account name."
-          name: OPERATOR_IMAGE_ACCOUNT
+          name: PARAM_OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - cirun-test-stuck-timeout
     builders:
@@ -35,7 +35,7 @@
 
           ENV=gke
           timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
-          $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \
+          $JOB_NAME --caas-image-repo=${PARAM_OPERATOR_IMAGE_ACCOUNT} \
           --caas-provider=${CAAS_PROVIDER} --k8s-controller --enable-rbac
     publishers:
       - artifact-results
@@ -62,7 +62,7 @@
       - string:
           default: docker.io/jujuqabot
           description: "Operator docker image account name."
-          name: OPERATOR_IMAGE_ACCOUNT
+          name: PARAM_OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - cirun-test-stuck-timeout
     builders:
@@ -78,7 +78,7 @@
 
           ENV=aks
           timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
-          $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \
+          $JOB_NAME --caas-image-repo=${PARAM_OPERATOR_IMAGE_ACCOUNT} \
           --caas-provider=${CAAS_PROVIDER} --k8s-controller --enable-rbac
     publishers:
       - artifact-results
@@ -106,7 +106,7 @@
       - string:
           default: docker.io/jujuqabot
           description: "Operator docker image account name."
-          name: OPERATOR_IMAGE_ACCOUNT
+          name: PARAM_OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - cirun-test-stuck-timeout
     builders:
@@ -122,7 +122,7 @@
 
           ENV=eks
           timeout -s INT 50m ${TESTS_DIR}/assess_caas_deploy_charms.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
-          $JOB_NAME --caas-image-repo=${OPERATOR_IMAGE_ACCOUNT} \
+          $JOB_NAME --caas-image-repo=${PARAM_OPERATOR_IMAGE_ACCOUNT} \
           --caas-provider=${CAAS_PROVIDER} --k8s-controller --enable-rbac
     publishers:
       - artifact-results

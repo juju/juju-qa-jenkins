@@ -39,7 +39,7 @@
     - string:
         default: docker.io/jujuqabot
         description: "Operator docker image account name."
-        name: OPERATOR_IMAGE_ACCOUNT
+        name: PARAM_OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
     builders:

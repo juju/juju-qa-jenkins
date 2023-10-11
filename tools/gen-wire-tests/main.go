@@ -538,7 +538,7 @@ const Template = `
     - string:
         default: docker.io/jujuqabot
         description: "Operator docker image account name."
-        name: OPERATOR_IMAGE_ACCOUNT
+        name: PARAM_OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -546,6 +546,9 @@ const Template = `
           fail: true
           type: absolute
     builders:
+      - inject:
+          properties-content: |-
+            OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
       - wait-for-cloud-init
       - prepare-integration-test
 {{- if index $.MinVersions $task_name }}
