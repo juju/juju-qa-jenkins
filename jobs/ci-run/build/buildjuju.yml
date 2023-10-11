@@ -160,7 +160,7 @@
           description: 'Go version used for build.'
           name: GOVERSION
       - choice:
-          name: OPERATOR_IMAGE_ACCOUNT
+          name: PARAM_OPERATOR_IMAGE_ACCOUNT
           choices:
             - docker.io/jujuqabot
             - docker.io/jujusolutions
@@ -183,7 +183,7 @@
           set -eu
 
           touch build.properties
-          echo "DOCKER_USERNAME=${OPERATOR_IMAGE_ACCOUNT}" >> build.properties
+          echo "DOCKER_USERNAME=${PARAM_OPERATOR_IMAGE_ACCOUNT}" >> build.properties
 
           cat build.properties
       - inject:

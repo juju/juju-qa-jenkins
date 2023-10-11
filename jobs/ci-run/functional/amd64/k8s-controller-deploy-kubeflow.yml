@@ -24,7 +24,7 @@
     - string:
         default: docker.io/jujuqabot
         description: "Operator docker image account name."
-        name: OPERATOR_IMAGE_ACCOUNT
+        name: PARAM_OPERATOR_IMAGE_ACCOUNT
     - string:
         default: full
         description: "Specify the kubeflow bundle version to deploy."
@@ -42,7 +42,7 @@
     builders:
     - wait-for-cloud-init
     - description-setter:
-        description: "${CAAS_PROVIDER}|bundle:${BUNDLE_VERSION}|build:${BUILD_CHARMS}|rbac:${ENABLE_RBAC}|${OPERATOR_IMAGE_ACCOUNT}"
+        description: "${CAAS_PROVIDER}|bundle:${BUNDLE_VERSION}|build:${BUILD_CHARMS}|rbac:${ENABLE_RBAC}|${PARAM_OPERATOR_IMAGE_ACCOUNT}"
     - prepare-functional-test-core:
         platform: "linux/${BUILD_ARCH}"
     - prepare-ephemeral-node-for-k8s-py-tests:
@@ -73,7 +73,7 @@
             params+=( '--enable-rbac' )
         fi
         timeout -s INT 90m $TESTS_DIR/assess_caas_deploy_kubeflow.py $ENV $JUJU_BIN $WORKSPACE/artifacts \
-        $JOB_NAME --caas-image-repo=$OPERATOR_IMAGE_ACCOUNT \
+        $JOB_NAME --caas-image-repo=$PARAM_OPERATOR_IMAGE_ACCOUNT \
         --caas-provider=$CAAS_PROVIDER --k8s-controller --bundle=$BUNDLE_VERSION ${params[@]}
     publishers:
     - artifact-results

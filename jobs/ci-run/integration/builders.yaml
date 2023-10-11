@@ -6,6 +6,8 @@
     - host-src-command:
         src_command:
           !include-raw: "common/registry-setup.sh"
+    - inject:
+          properties-file: build.properties
 
 - builder:
     name: 'prepare-integration-test'
