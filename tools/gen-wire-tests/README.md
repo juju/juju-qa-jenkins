@@ -10,9 +10,16 @@ You also need to provide a configuration file (usually `juju.config`) via stdin.
 We suggest running it as follows:
 
 ```bash
+cd ..
+make gen-wire-tests
+```
+
+To run by hand, or the hard way:
+
+```bash
 cd tools/gen-wire-tests
 cat juju.config | go run main.go <jujuroot>/tests/suites \
-  ../../jobs/ci-run/integration/gen
+  ../../jobs/ci-run/integration/gen <version of juju>
 ```
 
 or
@@ -21,7 +28,7 @@ or
 cd tools/gen-wire-tests
 go build main.go
 cat juju.config | ./main <jujuroot>/tests/suites \
-  ../../jobs/ci-run/integration/gen
+  ../../jobs/ci-run/integration/gen <version of juju>
 ```
 
 where `<jujuroot>` is the path to the Juju source tree on your local machine.
