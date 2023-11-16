@@ -1,7 +1,7 @@
-    cd ${GOPATH}/src/${PROJECT_DIR}
+    cd ${{GOPATH}}/src/${{PROJECT_DIR}}
 
-    NEEDS_MGO=$(echo "${NEEDS_MGO}" | tr '[:upper:]' '[:lower:]')
-    if [ "${NEEDS_MGO}" = "true" ]; then
+    NEEDS_MGO=$(echo "${{NEEDS_MGO}}" | tr '[:upper:]' '[:lower:]')
+    if [ "${{NEEDS_MGO}}" = "true" ]; then
       action=$(snap info juju-db | grep -q "installed" || echo "install")
       if [ "$action" == "" ]; then
               action="refresh"
@@ -20,12 +20,12 @@
         sleep 10
       done
     fi
-    if [ ! -z "${EXTRA_PACKAGES}" ]; then
-      echo "Installing packages ${EXTRA_PACKAGES}"
-      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $(echo ${EXTRA_PACKAGES} | sed "s/,/ /g")
+    if [ ! -z "${{EXTRA_PACKAGES}}" ]; then
+      echo "Installing packages ${{EXTRA_PACKAGES}}"
+      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $(echo ${{EXTRA_PACKAGES}} | sed "s/,/ /g")
     fi
-    if [ ! -z "${EXTRA_SCRIPT}" ]; then
-      eval ${EXTRA_SCRIPT}
+    if [ ! -z "${{EXTRA_SCRIPT}}" ]; then
+      eval ${{EXTRA_SCRIPT}}
     fi
 
     goversion=1.17
