@@ -73,7 +73,7 @@
 
 - job:
     name: unit-tests-amd64
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-github-16c-64g-amd64
     description: |-
       Build and run unit tests for amd64.
     wrappers:
@@ -124,7 +124,7 @@
 
 - job:
     name: 'unit-tests-arm64'
-    node: ephemeral-focal-8c-32g-arm64
+    node: ephemeral-focal-16c-64g-arm64
     description: |-
       Build and run unit tests for arm64.
     wrappers:
@@ -274,7 +274,7 @@
 
 - job:
     name: 'unit-tests-race-amd64'
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-github-16c-64g-amd64
     description: |-
       Build and run unit race tests for amd64.
     wrappers:
@@ -325,7 +325,7 @@
 
 - job:
     name: 'unit-tests-race-arm64'
-    node: ephemeral-focal-8c-32g-arm64
+    node: ephemeral-focal-16c-64g-arm64
     description: |-
       Build and run unit race tests for arm64.
     wrappers:
