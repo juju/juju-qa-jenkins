@@ -1,0 +1,3 @@
+# Required to fix "AttributeError: cython_sources" from
+# setuptools package. Seen with 68.2.2 setuptools as well.
+cython<3

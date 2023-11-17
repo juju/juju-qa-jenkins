@@ -16,7 +16,7 @@ ensure-venv:
 
 .PHONY: install-deps
 install-deps: ensure-venv
-	$(virtualenv_dir)/bin/pip3 install -r requirements.txt
+	PIP_CONSTRAINTS=./constraints.txt $(virtualenv_dir)/bin/pip3 install -r requirements.txt
 	# The postbuildscript plugin version is "3.1.0-375.v3db_cd92485e1" which cannot be parsed.
 	# So we override to set it to "3.1.0".
 	# jenkins-job-builder only cares if the plugin version is > 2.
