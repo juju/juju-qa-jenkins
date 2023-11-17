@@ -32,17 +32,35 @@
     - multijob:
         name: 'IntegrationTests-model'
         projects:
+        - name: 'test-model-test-model-config-aws'
+          current-parameters: true
+        - name: 'test-model-test-model-config-google'
+          current-parameters: true
+        - name: 'test-model-test-model-config-lxd'
+          current-parameters: true
         - name: 'test-model-test-model-destroy-aws'
           current-parameters: true
         - name: 'test-model-test-model-destroy-google'
           current-parameters: true
         - name: 'test-model-test-model-destroy-lxd'
           current-parameters: true
+        - name: 'test-model-test-model-metrics-aws'
+          current-parameters: true
+        - name: 'test-model-test-model-metrics-google'
+          current-parameters: true
+        - name: 'test-model-test-model-metrics-lxd'
+          current-parameters: true
         - name: 'test-model-test-model-migration-aws'
           current-parameters: true
         - name: 'test-model-test-model-migration-google'
           current-parameters: true
         - name: 'test-model-test-model-migration-lxd'
+          current-parameters: true
+        - name: 'test-model-test-model-migration-saas-common-aws'
+          current-parameters: true
+        - name: 'test-model-test-model-migration-saas-common-google'
+          current-parameters: true
+        - name: 'test-model-test-model-migration-saas-common-lxd'
           current-parameters: true
         - name: 'test-model-test-model-migration-version-aws'
           current-parameters: true

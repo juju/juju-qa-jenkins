@@ -114,7 +114,15 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: 'test-coslite-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: 'test-credential-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-dashboard-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
@@ -166,6 +174,14 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: 'test-secrets_iaas-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-secrets_k8s-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: 'test-sidecar-multijob'
               current-parameters: true
               predefined-parameters: |-
@@ -198,7 +214,6 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
-
 
 - job:
     name: proving-grounds-integration-tests-amd64
@@ -236,11 +251,11 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
-            - name: 'test-coslite-multijob'
+            - name: 'test-controllercharm-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
-            - name: 'test-dashboard-multijob'
+            - name: 'test-dashboard-unstable-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
@@ -264,19 +279,6 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
-            - name: 'test-secrets_iaas-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-            - name: 'test-secrets_k8s-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-            - name: 'test-user-unstable-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-
 - job:
     name: "gating-integration-tests-arm64"
     project-type: "multijob"
