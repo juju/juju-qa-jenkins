@@ -72,7 +72,6 @@ jobs:
     - unit-tests-s390x
     - unit-tests-race-arm64
     - unit-tests-ppc64el
-    - unit-tests-centos9
     - unit-tests-arm64
     - nw-deploy-jammy-s390x-lxd
     - nw-deploy-jammy-ppc64el-lxd
