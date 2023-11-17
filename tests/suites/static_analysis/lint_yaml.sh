@@ -1,7 +1,8 @@
 yaml_check() {
-  FILE="${1}"
+	FILE="${1}"
 
-  py=$(cat <<EOF
+	py=$(
+		cat <<EOF
 import yaml, sys
 
 def path(loader, tag_suffix, node):
@@ -13,25 +14,26 @@ def path(loader, tag_suffix, node):
 yaml.add_multi_constructor('', path)
 yaml.load(sys.stdin, Loader=yaml.Loader)
 EOF
-)
+	)
 
-  OUT=$(python3 -c "${py}" 2>&1 < "${FILE}" || true)
-  if [ -n "${OUT}" ]; then
-    echo ""
-    echo "$(red 'Found some issues:')"
-    echo "${OUT}"
-    exit 1
-  fi
+	OUT=$(python3 -c "${py}" 2>&1 <"${FILE}" || true)
+	if [ -n "${OUT}" ]; then
+		echo ""
+		echo "$(red 'Found some issues:')"
+		echo "${OUT}"
+		exit 1
+	fi
 }
 
 run_yaml_check() {
-  FILES="${2}"
+	FILES="${2}"
 
-  echo "$FILES" | while IFS= read -r line; do yaml_check "${line}"; done
+	echo "$FILES" | while IFS= read -r line; do yaml_check "${line}"; done
 }
 
 run_yaml_deadcode() {
-  OUT=$(go run tests/suites/static_analysis/deadcode/main.go "$(pwd)" <<EOF 2>&1 || true
+	OUT=$(
+		go run tests/suites/static_analysis/deadcode/main.go "$(pwd)" <<EOF 2>&1 || true
 files:
   skip:
     - .github/workflows/static-analysis.yml
@@ -91,18 +93,20 @@ jobs:
     - lxd-src-command-focal-base
     - nw-deploy-focal-amd64-lxd
     - nw-deploy-jammy-amd64-lxd
+    - test-controllercharm-multijob
 EOF
-)
-  if [ -n "${OUT}" ]; then
-    echo ""
-    echo "$(red 'Found some issues:')"
-    echo "${OUT}"
-    exit 1
-  fi
+	)
+	if [ -n "${OUT}" ]; then
+		echo ""
+		echo "$(red 'Found some issues:')"
+		echo "${OUT}"
+		exit 1
+	fi
 }
 
 run_yaml_simplify() {
-  OUT=$(go run tests/suites/static_analysis/simplify/main.go "$(pwd)" <<EOF 2>&1 || true
+	OUT=$(
+		go run tests/suites/static_analysis/simplify/main.go "$(pwd)" <<EOF 2>&1 || true
 files:
   skip:
     - .github/workflows/static-analysis.yml
@@ -132,17 +136,18 @@ jobs:
     - test-secrets_k8s-multijob:IntegrationTests-secrets_k8s
     - test-secrets_iaas-multijob:IntegrationTests-secrets_iaas
 EOF
-)
-  if [ -n "${OUT}" ]; then
-    echo ""
-    echo "$(red 'Found some issues:')"
-    echo "${OUT}"
-    exit 1
-  fi
+	)
+	if [ -n "${OUT}" ]; then
+		echo ""
+		echo "$(red 'Found some issues:')"
+		echo "${OUT}"
+		exit 1
+	fi
 }
 
 run_yaml_alphabetise() {
-  OUT=$(go run tests/suites/static_analysis/alphabetise/main.go "$(pwd)" <<EOF 2>&1 || true
+	OUT=$(
+		go run tests/suites/static_analysis/alphabetise/main.go "$(pwd)" <<EOF 2>&1 || true
 files:
   skip:
     - .github/workflows/static-analysis.yml
@@ -150,57 +155,57 @@ files:
 jobs:
   ignore: []
 EOF
-)
-  if [ -n "${OUT}" ]; then
-    echo ""
-    echo "$(red 'Found some issues:')"
-    echo "${OUT}"
-    exit 1
-  fi
+	)
+	if [ -n "${OUT}" ]; then
+		echo ""
+		echo "$(red 'Found some issues:')"
+		echo "${OUT}"
+		exit 1
+	fi
 
 }
 
 test_static_analysis_yaml() {
-  if [ "$(skip 'test_static_analysis_yaml')" ]; then
-      echo "==> TEST SKIPPED: static yaml analysis"
-      return
-  fi
+	if [ "$(skip 'test_static_analysis_yaml')" ]; then
+		echo "==> TEST SKIPPED: static yaml analysis"
+		return
+	fi
 
-  (
-    set_verbosity
+	(
+		set_verbosity
 
-    cd .. || exit
+		cd .. || exit
 
-    FILES=$(find ./* -name '*.yml')
+		FILES=$(find ./* -name '*.yml')
 
-    go mod download
+		go mod download
 
-    # YAML static analysis
-    if which python >/dev/null 2>&1; then
-      run "run_yaml_check" "${FILES}"
-    else
-      echo "python not found, yaml static analysis disabled"
-    fi
+		# YAML static analysis
+		if which python >/dev/null 2>&1; then
+			run "run_yaml_check" "${FILES}"
+		else
+			echo "python not found, yaml static analysis disabled"
+		fi
 
-    # YAML deadcode elimiation
-    if which go >/dev/null 2>&1; then
-      run "run_yaml_deadcode"
-    else
-      echo "go not found, yaml deadcode disabled"
-    fi
+		# YAML deadcode elimiation
+		if which go >/dev/null 2>&1; then
+			run "run_yaml_deadcode"
+		else
+			echo "go not found, yaml deadcode disabled"
+		fi
 
-    # YAML simplify
-    if which go >/dev/null 2>&1; then
-      run "run_yaml_simplify"
-    else
-      echo "go not found, yaml simplify disabled"
-    fi
+		# YAML simplify
+		if which go >/dev/null 2>&1; then
+			run "run_yaml_simplify"
+		else
+			echo "go not found, yaml simplify disabled"
+		fi
 
-    # YAML alphabetise
-    if which go >/dev/null 2>&1; then
-      run "run_yaml_alphabetise"
-    else
-      echo "go not found, yaml alphabetise disabled"
-    fi
-  )
+		# YAML alphabetise
+		if which go >/dev/null 2>&1; then
+			run "run_yaml_alphabetise"
+		else
+			echo "go not found, yaml alphabetise disabled"
+		fi
+	)
 }
