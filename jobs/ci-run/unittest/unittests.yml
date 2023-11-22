@@ -116,6 +116,7 @@
           GOTEST_TYPE: "xunit-report"
           TEST_TIMEOUT: "${TEST_TIMEOUT}"
           USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          FUZZ_CHECKING: 1
     publishers:
       - junit:
           results: tests.xml
@@ -167,6 +168,7 @@
           GOTEST_TYPE: "xunit-report"
           TEST_TIMEOUT: "${TEST_TIMEOUT}"
           USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          FUZZ_CHECKING: 0
     publishers:
       - junit:
           results: tests.xml
@@ -214,6 +216,7 @@
           GOTEST_TYPE: "xunit-report"
           TEST_TIMEOUT: "${TEST_TIMEOUT}"
           USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          FUZZ_CHECKING: 0
     publishers:
       - junit:
           results: tests.xml
@@ -265,6 +268,7 @@
           GOTEST_TYPE: "xunit-report"
           TEST_TIMEOUT: "${TEST_TIMEOUT}"
           USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          FUZZ_CHECKING: 0
     publishers:
       - junit:
           results: tests.xml
@@ -317,6 +321,7 @@
           GOTEST_TYPE: "race"
           TEST_TIMEOUT: "${TEST_TIMEOUT}"
           USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          FUZZ_CHECKING: 0
     publishers:
         - junit:
             results: tests.xml
@@ -368,6 +373,7 @@
           GOTEST_TYPE: "race"
           TEST_TIMEOUT: "${TEST_TIMEOUT}"
           USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          FUZZ_CHECKING: 0
     publishers:
         - junit:
             results: tests.xml
