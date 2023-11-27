@@ -111,11 +111,17 @@
             OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'dashboard'
-            setup_steps: ''
-            task_name: ''
-            skip_tasks: ''
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([1-9]|\\d{2,})(\\.|-).*"
+          label: "${JUJU_VERSION}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'dashboard'
+                  setup_steps: ''
+                  task_name: ''
+                  skip_tasks: ''
     publishers:
       - integration-artifacts
 
@@ -189,11 +195,17 @@
             OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'dashboard'
-            setup_steps: ''
-            task_name: ''
-            skip_tasks: ''
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([1-9]|\\d{2,})(\\.|-).*"
+          label: "${JUJU_VERSION}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'dashboard'
+                  setup_steps: ''
+                  task_name: ''
+                  skip_tasks: ''
     publishers:
       - integration-artifacts
 
@@ -267,11 +279,17 @@
             OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'dashboard'
-            setup_steps: ''
-            task_name: ''
-            skip_tasks: ''
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([1-9]|\\d{2,})(\\.|-).*"
+          label: "${JUJU_VERSION}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'dashboard'
+                  setup_steps: ''
+                  task_name: ''
+                  skip_tasks: ''
     publishers:
       - integration-artifacts
 
@@ -341,11 +359,17 @@
             OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'dashboard'
-            setup_steps: ''
-            task_name: ''
-            skip_tasks: ''
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([1-9]|\\d{2,})(\\.|-).*"
+          label: "${JUJU_VERSION}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'dashboard'
+                  setup_steps: ''
+                  task_name: ''
+                  skip_tasks: ''
     publishers:
       - integration-artifacts
 
@@ -415,10 +439,16 @@
             OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test-microk8s:
-            test_name: 'dashboard'
-            setup_steps: ''
-            task_name: ''
-            skip_tasks: ''
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([1-9]|\\d{2,})(\\.|-).*"
+          label: "${JUJU_VERSION}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                  test_name: 'dashboard'
+                  setup_steps: ''
+                  task_name: ''
+                  skip_tasks: ''
     publishers:
       - integration-artifacts
