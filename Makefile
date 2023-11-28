@@ -62,7 +62,7 @@ gen-wire-tests:
 	@go run ./tools/gen-wire-tests/main.go \
 		"${JUJU_REPO_PATH}/tests/suites" \
 		"./jobs/ci-run/integration/gen" \
-		"3.3" \
+		"3.4" \
 		<"${config}"
 
 .PHONY: clean
