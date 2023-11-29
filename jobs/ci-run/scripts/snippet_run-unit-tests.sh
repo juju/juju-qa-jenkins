@@ -36,7 +36,7 @@ if [[ "{GOTEST_TYPE}" == "race" ]]; then
         exit_code=$?
     fi
 elif [[ "{GOTEST_TYPE}" == "xunit-report" ]]; then
-    JUJU_GOMOD_MODE=vendor make test VERBOSE_CHECK=1 FUZZ_CHECK=${{FUZZ_CHECK}} TEST_TIMEOUT=${{TEST_TIMEOUT}} | tee ${{WORKSPACE}}/go-unittest.out
+    JUJU_GOMOD_MODE=vendor make test VERBOSE_CHECK=1 FUZZ_CHECK={FUZZ_CHECK} TEST_TIMEOUT=${{TEST_TIMEOUT}} | tee ${{WORKSPACE}}/go-unittest.out
     exit_code=$?
 fi
 set +o pipefail
