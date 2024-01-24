@@ -38,7 +38,7 @@
 
     set +e  # Will fail in reports gen if any errors occur
     set -o pipefail  # Need to error for make, not tees' success.
-    make check VERBOSE_CHECK=1 | tee ${WORKSPACE}/go-unittest.out
+    make check COVERAGE_CHECK=1 VERBOSE_CHECK=1 | tee ${WORKSPACE}/go-unittest.out
     check_exit=$?
     set +o pipefail
     echo `date --rfc-3339=seconds` "ran make check"
