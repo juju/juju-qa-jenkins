@@ -194,6 +194,7 @@
         # Steps come from https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
         set -eux
 
+        sudo DEBIAN_FRONTEND=noninteractive apt-get update
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates curl apt-transport-https lsb-release gnupg
 
         curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
