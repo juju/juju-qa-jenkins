@@ -34,7 +34,6 @@
           cron: "H/5 * * * *"
           org-list:
             - juju
-            - CanonicalLtd
           allow-whitelist-orgs-as-admins: true
           black-list-labels:
             - "no-test-run"
@@ -136,7 +135,6 @@
           cron: "H/5 * * * *"
           org-list:
             - juju
-            - CanonicalLtd
           allow-whitelist-orgs-as-admins: true
           black-list-target-branches:
             - feature-.*
