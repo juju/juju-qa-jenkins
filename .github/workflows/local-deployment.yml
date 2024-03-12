@@ -13,7 +13,7 @@ jobs:
       uses: charmed-kubernetes/actions-operator@main
       with:
         provider: lxd
-        juju-channel: latest/stable
+        juju-channel: 3/stable
 
     - name: Deploy a Jenkins master to Juju
       shell: bash
