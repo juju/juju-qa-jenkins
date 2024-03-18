@@ -124,7 +124,7 @@
         fi
 
         export PATH="/snap/bin:$PATH"
-        sudo snap refresh go --channel=1.17/stable || sudo snap install go --channel=1.17/stable --classic
+        sudo snap refresh go --channel=1.21/stable || sudo snap install go --channel=1.21/stable --classic
 
         # TODO - fix this workaround
         # As we clone the full history (can't shallow clone otherwise queued jobs miss
