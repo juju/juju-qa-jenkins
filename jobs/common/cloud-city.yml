@@ -84,14 +84,6 @@
         properties-file: $CLOUD_CITY/vsphere-govc-rc
 
 - builder:
-    name: 'get-rackspace-creds'
-    builders:
-    - get-cloud-city-repo:
-        files: rackspacerc
-    - inject:
-        properties-file: $CLOUD_CITY/rackspacerc
-
-- builder:
     name: 'get-github-token'
     builders:
     - get-cloud-city-repo:
