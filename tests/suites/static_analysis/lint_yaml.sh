@@ -64,7 +64,6 @@ jobs:
     - z-clean-resources-gke
     - z-clean-resources-aks
     - z-clean-resources-equinix
-    - z-clean-resources-rackspace
     - z-clean-resources-vsphere
     - z-clean-resources-windows
     - z-clean-resources-eks
