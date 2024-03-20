@@ -139,7 +139,6 @@
             - "no-test-run"
           org-list:
             - juju
-            - CanonicalLtd
           allow-whitelist-orgs-as-admins: true
     builders:
       - wait-for-cloud-init
@@ -242,7 +241,6 @@
           cron: 'H/5 * * * *'
           org-list:
             - juju
-            - CanonicalLtd
           allow-whitelist-orgs-as-admins: true
     builders:
       - wait-for-cloud-init
