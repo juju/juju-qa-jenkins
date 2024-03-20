@@ -40,6 +40,8 @@
           current-parameters: true
         - name: 'test-deploy-test-deploy-charms-aws'
           current-parameters: true
+        - name: 'test-deploy-test-deploy-charms-lxd'
+          current-parameters: true
         - name: 'test-deploy-test-deploy-default-series-aws'
           current-parameters: true
         - name: 'test-deploy-test-deploy-default-series-lxd'
