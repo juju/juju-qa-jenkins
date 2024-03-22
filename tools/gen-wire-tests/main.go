@@ -278,6 +278,9 @@ func writeJobDefinitions(
 		if introduced, ok := config.Folders.Introduced[task]; ok {
 			minVersions[task] = minVersionRegex[introduced]
 		}
+		if introduced, ok := config.Folders.Introduced[suiteName+"-"+task]; ok {
+			minVersions[suiteName+"-"+task] = minVersionRegex[introduced]
+		}
 	}
 
 	if err := t.Execute(f, struct {
@@ -553,10 +556,14 @@ const Template = `
             OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
       - wait-for-cloud-init
       - prepare-integration-test
-{{- if index $.MinVersions $task_name }}
+{{- if or (index $.MinVersions $task_name) (index $.MinVersions (printf "%s-%s" $.SuiteName $task_name)) }}
+      {{- $cond := index $.MinVersions $task_name -}}
+      {{- if eq $cond "" }}
+        {{- $cond = index $.MinVersions (printf "%s-%s" $.SuiteName $task_name) -}}
+      {{- end }}
       - conditional-step:
           condition-kind: regex-match
-          regex: "{{ index $.MinVersions $task_name }}"
+          regex: "{{ $cond }}"
           label: "${JUJU_VERSION}"
           on-evaluation-failure: "dont-run"
           steps:
