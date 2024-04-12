@@ -335,3 +335,19 @@
           set -e
           echo "Removing Juju source ${SHORT_GIT_COMMIT} buildvars file"
           rm -rf buildvars
+
+
+- builder:
+    name: select-oci-registry
+    builders:
+    - shell: |-
+        #!/bin/bash
+        set -e
+        echo "OPERATOR_IMAGE_ACCOUNT=public.ecr.aws/jujuqabot/build-${SHORT_GIT_COMMIT}" > juju-oci.properties
+        cat juju-oci.properties
+    - inject:
+        properties-file: juju-oci.properties
+    - shell: |-
+          #!/bin/bash
+          set -e
+          rm -rf juju-oci.properties

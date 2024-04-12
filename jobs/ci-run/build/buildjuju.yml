@@ -159,13 +159,6 @@
           default: ""
           description: 'Go version used for build.'
           name: GOVERSION
-      - choice:
-          name: PARAM_OPERATOR_IMAGE_ACCOUNT
-          choices:
-            - docker.io/jujuqabot
-            - docker.io/jujusolutions
-          default: "docker.io/jujuqabot"
-          description: "Operator docker image account name."
       - string:
           default: "linux/amd64 linux/arm64 linux/s390x linux/ppc64el"
           description: "Space seperated list of Go Platforms to build the OCI images for"
@@ -183,15 +176,19 @@
           set -eu
 
           touch build.properties
-          echo "DOCKER_USERNAME=${PARAM_OPERATOR_IMAGE_ACCOUNT}" >> build.properties
+          echo "DOCKER_USERNAME=public.ecr.aws/jujuqabot/build-${SHORT_GIT_COMMIT}" >> build.properties
 
           cat build.properties
       - inject:
           properties-file: build.properties
       - install-docker
       - docker-login
+      - ensure-aws-credentials
+      - docker-ecr-login
       - get-s3-build-payload-packaging:
           platforms: "${BUILD_PLATFORMS}"
+      - host-src-command:
+          src_command: !include-raw: ../scripts/snippet_setup_ecr_public.sh
       - host-src-command:
           src_command: !include-raw: ../scripts/snippet_caas-jujud-operator.sh
 
