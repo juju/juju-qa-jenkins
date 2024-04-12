@@ -36,23 +36,18 @@
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
-    - string:
-        default: docker.io/jujuqabot
-        description: "Operator docker image account name."
-        name: PARAM_OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
     builders:
+      - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
       - install-common-tools
       - install-docker
-      - ensure-aws-credentials
       - run-integration-test:
           test_name: "ck"
           task_name: ''
           skip_tasks: ''
-          setup_steps:
-                !include-raw: "../common/registry-setup.sh"
+          setup_steps: ''
     publishers:
       - integration-artifacts

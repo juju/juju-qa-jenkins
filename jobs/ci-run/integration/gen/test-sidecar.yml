@@ -89,10 +89,6 @@
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
-    - string:
-        default: docker.io/jujuqabot
-        description: "Operator docker image account name."
-        name: PARAM_OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -100,16 +96,14 @@
           fail: true
           type: absolute
     builders:
-      - inject:
-          properties-content: |-
-            OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
+      - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
       - run-integration-test-microk8s:
             test_name: 'sidecar'
             setup_steps: ''
             task_name: 'test_deploy_and_force_remove_application'
-            skip_tasks: 'test_deploy_and_remove_application,test_pebble_notices'
+            skip_tasks: 'test_deploy_and_remove_application,test_pebble_notices,test_pebble_change_updated'
     publishers:
       - integration-artifacts
 
@@ -163,10 +157,6 @@
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
-    - string:
-        default: docker.io/jujuqabot
-        description: "Operator docker image account name."
-        name: PARAM_OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -174,16 +164,14 @@
           fail: true
           type: absolute
     builders:
-      - inject:
-          properties-content: |-
-            OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
+      - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
       - run-integration-test-microk8s:
             test_name: 'sidecar'
             setup_steps: ''
             task_name: 'test_deploy_and_remove_application'
-            skip_tasks: 'test_deploy_and_force_remove_application,test_pebble_notices'
+            skip_tasks: 'test_deploy_and_force_remove_application,test_pebble_notices,test_pebble_change_updated'
     publishers:
       - integration-artifacts
 
@@ -237,10 +225,6 @@
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
-    - string:
-        default: docker.io/jujuqabot
-        description: "Operator docker image account name."
-        name: PARAM_OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -248,9 +232,7 @@
           fail: true
           type: absolute
     builders:
-      - inject:
-          properties-content: |-
-            OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
+      - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
       - conditional-step:
@@ -263,6 +245,6 @@
                   test_name: 'sidecar'
                   setup_steps: ''
                   task_name: 'test_pebble_notices'
-                  skip_tasks: 'test_deploy_and_force_remove_application,test_deploy_and_remove_application'
+                  skip_tasks: 'test_deploy_and_force_remove_application,test_deploy_and_remove_application,test_pebble_change_updated'
     publishers:
       - integration-artifacts

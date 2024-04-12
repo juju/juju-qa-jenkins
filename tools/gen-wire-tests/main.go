@@ -29,6 +29,7 @@ type Config struct {
 		SkipSubTasks []string                       `yaml:"skip-subtasks"`
 		PreventSplit []string                       `yaml:"prevent-split"`
 		Ephemeral    []string                       `yaml:"ephemeral"`
+		CrossCloud   []string                       `yaml:"cross-cloud"`
 		Unstable     map[string]map[string][]string `yaml:"unstable"`
 		Timeout      map[string]map[string]int      `yaml:"timeout"`
 		Introduced   map[string]string              `yaml:"introduced"`
@@ -225,7 +226,7 @@ func isTrackingBranch(inputDir, trackingBranch string) bool {
 
 	cmd = exec.Command("git", "-C", inputDir, "diff", "--quiet", fmt.Sprintf("upstream/%s", trackingBranch))
 	if err := cmd.Run(); err != nil {
-		log.Fatalf("unable to fetch: %v", err)
+		log.Fatalf("unable to diff: %v", err)
 	}
 
 	return true
@@ -273,6 +274,11 @@ func writeJobDefinitions(
 		ephemeral[test] = true
 	}
 
+	crossCloud := make(map[string]bool)
+	for _, test := range config.Folders.CrossCloud {
+		crossCloud[test] = true
+	}
+
 	minVersions := make(map[string]string)
 	for _, task := range task.SubTasks {
 		if introduced, ok := config.Folders.Introduced[task]; ok {
@@ -292,6 +298,7 @@ func writeJobDefinitions(
 		UnstableTasks map[string][]string
 		Unstable      bool
 		Ephemeral     map[string]bool
+		CrossCloud    map[string]bool
 		Timeout       map[string]int
 		MinVersions   map[string]string
 	}{
@@ -303,6 +310,7 @@ func writeJobDefinitions(
 		UnstableTasks: task.UnstableProviderSubTasks,
 		Unstable:      unstable,
 		Ephemeral:     ephemeral,
+		CrossCloud:    crossCloud,
 		Timeout:       task.Timeout,
 		MinVersions:   minVersions,
 	}); err != nil {
@@ -473,7 +481,7 @@ const Template = `
       {{- $builder = "run-integration-test" -}}
       {{- $run_on = "ephemeral-focal-8c-32g-amd64" -}}
     {{- end }}
-    {{- if eq $cloud.CloudName "microk8s" }}
+    {{- if or (eq (index $node.CrossCloud $test_name) true) (eq $cloud.CloudName "microk8s") }}
       {{- $builder = "run-integration-test-microk8s" -}}
       {{- $run_on = "ephemeral-focal-8c-32g-amd64" -}}
     {{- end }}
@@ -540,10 +548,6 @@ const Template = `
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
-    - string:
-        default: docker.io/jujuqabot
-        description: "Operator docker image account name."
-        name: PARAM_OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -551,9 +555,7 @@ const Template = `
           fail: true
           type: absolute
     builders:
-      - inject:
-          properties-content: |-
-            OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
+      - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
 {{- if or (index $.MinVersions $task_name) (index $.MinVersions (printf "%s-%s" $.SuiteName $task_name)) }}

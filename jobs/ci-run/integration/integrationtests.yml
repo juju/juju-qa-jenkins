@@ -118,6 +118,10 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: 'test-controllercharm-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: 'test-coslite-multijob'
               current-parameters: true
               predefined-parameters: |-
@@ -256,10 +260,6 @@
           name: proving-grounds-integration-tests-amd64
           projects:
             - name: 'test-ck'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-            - name: 'test-controllercharm-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64

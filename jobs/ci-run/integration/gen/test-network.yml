@@ -95,10 +95,6 @@
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
-    - string:
-        default: docker.io/jujuqabot
-        description: "Operator docker image account name."
-        name: PARAM_OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -106,9 +102,7 @@
           fail: true
           type: absolute
     builders:
-      - inject:
-          properties-content: |-
-            OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
+      - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
       - run-integration-test:
@@ -173,10 +167,6 @@
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
-    - string:
-        default: docker.io/jujuqabot
-        description: "Operator docker image account name."
-        name: PARAM_OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -184,9 +174,7 @@
           fail: true
           type: absolute
     builders:
-      - inject:
-          properties-content: |-
-            OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
+      - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
       - run-integration-test:
@@ -251,10 +239,6 @@
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
-    - string:
-        default: docker.io/jujuqabot
-        description: "Operator docker image account name."
-        name: PARAM_OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -262,9 +246,7 @@
           fail: true
           type: absolute
     builders:
-      - inject:
-          properties-content: |-
-            OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
+      - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
       - run-integration-test:
@@ -325,10 +307,6 @@
         default: ''
         description: 'Ubuntu series to use when bootstrapping Juju'
         name: BOOTSTRAP_SERIES
-    - string:
-        default: docker.io/jujuqabot
-        description: "Operator docker image account name."
-        name: PARAM_OPERATOR_IMAGE_ACCOUNT
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -336,9 +314,7 @@
           fail: true
           type: absolute
     builders:
-      - inject:
-          properties-content: |-
-            OPERATOR_IMAGE_ACCOUNT=${PARAM_OPERATOR_IMAGE_ACCOUNT}
+      - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
       - run-integration-test:

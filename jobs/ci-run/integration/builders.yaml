@@ -1,15 +1,6 @@
 # utils related to integration tests
 # Prepare things for an integration test
 - builder:
-    name: 'registry-setup'
-    builders:
-    - host-src-command:
-        src_command:
-          !include-raw: "common/registry-setup.sh"
-    - inject:
-          properties-file: build.properties
-
-- builder:
     name: 'prepare-integration-test'
     builders:
     - set-common-environment
@@ -36,9 +27,7 @@
     builders:
     - install-microk8s:
         channel: "latest/stable"
-    - install-docker
-    - ensure-aws-credentials
-    - registry-setup
+    - select-oci-registry
     - get-s3-build-payload-testing:
           SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
           platform: "linux/${{BUILD_ARCH}}"
