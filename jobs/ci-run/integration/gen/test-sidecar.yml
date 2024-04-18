@@ -103,7 +103,7 @@
             test_name: 'sidecar'
             setup_steps: ''
             task_name: 'test_deploy_and_force_remove_application'
-            skip_tasks: 'test_deploy_and_remove_application,test_pebble_notices,test_pebble_change_updated'
+            skip_tasks: 'test_deploy_and_remove_application,test_pebble_notices'
     publishers:
       - integration-artifacts
 
@@ -171,7 +171,7 @@
             test_name: 'sidecar'
             setup_steps: ''
             task_name: 'test_deploy_and_remove_application'
-            skip_tasks: 'test_deploy_and_force_remove_application,test_pebble_notices,test_pebble_change_updated'
+            skip_tasks: 'test_deploy_and_force_remove_application,test_pebble_notices'
     publishers:
       - integration-artifacts
 
@@ -245,6 +245,6 @@
                   test_name: 'sidecar'
                   setup_steps: ''
                   task_name: 'test_pebble_notices'
-                  skip_tasks: 'test_deploy_and_force_remove_application,test_deploy_and_remove_application,test_pebble_change_updated'
+                  skip_tasks: 'test_deploy_and_force_remove_application,test_deploy_and_remove_application'
     publishers:
       - integration-artifacts
