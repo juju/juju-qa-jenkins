@@ -32,6 +32,21 @@ while sudo lsof /var/lib/apt/lists/lock 2> /dev/null; do
 done
 sudo apt-get -y update
 
+setup_parca_agent() {
+    # Parca agent is already installed, then skip it.
+    if [ "$(which parca-agent >/dev/null 2>&1)" ]; then
+        return
+    fi
+
+    sudo snap install parca-agent --classic
+    sudo snap set parca-agent metadata-external-labels="machine=ci-run-${{BOOTSTRAP_PROVIDER}}"
+
+    # Hide the setting of the bearer token to the parca agent.
+    set +x
+    sudo snap set parca-agent remote-store-bearer-token="${{PARCA_BEARER_TOKEN}}"
+    set -x
+}
+
 # Issue around installing a snap within a privileged container on a host
 # fails. There is no real work around once privileged and nesting has been
 # set, so retries succeed.
@@ -55,8 +70,18 @@ while [ $attempts -lt 3 ]; do
     if [ ! "$(which microceph >/dev/null 2>&1)" ]; then
         sudo snap install microceph || true
     fi
-    # shellcheck disable=SC2193
-    if [ "${{BOOTSTRAP_PROVIDER:-}}" = "ec2" ]; then
+
+    provider="${{BOOTSTRAP_PROVIDER:-}}"
+    case "$provider" in
+        "lxd" | "lxd-remote" | "localhost")
+            setup_parca_agent || true
+            ;;
+        *)
+            echo "Skipping parca-agent setup for provider: $provider"
+            ;;
+    esac
+
+    if [ "$provider" = "ec2" ]; then
         if [ ! "$(which aws >/dev/null 2>&1)" ]; then
             sudo snap install aws-cli --classic || true
         fi
@@ -72,8 +97,8 @@ while [ $attempts -lt 3 ]; do
         echo -e "[default]\nregion = us-east-1" > "$HOME"/.aws/config
         chmod 600 ~/.aws/*
     fi
-    # shellcheck disable=SC2193
-    if [ "${{BOOTSTRAP_PROVIDER:-}}" = "azure" ]; then
+
+    if [ "$provider" = "azure" ]; then
         if [ ! "$(which az >/dev/null 2>&1)" ]; then
             curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
         fi
