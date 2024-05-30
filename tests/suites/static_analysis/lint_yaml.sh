@@ -125,6 +125,7 @@ jobs:
     - github-juju-merge-jobs-{branch_name}:github-juju-merge-jobs
     - github-juju-pylibjuju-jobs:github-juju-pylibjuju-jobs
     - github-juju-check-jobs:github-juju-check-jobs
+    - ci-proving-ground-tests:CI ProvingGrounds Tests
     - test-bootstrap-multijob:IntegrationTests-bootstrap
     - test-coslite-multijob:IntegrationTests-coslite
     - test-deploy_aks-multijob:IntegrationTests-deploy_aks
