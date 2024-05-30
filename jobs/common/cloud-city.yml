@@ -24,15 +24,6 @@
             CLOUD_CITY=${{WORKSPACE}}/cloud-city
 
 - builder:
-    name: 'get-cloud-environments'
-    builders:
-    - get-cloud-city-repo:
-        files: environments.yaml
-    - inject:
-        properties-content: |-
-          CLOUD_ENV=$CLOUD_CITY/environments.yaml
-
-- builder:
     name: 'get-s3-creds'
     builders:
     - get-cloud-city-repo:

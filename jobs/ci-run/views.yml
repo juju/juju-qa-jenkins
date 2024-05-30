@@ -14,11 +14,6 @@
     regex: 'gating-.*'
 
 - view:
-    name: 'proving-ground-tests'
-    view-type: list
-    regex: 'proving-ground.*'
-
-- view:
     name: 'github-jobs'
     view-type: list
     regex: 'github-.*(-check-|-merge-).*'

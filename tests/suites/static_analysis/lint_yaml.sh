@@ -74,8 +74,6 @@ jobs:
     - unit-tests-race-arm64
     - unit-tests-ppc64el
     - unit-tests-arm64
-    - nw-deploy-jammy-s390x-lxd
-    - nw-deploy-jammy-ppc64el-lxd
     - make-windows-installer
     - gating-functional-tests-s390x
     - gating-functional-tests-ppc64el
@@ -85,14 +83,8 @@ jobs:
     # TODO (stickupkid): The followng jobs seem to be orphan jobs with in the
     # jenkins suite. We should clean them up to ensure that they do run, or
     # are removed.
-    - nw-caas-deploy-charms-kubernetes-core-iaas-controller
-    - nw-caas-deploy-charms-microk8s-iaas-controller
-    - nw-upgrade-lxd-profile-lxd
     - integration-tests
-    - public-clouds
     - lxd-src-command-focal-base
-    - nw-deploy-focal-amd64-lxd
-    - nw-deploy-jammy-amd64-lxd
     - test-controllercharm-multijob
 EOF
 	)
