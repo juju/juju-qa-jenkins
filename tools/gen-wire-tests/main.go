@@ -45,17 +45,18 @@ type Task struct {
 }
 
 type Cloud struct {
+	Name         string
 	CloudName    string
 	ProviderName string
 	Region       string
 }
 
 var (
-	lxd      = Cloud{CloudName: "lxd", ProviderName: "lxd"}
-	aws      = Cloud{CloudName: "aws", ProviderName: "ec2", Region: "us-east-1"}
-	google   = Cloud{CloudName: "google", ProviderName: "gce", Region: "us-east1"}
-	azure    = Cloud{CloudName: "azure", ProviderName: "azure", Region: "eastus"}
-	microk8s = Cloud{CloudName: "microk8s", ProviderName: "k8s"}
+	lxd      = Cloud{Name: "lxd", CloudName: "localhost", ProviderName: "lxd"}
+	aws      = Cloud{Name: "aws", CloudName: "aws", ProviderName: "ec2", Region: "us-east-1"}
+	google   = Cloud{Name: "google", CloudName: "google", ProviderName: "gce", Region: "us-east1"}
+	azure    = Cloud{Name: "azure", CloudName: "azure", ProviderName: "azure", Region: "eastus"}
+	microk8s = Cloud{Name: "microk8s", CloudName: "microk8s", ProviderName: "k8s"}
 )
 
 // minVersionRegex is a map from relevant minor semantic version releases
@@ -460,10 +461,10 @@ const Template = `
         projects:
 {{- range $k, $skip_tasks := $node.SkipTasks}}
 {{- range $cloud := $node.Clouds}}
-    {{- $unstableTasks := index $node.UnstableTasks $cloud.CloudName -}}
+    {{- $unstableTasks := index $node.UnstableTasks $cloud.Name -}}
     {{- $task_name := index $node.TaskNames $k -}}
     {{- if eq (contains $unstableTasks $task_name) $node.Unstable}}
-        - name: 'test-{{$.SuiteName}}-{{ensureHyphen $task_name}}-{{$cloud.CloudName}}'
+        - name: 'test-{{$.SuiteName}}-{{ensureHyphen $task_name}}-{{$cloud.Name}}'
           current-parameters: true
     {{- end -}}
 {{- end}}
@@ -472,9 +473,9 @@ const Template = `
 {{- range $k, $skip_tasks := $node.SkipTasks -}}
 {{- range $cloud := $node.Clouds -}}
     {{- $task_name := "" -}}
-    {{- $test_name := (printf "%s-%s" $.SuiteName $cloud.CloudName) -}}
+    {{- $test_name := (printf "%s-%s" $.SuiteName $cloud.Name) -}}
 	{{- $task_name = index $node.TaskNames $k -}}
-	{{- $full_task_name := (printf "test-%s-%s-%s" $.SuiteName (ensureHyphen $task_name) $cloud.CloudName) -}}
+	{{- $full_task_name := (printf "test-%s-%s-%s" $.SuiteName (ensureHyphen $task_name) $cloud.Name) -}}
 
     {{- $builder := "run-integration-test" -}}
     {{- $run_on := "ephemeral-focal-small-amd64" -}}
@@ -482,7 +483,7 @@ const Template = `
       {{- $builder = "run-integration-test" -}}
       {{- $run_on = "ephemeral-focal-8c-32g-amd64" -}}
     {{- end }}
-    {{- if or (eq (index $node.CrossCloud $test_name) true) (eq $cloud.CloudName "microk8s") }}
+    {{- if or (eq (index $node.CrossCloud $test_name) true) (eq $cloud.Name "microk8s") }}
       {{- $builder = "run-integration-test-microk8s" -}}
       {{- $run_on = "ephemeral-focal-8c-32g-amd64" -}}
     {{- end }}
@@ -494,9 +495,9 @@ const Template = `
     node: {{$run_on}}
     description: |-
     {{- if eq (len $node.SkipTasks) 1 }}
-      Test {{$.SuiteName}} suite on {{$cloud.CloudName}}
+      Test {{$.SuiteName}} suite on {{$cloud.Name}}
     {{ else }}
-      Test {{$task_name}} in {{$.SuiteName}} suite on {{$cloud.CloudName}}
+      Test {{$task_name}} in {{$.SuiteName}} suite on {{$cloud.Name}}
     {{ end -}}
     parameters:
     - validating-string:

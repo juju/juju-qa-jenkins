@@ -160,7 +160,7 @@
         - s390x
         - ppc64el
     - string:
-        default: 'lxd'
+        default: 'localhost'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
@@ -300,7 +300,7 @@
         - s390x
         - ppc64el
     - string:
-        default: 'lxd'
+        default: 'localhost'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
@@ -440,7 +440,7 @@
         - s390x
         - ppc64el
     - string:
-        default: 'lxd'
+        default: 'localhost'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
@@ -586,7 +586,7 @@
         - s390x
         - ppc64el
     - string:
-        default: 'lxd'
+        default: 'localhost'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
