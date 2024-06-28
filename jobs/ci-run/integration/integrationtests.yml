@@ -284,7 +284,7 @@
     project-type: "multijob"
     description: |-
       intergration-arm64 runs the new shell integration tests with arm64 workloads.
-    node: ephemeral-bionic-8c-32g-arm64
+    node: noop-parent-jobs
     concurrent: true
     wrappers:
       - default-integration-test-wrapper
