@@ -37,19 +37,19 @@ sudo apt-get -y update
 # set, so retries succeed.
 attempts=0
 while [ $attempts -lt 3 ]; do
-    if [ ! "$(which jq >/dev/null 2>&1)" ]; then
+    if ! which jq >/dev/null 2>&1; then
         sudo snap install jq || true
     fi
-    if [ ! "$(which yq >/dev/null 2>&1)" ]; then
+    if ! which yq >/dev/null 2>&1; then
         sudo snap install yq || true
     fi
-    if [ ! "$(which shellcheck >/dev/null 2>&1)" ]; then
+    if ! which shellcheck >/dev/null 2>&1; then
         sudo snap install shellcheck || true
     fi
-    if [ ! "$(which expect >/dev/null 2>&1)" ]; then
+    if ! which expect >/dev/null 2>&1; then
         sudo apt-get -y install expect || true
     fi
-    if [ ! "$(which petname >/dev/null 2>&1)" ]; then
+    if ! which petname >/dev/null 2>&1; then
         sudo snap install petname || true
     fi
     if [ ! "$(which microceph >/dev/null 2>&1)" ]; then
@@ -57,7 +57,7 @@ while [ $attempts -lt 3 ]; do
     fi
     # shellcheck disable=SC2193
     if [ "${{BOOTSTRAP_PROVIDER:-}}" = "ec2" ]; then
-        if [ ! "$(which aws >/dev/null 2>&1)" ]; then
+        if ! which aws >/dev/null 2>&1; then
             sudo snap install aws-cli --classic || true
         fi
 
@@ -74,7 +74,7 @@ while [ $attempts -lt 3 ]; do
     fi
     # shellcheck disable=SC2193
     if [ "${{BOOTSTRAP_PROVIDER:-}}" = "azure" ]; then
-        if [ ! "$(which az >/dev/null 2>&1)" ]; then
+        if ! which az >/dev/null 2>&1; then
             curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
         fi
 
