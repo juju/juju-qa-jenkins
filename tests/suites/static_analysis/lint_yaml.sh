@@ -119,6 +119,7 @@ jobs:
     - github-juju-check-jobs:github-juju-check-jobs
     - ci-proving-ground-tests:CI ProvingGrounds Tests
     - test-bootstrap-multijob:IntegrationTests-bootstrap
+    - test-coslite-multijob:IntegrationTests-cloud_azure
     - test-coslite-multijob:IntegrationTests-coslite
     - test-deploy_aks-multijob:IntegrationTests-deploy_aks
     - test-deploy_caas-multijob:IntegrationTests-deploy_caas
