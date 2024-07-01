@@ -38,6 +38,8 @@
           current-parameters: true
         - name: 'test-deploy-test-deploy-bundles-aws'
           current-parameters: true
+        - name: 'test-deploy-test-deploy-bundles-lxd'
+          current-parameters: true
         - name: 'test-deploy-test-deploy-charms-aws'
           current-parameters: true
         - name: 'test-deploy-test-deploy-charms-lxd'
@@ -45,8 +47,6 @@
         - name: 'test-deploy-test-deploy-default-series-aws'
           current-parameters: true
         - name: 'test-deploy-test-deploy-default-series-lxd'
-          current-parameters: true
-        - name: 'test-deploy-test-deploy-os-lxd'
           current-parameters: true
         - name: 'test-deploy-test-deploy-revision-aws'
           current-parameters: true
@@ -121,7 +121,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_cmr_bundles_export_overlay'
-            skip_tasks: 'test_deploy_bundles,test_deploy_charms,test_deploy_default_series,test_deploy_os,test_deploy_revision'
+            skip_tasks: 'test_deploy_bundles,test_deploy_charms,test_deploy_default_series,test_deploy_revision'
     publishers:
       - integration-artifacts
 
@@ -189,7 +189,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_cmr_bundles_export_overlay'
-            skip_tasks: 'test_deploy_bundles,test_deploy_charms,test_deploy_default_series,test_deploy_os,test_deploy_revision'
+            skip_tasks: 'test_deploy_bundles,test_deploy_charms,test_deploy_default_series,test_deploy_revision'
     publishers:
       - integration-artifacts
 
@@ -261,7 +261,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_bundles'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_charms,test_deploy_default_series,test_deploy_os,test_deploy_revision'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_charms,test_deploy_default_series,test_deploy_revision'
     publishers:
       - integration-artifacts
 
@@ -329,7 +329,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_bundles'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_charms,test_deploy_default_series,test_deploy_os,test_deploy_revision'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_charms,test_deploy_default_series,test_deploy_revision'
     publishers:
       - integration-artifacts
 
@@ -401,7 +401,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_charms'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_default_series,test_deploy_os,test_deploy_revision'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_default_series,test_deploy_revision'
     publishers:
       - integration-artifacts
 
@@ -469,7 +469,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_charms'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_default_series,test_deploy_os,test_deploy_revision'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_default_series,test_deploy_revision'
     publishers:
       - integration-artifacts
 
@@ -541,7 +541,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_default_series'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_os,test_deploy_revision'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_revision'
     publishers:
       - integration-artifacts
 
@@ -609,147 +609,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_default_series'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_os,test_deploy_revision'
-    publishers:
-      - integration-artifacts
-
-- job:
-    name: test-deploy-test-deploy-os-aws
-    node: ephemeral-focal-small-amd64
-    description: |-
-      Test test_deploy_os in deploy suite on aws
-    parameters:
-    - validating-string:
-        name: SHORT_GIT_COMMIT
-        description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
-        msg: Enter a valid 7 char git sha
-    - choice:
-        default: 'amd64'
-        description: 'Build arch used to download the build tar.gz.'
-        name: BUILD_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - choice:
-        default: ''
-        description: 'Arch used to boostrap controller.'
-        name: BOOTSTRAP_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - choice:
-        default: ''
-        description: 'Arch used for hosted models.'
-        name: MODEL_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - string:
-        default: 'aws'
-        description: 'Cloud to use when bootstrapping Juju'
-        name: BOOTSTRAP_CLOUD
-    - string:
-        default: 'ec2'
-        description: 'Provider to use when bootstrapping Juju'
-        name: BOOTSTRAP_PROVIDER
-    - string:
-        default: 'us-east-1'
-        description: 'Cloud Region to use when bootstrapping Juju'
-        name: BOOTSTRAP_REGION
-    - string:
-        default: ''
-        description: 'Ubuntu series to use when bootstrapping Juju'
-        name: BOOTSTRAP_SERIES
-    wrappers:
-      - default-integration-test-wrapper
-      - timeout:
-          timeout: 30
-          fail: true
-          type: absolute
-    builders:
-      - select-oci-registry
-      - wait-for-cloud-init
-      - prepare-integration-test
-      - run-integration-test:
-            test_name: 'deploy'
-            setup_steps: ''
-            task_name: 'test_deploy_os'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_default_series,test_deploy_revision'
-    publishers:
-      - integration-artifacts
-
-- job:
-    name: test-deploy-test-deploy-os-lxd
-    node: ephemeral-focal-8c-32g-amd64
-    description: |-
-      Test test_deploy_os in deploy suite on lxd
-    parameters:
-    - validating-string:
-        name: SHORT_GIT_COMMIT
-        description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
-        msg: Enter a valid 7 char git sha
-    - choice:
-        default: 'amd64'
-        description: 'Build arch used to download the build tar.gz.'
-        name: BUILD_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - choice:
-        default: ''
-        description: 'Arch used to boostrap controller.'
-        name: BOOTSTRAP_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - choice:
-        default: ''
-        description: 'Arch used for hosted models.'
-        name: MODEL_ARCH
-        choices:
-        - amd64
-        - arm64
-        - s390x
-        - ppc64el
-    - string:
-        default: 'localhost'
-        description: 'Cloud to use when bootstrapping Juju'
-        name: BOOTSTRAP_CLOUD
-    - string:
-        default: 'lxd'
-        description: 'Provider to use when bootstrapping Juju'
-        name: BOOTSTRAP_PROVIDER
-    - string:
-        default: ''
-        description: 'Ubuntu series to use when bootstrapping Juju'
-        name: BOOTSTRAP_SERIES
-    wrappers:
-      - default-integration-test-wrapper
-      - timeout:
-          timeout: 30
-          fail: true
-          type: absolute
-    builders:
-      - select-oci-registry
-      - wait-for-cloud-init
-      - prepare-integration-test
-      - run-integration-test:
-            test_name: 'deploy'
-            setup_steps: ''
-            task_name: 'test_deploy_os'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_default_series,test_deploy_revision'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_revision'
     publishers:
       - integration-artifacts
 
@@ -821,7 +681,7 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_revision'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_default_series,test_deploy_os'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_default_series'
     publishers:
       - integration-artifacts
 
@@ -889,6 +749,6 @@
             test_name: 'deploy'
             setup_steps: ''
             task_name: 'test_deploy_revision'
-            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_default_series,test_deploy_os'
+            skip_tasks: 'test_cmr_bundles_export_overlay,test_deploy_bundles,test_deploy_charms,test_deploy_default_series'
     publishers:
       - integration-artifacts

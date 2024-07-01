@@ -32,7 +32,3 @@
     - multijob:
         name: 'IntegrationTests-deploy'
         projects:
-        - name: 'test-deploy-test-deploy-bundles-lxd'
-          current-parameters: true
-        - name: 'test-deploy-test-deploy-os-aws'
-          current-parameters: true
