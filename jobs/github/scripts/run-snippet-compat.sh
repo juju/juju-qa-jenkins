@@ -140,7 +140,7 @@ sudo su - "$USER" -c "$(echo "$SAVE_ENV" && cat <<'EOS'
     if [ -f "${{WORKSPACE}}/go-unittest.out" ]; then
         # This will be used to generate reports for jenkins assuming there is
         # a file "go-unittest.out" in the WORKSPACE.
-        GO111MODULE=off go get -v github.com/tebeka/go2xunit
+        go install -v github.com/tebeka/go2xunit@latest
         "${{GOPATH}}/bin/go2xunit" -fail -input "${{WORKSPACE}}/go-unittest.out" -output "${{WORKSPACE}}/tests.xml"
     fi
 

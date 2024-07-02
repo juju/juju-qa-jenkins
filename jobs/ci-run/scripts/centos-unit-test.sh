@@ -37,7 +37,7 @@ else
 fi
 
 # This will be used to generate reports for jenkins.
-GO111MODULE=off go get github.com/tebeka/go2xunit
+go install github.com/tebeka/go2xunit@latest
 
 cd ${full_path}
 

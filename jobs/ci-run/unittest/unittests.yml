@@ -106,8 +106,8 @@
       - apt-install:
           packages: gcc squashfuse
       - setup-go-environment
-      - go-get:
-          modules: github.com/tebeka/go2xunit
+      - go-install:
+          modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
           description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
@@ -158,8 +158,8 @@
       - apt-install:
           packages: gcc squashfuse
       - setup-go-environment
-      - go-get:
-          modules: github.com/tebeka/go2xunit
+      - go-install:
+          modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
           description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
@@ -206,8 +206,8 @@
       - apt-install:
           packages: gcc squashfuse
       - setup-go-environment
-      - go-get:
-          modules: github.com/tebeka/go2xunit
+      - go-install:
+          modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
           description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
@@ -258,8 +258,8 @@
       - apt-install:
           packages: gcc squashfuse
       - setup-go-environment
-      - go-get:
-          modules: github.com/tebeka/go2xunit
+      - go-install:
+          modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
           description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
@@ -311,8 +311,8 @@
       - apt-install:
           packages: gcc squashfuse
       - setup-go-environment
-      - go-get:
-          modules: github.com/tebeka/go2xunit
+      - go-install:
+          modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
           description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
@@ -363,8 +363,8 @@
       - apt-install:
           packages: gcc squashfuse
       - setup-go-environment
-      - go-get:
-          modules: github.com/tebeka/go2xunit
+      - go-install:
+          modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
           description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"

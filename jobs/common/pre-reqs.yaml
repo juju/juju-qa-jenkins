@@ -50,12 +50,12 @@
             {packages}
 
 - builder:
-    name: go-get
+    name: go-install
     builders:
       - shell: |-
           #!/bin/bash
           set -eux
-          GO111MODULE=off go get {modules}
+          go install {modules}
 
 # install-common-tools installs the common set of tools needed between 99% of
 # jobs in this repo. This builder assumes the install target is Ubuntu.
