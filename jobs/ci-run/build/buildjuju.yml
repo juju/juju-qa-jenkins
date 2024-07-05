@@ -2,7 +2,7 @@
 
 - job:
     name: build-juju
-    node: ephemeral-focal-16c-64g-amd64
+    node: ephemeral-noble-16c-64g-amd64
     concurrent: true
     description: |-
       Build juju binaries for specified platform
@@ -139,7 +139,7 @@
 
 - job:
     name: build-jujud-operator
-    node: ephemeral-jammy-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: Build juju docker image for caas operator on all platforms.
     wrappers:
       - ansicolor

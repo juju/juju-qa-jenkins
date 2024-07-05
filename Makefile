@@ -11,8 +11,7 @@ python_base_path = $(shell which python3)
 
 .PHONY: ensure-venv
 ensure-venv:
-	pip3 show virtualenv > /dev/null || pip3 install virtualenv
-	test -d venv || virtualenv -p $(python_base_path) $(virtualenv_dir)
+	$(python_base_path) -m venv $(virtualenv_dir)
 
 .PHONY: install-deps
 install-deps: ensure-venv

@@ -1,7 +1,7 @@
 ## Jobs and builders for handling agent json
 - job:
     name: generate-agent-testing-streams
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Build simple streams agent product json
     wrappers:
@@ -68,7 +68,7 @@
     description: |-
       Publish stream metadata and agents from this build for use in
       functional testing.
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     wrappers:
       - ansicolor
       - workspace-cleanup
@@ -127,7 +127,7 @@
     description: |-
       Publish stream metadata and agents from this build for use in
       functional testing.
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     wrappers:
       - ansicolor
       - workspace-cleanup

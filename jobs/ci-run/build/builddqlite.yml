@@ -40,7 +40,7 @@
 
 - job:
     name: build-dqlite-amd64
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     concurrent: true
     description: |-
       Build dqlite libraries for specified platform
@@ -68,7 +68,7 @@
 
 - job:
     name: build-dqlite-arm64
-    node: ephemeral-focal-8c-32g-arm64
+    node: ephemeral-noble-8c-32g-arm64
     concurrent: true
     description: |-
       Build dqlite libraries for specified platform
@@ -102,7 +102,7 @@
 
 - job:
     name: build-dqlite-ppc64el
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     concurrent: true
     description: |-
       Build dqlite libraries for specified platform
@@ -132,7 +132,7 @@
 
 - job:
     name: build-dqlite-s390x
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     concurrent: true
     description: |-
       Build dqlite libraries for specified platform

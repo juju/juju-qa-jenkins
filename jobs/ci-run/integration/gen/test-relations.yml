@@ -47,7 +47,7 @@
 
 - job:
     name: test-relations-test-relation-data-exchange-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_relation_data_exchange in relations suite on aws
     parameters:
@@ -119,7 +119,7 @@
 
 - job:
     name: test-relations-test-relation-data-exchange-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_relation_data_exchange in relations suite on lxd
     parameters:
@@ -187,7 +187,7 @@
 
 - job:
     name: test-relations-test-relation-departing-unit-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_relation_departing_unit in relations suite on aws
     parameters:
@@ -259,7 +259,7 @@
 
 - job:
     name: test-relations-test-relation-departing-unit-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_relation_departing_unit in relations suite on lxd
     parameters:
@@ -327,7 +327,7 @@
 
 - job:
     name: test-relations-test-relation-list-app-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_relation_list_app in relations suite on aws
     parameters:
@@ -399,7 +399,7 @@
 
 - job:
     name: test-relations-test-relation-list-app-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_relation_list_app in relations suite on lxd
     parameters:

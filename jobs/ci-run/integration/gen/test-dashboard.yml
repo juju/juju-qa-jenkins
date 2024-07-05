@@ -39,7 +39,7 @@
 
 - job:
     name: test-dashboard-test-dashboard-deploy-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test dashboard suite on aws
     parameters:
@@ -117,7 +117,7 @@
 
 - job:
     name: test-dashboard-test-dashboard-deploy-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test dashboard suite on lxd
     parameters:

@@ -47,7 +47,7 @@
 
 - job:
     name: test-user-test-user-login-password-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_user_login_password in user suite on aws
     parameters:
@@ -119,7 +119,7 @@
 
 - job:
     name: test-user-test-user-login-password-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_user_login_password in user suite on lxd
     parameters:
@@ -187,7 +187,7 @@
 
 - job:
     name: test-user-test-user-manage-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_user_manage in user suite on aws
     parameters:
@@ -259,7 +259,7 @@
 
 - job:
     name: test-user-test-user-manage-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_user_manage in user suite on lxd
     parameters:
@@ -327,7 +327,7 @@
 
 - job:
     name: test-user-test-user-register-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_user_register in user suite on aws
     parameters:
@@ -399,7 +399,7 @@
 
 - job:
     name: test-user-test-user-register-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_user_register in user suite on lxd
     parameters:

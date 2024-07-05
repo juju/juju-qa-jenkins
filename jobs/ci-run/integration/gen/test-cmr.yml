@@ -39,7 +39,7 @@
 
 - job:
     name: test-cmr-test-offer-consume-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test cmr suite on aws
     parameters:
@@ -111,7 +111,7 @@
 
 - job:
     name: test-cmr-test-offer-consume-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test cmr suite on lxd
     parameters:

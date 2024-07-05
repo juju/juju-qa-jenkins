@@ -43,7 +43,7 @@
 
 - job:
     name: test-smoke-test-build-aws
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_build in smoke suite on aws
     parameters:
@@ -115,7 +115,7 @@
 
 - job:
     name: test-smoke-test-build-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_build in smoke suite on lxd
     parameters:
@@ -183,7 +183,7 @@
 
 - job:
     name: test-smoke-test-deploy-aws
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_deploy in smoke suite on aws
     parameters:
@@ -255,7 +255,7 @@
 
 - job:
     name: test-smoke-test-deploy-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_deploy in smoke suite on lxd
     parameters:

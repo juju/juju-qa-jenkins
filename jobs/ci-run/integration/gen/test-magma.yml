@@ -37,7 +37,7 @@
 
 - job:
     name: test-magma-test-deploy-magma-microk8s
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test magma suite on microk8s
     parameters:

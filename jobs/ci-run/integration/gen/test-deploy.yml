@@ -55,7 +55,7 @@
 
 - job:
     name: test-deploy-test-cmr-bundles-export-overlay-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_cmr_bundles_export_overlay in deploy suite on aws
     parameters:
@@ -127,7 +127,7 @@
 
 - job:
     name: test-deploy-test-cmr-bundles-export-overlay-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_cmr_bundles_export_overlay in deploy suite on lxd
     parameters:
@@ -195,7 +195,7 @@
 
 - job:
     name: test-deploy-test-deploy-bundles-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_deploy_bundles in deploy suite on aws
     parameters:
@@ -267,7 +267,7 @@
 
 - job:
     name: test-deploy-test-deploy-bundles-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_deploy_bundles in deploy suite on lxd
     parameters:
@@ -335,7 +335,7 @@
 
 - job:
     name: test-deploy-test-deploy-charms-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_deploy_charms in deploy suite on aws
     parameters:
@@ -407,7 +407,7 @@
 
 - job:
     name: test-deploy-test-deploy-charms-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_deploy_charms in deploy suite on lxd
     parameters:
@@ -475,7 +475,7 @@
 
 - job:
     name: test-deploy-test-deploy-default-series-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_deploy_default_series in deploy suite on aws
     parameters:
@@ -547,7 +547,7 @@
 
 - job:
     name: test-deploy-test-deploy-default-series-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_deploy_default_series in deploy suite on lxd
     parameters:
@@ -615,7 +615,7 @@
 
 - job:
     name: test-deploy-test-deploy-revision-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_deploy_revision in deploy suite on aws
     parameters:
@@ -687,7 +687,7 @@
 
 - job:
     name: test-deploy-test-deploy-revision-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_deploy_revision in deploy suite on lxd
     parameters:

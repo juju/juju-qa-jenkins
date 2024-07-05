@@ -285,7 +285,7 @@
 
 - job:
     name: "package-juju-source"
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     project-type: "multijob"
     condition: SUCCESSFUL
     wrappers:

@@ -39,7 +39,7 @@
 
 - job:
     name: test-agents-test-charmrevisionupdater-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test agents suite on aws
     parameters:
@@ -111,7 +111,7 @@
 
 - job:
     name: test-agents-test-charmrevisionupdater-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test agents suite on lxd
     parameters:

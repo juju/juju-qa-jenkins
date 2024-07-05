@@ -41,7 +41,7 @@
 
 - job:
     name: test-sidecar-test-deploy-and-force-remove-application-microk8s
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_deploy_and_force_remove_application in sidecar suite on microk8s
     parameters:
@@ -109,7 +109,7 @@
 
 - job:
     name: test-sidecar-test-deploy-and-remove-application-microk8s
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_deploy_and_remove_application in sidecar suite on microk8s
     parameters:
@@ -177,7 +177,7 @@
 
 - job:
     name: test-sidecar-test-pebble-notices-microk8s
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_pebble_notices in sidecar suite on microk8s
     parameters:

@@ -37,7 +37,7 @@
 
 - job:
     name: test-cloud_azure-test-managed-identity-azure
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test cloud_azure suite on azure
     parameters:

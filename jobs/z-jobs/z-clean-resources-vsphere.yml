@@ -19,7 +19,7 @@
         name: VSPHERE_SDK_URL
         description: "URL for the vsphere's SDK"
         default: https://10.247.0.3/sdk
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     publishers:
     - email-ext:
         recipients: juju-qa-aws@canonical.com

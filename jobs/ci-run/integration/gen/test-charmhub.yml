@@ -47,7 +47,7 @@
 
 - job:
     name: test-charmhub-test-charmhub-download-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_charmhub_download in charmhub suite on aws
     parameters:
@@ -119,7 +119,7 @@
 
 - job:
     name: test-charmhub-test-charmhub-download-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_charmhub_download in charmhub suite on lxd
     parameters:
@@ -187,7 +187,7 @@
 
 - job:
     name: test-charmhub-test-charmhub-find-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_charmhub_find in charmhub suite on aws
     parameters:
@@ -259,7 +259,7 @@
 
 - job:
     name: test-charmhub-test-charmhub-find-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_charmhub_find in charmhub suite on lxd
     parameters:
@@ -327,7 +327,7 @@
 
 - job:
     name: test-charmhub-test-charmhub-info-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_charmhub_info in charmhub suite on aws
     parameters:
@@ -399,7 +399,7 @@
 
 - job:
     name: test-charmhub-test-charmhub-info-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_charmhub_info in charmhub suite on lxd
     parameters:

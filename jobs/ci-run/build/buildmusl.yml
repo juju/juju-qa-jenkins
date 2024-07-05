@@ -34,7 +34,7 @@
 
 - job:
     name: build-musl-amd64
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     concurrent: true
     description: |-
       Build musl libraries for specified platform
@@ -62,7 +62,7 @@
 
 - job:
     name: build-musl-arm64
-    node: ephemeral-focal-8c-32g-arm64
+    node: ephemeral-noble-8c-32g-arm64
     concurrent: true
     description: |-
       Build musl libraries for specified platform

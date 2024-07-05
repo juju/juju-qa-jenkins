@@ -1,6 +1,6 @@
 - job:
     name: test-kubeflow
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test kubeflow suite on microk8s
     condition: SUCCESSFUL

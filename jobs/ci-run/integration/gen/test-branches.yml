@@ -43,7 +43,7 @@
 
 - job:
     name: test-branches-test-active-branch-output-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_active_branch_output in branches suite on aws
     parameters:
@@ -115,7 +115,7 @@
 
 - job:
     name: test-branches-test-active-branch-output-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_active_branch_output in branches suite on lxd
     parameters:
@@ -183,7 +183,7 @@
 
 - job:
     name: test-branches-test-branch-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_branch in branches suite on aws
     parameters:
@@ -255,7 +255,7 @@
 
 - job:
     name: test-branches-test-branch-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_branch in branches suite on lxd
     parameters:

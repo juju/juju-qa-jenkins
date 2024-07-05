@@ -37,7 +37,7 @@
 
 - job:
     name: test-upgrade-test-upgrade-simplestream-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test upgrade suite on lxd
     parameters:

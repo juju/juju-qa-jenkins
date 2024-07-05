@@ -18,7 +18,7 @@
             done
 
     description: Clean up AWS resouces.
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     publishers:
     - email-ext:
         recipients: juju-qa-aws@canonical.com

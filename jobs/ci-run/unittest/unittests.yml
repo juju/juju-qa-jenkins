@@ -48,17 +48,6 @@
 #               current-parameters: true
 #               current-parameters: true
 
-
-- builder:
-    # Takes parameter: GOTEST_TYPE. 'race' for go test race, 'xunit-report' for
-    # make test w/ verbose and generating an xml report and anything else for
-    # straight 'make test'
-    name: 'run-unit-tests-lxd'
-    builders:
-    - lxd-src-command:
-          src_command:
-              !include-raw: ../scripts/snippet_run-unit-tests.sh
-
 - builder:
     # Takes parameter: GOTEST_TYPE. 'race' for go test race, 'xunit-report' for
     # make test w/ verbose and generating an xml report and anything else for
@@ -72,7 +61,7 @@
 
 - job:
     name: unit-tests-amd64
-    node: ephemeral-focal-16c-64g-amd64
+    node: ephemeral-noble-16c-64g-amd64
     description: |-
       Build and run unit tests for amd64.
     wrappers:
@@ -124,7 +113,7 @@
 
 - job:
     name: 'unit-tests-arm64'
-    node: ephemeral-focal-16c-64g-arm64
+    node: ephemeral-noble-16c-64g-arm64
     description: |-
       Build and run unit tests for arm64.
     wrappers:
@@ -277,7 +266,7 @@
 
 - job:
     name: 'unit-tests-race-amd64'
-    node: ephemeral-focal-16c-64g-amd64
+    node: ephemeral-noble-16c-64g-amd64
     description: |-
       Build and run unit race tests for amd64.
     wrappers:
@@ -329,7 +318,7 @@
 
 - job:
     name: 'unit-tests-race-arm64'
-    node: ephemeral-focal-16c-64g-arm64
+    node: ephemeral-noble-16c-64g-arm64
     description: |-
       Build and run unit race tests for arm64.
     wrappers:

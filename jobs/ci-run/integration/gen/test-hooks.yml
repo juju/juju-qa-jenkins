@@ -43,7 +43,7 @@
 
 - job:
     name: test-hooks-test-dispatching-script-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_dispatching_script in hooks suite on aws
     parameters:
@@ -115,7 +115,7 @@
 
 - job:
     name: test-hooks-test-dispatching-script-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_dispatching_script in hooks suite on lxd
     parameters:
@@ -183,7 +183,7 @@
 
 - job:
     name: test-hooks-test-start-hook-fires-after-reboot-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_start_hook_fires_after_reboot in hooks suite on aws
     parameters:
@@ -255,7 +255,7 @@
 
 - job:
     name: test-hooks-test-start-hook-fires-after-reboot-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_start_hook_fires_after_reboot in hooks suite on lxd
     parameters:

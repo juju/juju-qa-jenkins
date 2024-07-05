@@ -28,7 +28,7 @@
         comm -1 -2  ~/gcerules newrules | xargs  -I % gcloud compute firewall-rules delete % --quiet
         # set new rules
         mv newrules ~/gcerules
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     publishers:
     - email-ext:
         recipients: juju-qa-aws@canonical.com

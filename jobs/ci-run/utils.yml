@@ -236,42 +236,6 @@
             default-excludes: true
             case-sensitive: true
 
-- builder:
-    name: 'lxd-src-command-base'
-    builders:
-    - get-juju-cloud-creds
-    - inject:
-        properties-content: |-
-            JUJU_UNITTEST_IMAGE=ubuntu
-            JUJU_UNITTEST_SERIES=jammy
-    # This takes the param:
-    #  {src_command} which should be a the commands to run within the workspace.
-    #  {setup_steps} commands to run before the src_command step (e.g. install things, add to groups)
-    #  {env_file} is a file that will be sourced before src_command and setup_steps (pass a blank string to ignore this step)
-    - shell:
-        !include-raw: "scripts/lxd-runner.sh"
-
-
-# This should go somewhere else.
-- builder:
-    name: 'lxd-src-command'
-    builders:
-        - lxd-src-command-base:
-            env_file: ""
-            setup_steps: ""
-            src_command: "{src_command}"
-
-- builder:
-    name: 'lxd-src-command-focal-base'
-    builders:
-      - get-juju-cloud-creds
-      - inject:
-          properties-content: |-
-            JUJU_UNITTEST_IMAGE=ubuntu
-            JUJU_UNITTEST_SERIES=focal
-      - shell:
-          !include-raw: "scripts/lxd-runner.sh"
-
 - publisher:
     name: 'log-panic-check'
     publishers:
@@ -283,7 +247,6 @@
                   - UNSTABLE
                 build-steps:
                   - shell: !include-raw: ./scripts/panic_search.sh
-
 
 # Basic timeout wrapper for all functional tests
 - wrapper:
