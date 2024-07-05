@@ -29,7 +29,7 @@
     name: 'run-build-check-raw'
     builders:
     - shell:
-        !include-raw-verbatim: "scripts/run-snippet-compat.sh"
+        !include-raw-expand: "scripts/run-snippet-compat.template.sh"
 
 
 - builder:
@@ -44,7 +44,7 @@
     name: github-merge
     builders:
     - shell:
-        !include-raw-verbatim: "scripts/github-merge.sh"
+        !include-raw-expand: "scripts/github-merge.template.sh"
 
 - builder:
     name: 'resolve-merge-commit'
@@ -64,33 +64,4 @@
     name: 'should-skip-juju-make-check'
     builders:
         - system-groovy:
-            command: |
-                import hudson.model.*
-                import jenkins.model.Jenkins
-                import org.jenkinsci.plugins.envinject.EnvInjectPluginAction
-
-                def pr = build.getEnvironment(listener).get("ghprbPullLink")
-                def goversion = build.getEnvironment(listener).get("GOVERSION")
-                def mergecommit = build.getEnvironment(listener).get("MERGE_COMMIT")
-                def b = Jenkins.getInstance().getItem("github-make-check-juju").getLastBuild()
-                def limit = 100
-                while (b != null && limit > 0) {
-                    def current = b
-                    limit = limit - 1
-                    b = b.getPreviousBuild()
-                    if (current.result == null) {
-                        continue
-                    }
-                    if (current.result != Result.SUCCESS) {
-                        continue
-                    }
-                    def vars = current.buildVariableResolver
-                    println "${vars.resolve("ghprbPullLink")} ${vars.resolve("GOVERSION")} ${vars.resolve("MERGE_COMMIT")}"
-                    if (vars.resolve("ghprbPullLink").equals(pr) &&
-                        vars.resolve("GOVERSION").equals(goversion) &&
-                        vars.resolve("MERGE_COMMIT").equals(mergecommit)) {
-                        println "Found previous successful build ${current.getAbsoluteUrl()} with the same parameters"
-                        build.getAction(EnvInjectPluginAction.class).overrideAll([SKIP_CHECK: '1'])
-                        break
-                    }
-                }
+            command: !include-raw-verbatim: "scripts/should-skip-juju-make-check.groovy"
