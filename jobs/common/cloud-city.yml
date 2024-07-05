@@ -81,7 +81,7 @@
         files: github-token
     - inject:
         properties-content:
-            GITHUB_TOKEN_FILE=${CLOUD_CITY}/github-token
+            GITHUB_TOKEN_FILE=${{CLOUD_CITY}}/github-token
 
 - builder:
     name: 'get-juju-cloud-creds'

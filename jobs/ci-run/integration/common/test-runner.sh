@@ -6,7 +6,7 @@ set -eux
 # Term is set to "unknown" in jenkins, so we force it to empty. Ensuring it
 # doesn't error out later on.
 export TERM=""
-export TEST_RUNNER_NAME="${{TEST_RUNNER_NAME}}"
+export TEST_RUNNER_NAME="${TEST_RUNNER_NAME}"
 
 if [ ! -d "$JUJU_SRC_PATH"/tests ]; then
     echo "Test directory not found."
@@ -14,7 +14,7 @@ if [ ! -d "$JUJU_SRC_PATH"/tests ]; then
     exit 0
 fi
 
-export PATH="${{BIN_DIR}}":$PATH
+export PATH="${BIN_DIR}":$PATH
 
 # Copy the juju cloud credentials to ~/.local/share/juju. This is
 # required for bootstrapping non-lxd providers for the integration tests.
@@ -56,7 +56,7 @@ while [ $attempts -lt 3 ]; do
         sudo snap install microceph || true
     fi
     # shellcheck disable=SC2193
-    if [ "${{BOOTSTRAP_PROVIDER:-}}" = "ec2" ]; then
+    if [ "${BOOTSTRAP_PROVIDER:-}" = "ec2" ]; then
         if ! which aws >/dev/null 2>&1; then
             sudo snap install aws-cli --classic || true
         fi
@@ -73,7 +73,7 @@ while [ $attempts -lt 3 ]; do
         chmod 600 ~/.aws/*
     fi
     # shellcheck disable=SC2193
-    if [ "${{BOOTSTRAP_PROVIDER:-}}" = "azure" ]; then
+    if [ "${BOOTSTRAP_PROVIDER:-}" = "azure" ]; then
         if ! which az >/dev/null 2>&1; then
             curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
         fi
@@ -81,7 +81,7 @@ while [ $attempts -lt 3 ]; do
         az login --service-principal \
           -u "$(cat "$HOME"/.local/share/juju/credentials.yaml | yq ".credentials.azure.credentials.application-id")" \
           -p "$(cat "$HOME"/.local/share/juju/credentials.yaml | yq ".credentials.azure.credentials.application-password")" \
-          --tenant "${{AZURE_TENANT}}"
+          --tenant "${AZURE_TENANT}"
     fi
     attempts=$((attempts + 1))
 done
@@ -93,8 +93,8 @@ OUT=$(./main.sh -H 2>&1)
 if [ "$(echo "$OUT" | grep -q "Illegal option -H" || true)" ]; then
     echo "Not supported runner query."
     exit 1
-elif [ "$(echo "$OUT" | grep -q "${{TEST_RUNNER_NAME}}" || true)" ]; then
-    echo "Test ${{TEST_RUNNER_NAME}} not found."
+elif [ "$(echo "$OUT" | grep -q "${TEST_RUNNER_NAME}" || true)" ]; then
+    echo "Test ${TEST_RUNNER_NAME} not found."
     echo "Recording as success."
     exit 0
 fi
@@ -112,15 +112,15 @@ set -u
 
 echo "=> Running tests"
 
-artifacts_dir="${{WORKSPACE}}/artifacts"
+artifacts_dir="${WORKSPACE}/artifacts"
 mkdir -p "$artifacts_dir"
 
 set -o pipefail
 ./main.sh -v \
-  -a "${{artifacts_dir}}"/output.tar.gz \
+  -a "${artifacts_dir}"/output.tar.gz \
   -x output.txt \
-  -s \""${{TEST_SKIP_TASKS:-}}"\" \
-  "${{TEST_RUNNER_NAME}}" "${{TEST_TASK_NAME:-}}"  2>&1 | tee output.txt
+  -s \""${TEST_SKIP_TASKS:-}"\" \
+  "${TEST_RUNNER_NAME}" "${TEST_TASK_NAME:-}"  2>&1 | tee output.txt
 exit_code=$?
 set +o pipefail
 

@@ -87,6 +87,6 @@
 #           src_command:
 #               !include-raw-escape: "./scripts/pylibjuju-integration-test.sh"
 #           checkout_command:
-#               !include-raw: "./scripts/checkout.sh"
+#               !include-raw-verbatim: "./scripts/checkout.sh"
 #           test_command:
-#              !include-raw: "./scripts/snippet_clean-test-exit.sh"
+#              !include-raw-verbatim: "./scripts/snippet_clean-test-exit.sh"

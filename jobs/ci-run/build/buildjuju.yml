@@ -11,7 +11,7 @@
       - workspace-cleanup
       - timestamps
       - build-name:
-          name: build-juju-${BUILD_LABEL}
+          name: build-juju-${{BUILD_LABEL}}
     properties:
       - build-discarder:
           days-to-keep: 30
@@ -22,7 +22,7 @@
       - validating-string:
           description: The git short hash for the commit you wish to build
           name: SHORT_GIT_COMMIT
-          regex: ^\S{7}$
+          regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
       - string:
           default: ''
@@ -53,23 +53,23 @@
       - setup-go-environment
       - get-s3-source-payload
       - set-build-description:
-          GOVERSION: "${GOVERSION}"
+          GOVERSION: "${{GOVERSION}}"
       - make-juju:
-          platform: ${PLATFORM}
-          build_tags: ${BUILD_TAGS}
+          platform: ${{PLATFORM}}
+          build_tags: ${{BUILD_TAGS}}
       - conditional-step:
           condition-kind: regex-match
           label: "$PLATFORM"
           regex: "windows.*"
           steps:
             - make-windows-installer:
-                platform: ${PLATFORM}
+                platform: ${{PLATFORM}}
       - create-build-payload-tarballs:
-          platform: ${PLATFORM}
-          label: ${LABEL:-}
+          platform: ${{PLATFORM}}
+          label: ${{LABEL:-}}
       - upload-s3-binaries:
-          platform: ${PLATFORM}
-          label: ${LABEL:-}
+          platform: ${{PLATFORM}}
+          label: ${{LABEL:-}}
       - conditional-step:
           condition-kind: and
           condition-operands:
@@ -81,7 +81,7 @@
               condition-string2: ""
           steps:
             - upload-s3-agent-binaries:
-                platform: ${PLATFORM}
+                platform: ${{PLATFORM}}
 
 - builder:
     name: "make-windows-installer"
@@ -135,7 +135,7 @@
 
           rm -rf make-juju.properties
       - host-src-command:
-          src_command: !include-raw: ../scripts/snippet_make-release-build.sh
+          src_command: !include-raw-verbatim: ../scripts/snippet_make-release-build.sh
 
 - job:
     name: build-jujud-operator
@@ -153,7 +153,7 @@
       - validating-string:
           description: The git short hash for the commit you wish to build
           name: SHORT_GIT_COMMIT
-          regex: ^\S{7}$
+          regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
       - string:
           default: ""
@@ -170,13 +170,13 @@
       - setup-go-environment
       - get-s3-source-payload
       - set-build-description:
-          GOVERSION: "${GOVERSION}"
+          GOVERSION: "${{GOVERSION}}"
       - shell: |-
           #!/bin/bash
           set -eu
 
           touch build.properties
-          echo "DOCKER_USERNAME=public.ecr.aws/jujuqabot/build-${SHORT_GIT_COMMIT}" >> build.properties
+          echo "DOCKER_USERNAME=public.ecr.aws/jujuqabot/build-${{SHORT_GIT_COMMIT}}" >> build.properties
 
           cat build.properties
       - inject:
@@ -186,11 +186,11 @@
       - ensure-aws-credentials
       - docker-ecr-login
       - get-s3-build-payload-packaging:
-          platforms: "${BUILD_PLATFORMS}"
+          platforms: "${{BUILD_PLATFORMS}}"
       - host-src-command:
-          src_command: !include-raw: ../scripts/snippet_setup_ecr_public.sh
+          src_command: !include-raw-verbatim: ../scripts/snippet_setup_ecr_public.sh
       - host-src-command:
-          src_command: !include-raw: ../scripts/snippet_caas-jujud-operator.sh
+          src_command: !include-raw-verbatim: ../scripts/snippet_caas-jujud-operator.sh
 
 - builder:
     name: "create-build-payload-tarballs"

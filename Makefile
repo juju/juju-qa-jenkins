@@ -1,12 +1,12 @@
-STATIC_ANALYSIS_JOB 	?=
-IGNORE_STATIC_ANALYSIS	?=
-PUSH_JOB				?=
-PUSH_TARGET				?= "jobs/ci-run"
-JJB_CONF_PATH			?= jenkins-jjb
-JUJU_REPO_PATH			?= "${GOPATH}/src/github.com/juju/juju"
+STATIC_ANALYSIS_JOB    ?=
+IGNORE_STATIC_ANALYSIS ?=
+PUSH_JOB               ?=
+PUSH_TARGET            ?= "jobs/ci-run"
+JJB_CONF_PATH          ?= jenkins-jjb
+JUJU_REPO_PATH         ?= "${GOPATH}/src/github.com/juju/juju"
 
-cwd 			 = $(shell pwd)
-virtualenv_dir 	 = $(cwd)/venv
+cwd              = $(shell pwd)
+virtualenv_dir   = $(cwd)/venv
 python_base_path = $(shell which python3)
 
 .PHONY: ensure-venv

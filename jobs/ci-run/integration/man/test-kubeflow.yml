@@ -9,7 +9,7 @@
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -64,8 +64,8 @@
           channel: "1.22/stable"
       - install-charmcraft
       - get-s3-build-payload-testing:
-            SHORT_GIT_COMMIT: "${SHORT_GIT_COMMIT}"
-            platform: "linux/${BUILD_ARCH}"
+            SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
+            platform: "linux/${{BUILD_ARCH}}"
       - integration-test-runner:
             test_name: "kubeflow"
             task_name: ""

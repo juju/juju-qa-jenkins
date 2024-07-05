@@ -102,13 +102,13 @@ func main() {
 	if err := walkDirectory(dir, ignore(dir, config.Files.Skip, func(path string, info os.FileInfo) error {
 		data, err := ioutil.ReadFile(path)
 		if err != nil {
-			return err
+			return fmt.Errorf("cannot read file %s: %w", path, err)
 		}
 
 		var job []Node
 		err = yaml.Unmarshal(data, &job)
 		if err != nil {
-			return err
+			return fmt.Errorf("cannot parse file %s: %w", path, err)
 		}
 
 		for _, v := range job {

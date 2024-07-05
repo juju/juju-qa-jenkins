@@ -56,7 +56,7 @@
     builders:
     - host-src-command:
           src_command:
-              !include-raw: ../scripts/snippet_run-unit-tests.sh
+              !include-raw-expand: ../scripts/snippet_run-unit-tests.template.sh
 
 
 - job:
@@ -99,12 +99,12 @@
           modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
-          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+          description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "xunit-report"
-          TEST_TIMEOUT: "${TEST_TIMEOUT}"
-          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          TEST_TIMEOUT: "${{TEST_TIMEOUT}}"
+          USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 1
     publishers:
       - junit:
@@ -151,12 +151,12 @@
           modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
-          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+          description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "xunit-report"
-          TEST_TIMEOUT: "${TEST_TIMEOUT}"
-          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          TEST_TIMEOUT: "${{TEST_TIMEOUT}}"
+          USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 0
     publishers:
       - junit:
@@ -199,12 +199,12 @@
           modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
-          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+          description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "xunit-report"
-          TEST_TIMEOUT: "${TEST_TIMEOUT}"
-          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          TEST_TIMEOUT: "${{TEST_TIMEOUT}}"
+          USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 0
     publishers:
       - junit:
@@ -251,12 +251,12 @@
           modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
-          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+          description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "xunit-report"
-          TEST_TIMEOUT: "${TEST_TIMEOUT}"
-          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          TEST_TIMEOUT: "${{TEST_TIMEOUT}}"
+          USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 0
     publishers:
       - junit:
@@ -304,12 +304,12 @@
           modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
-          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+          description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "race"
-          TEST_TIMEOUT: "${TEST_TIMEOUT}"
-          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          TEST_TIMEOUT: "${{TEST_TIMEOUT}}"
+          USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 0
     publishers:
         - junit:
@@ -356,12 +356,12 @@
           modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
-          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+          description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "race"
-          TEST_TIMEOUT: "${TEST_TIMEOUT}"
-          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          TEST_TIMEOUT: "${{TEST_TIMEOUT}}"
+          USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 0
     publishers:
         - junit:

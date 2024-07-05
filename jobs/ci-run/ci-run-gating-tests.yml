@@ -17,7 +17,7 @@
       - validating-string:
           description: The git short hash for the commit you wish to test
           name: SHORT_GIT_COMMIT
-          regex: ^\S{7}$
+          regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
       - string:
           default: ""
@@ -34,7 +34,7 @@
           attach-build-log: true
           first-failure: true
           fixed-unhealthy: true
-          subject: "STOP THE LINE! ${DEFAULT_SUBJECT}"
+          subject: "STOP THE LINE!"
           body: |
             <h1>functional-tests-amd64 test failure</h1>
             These tests must pass. Diagnose the problem and assign to a member of the team today!
@@ -50,8 +50,8 @@
             - name: gating-integration-tests-amd64
               current-parameters: true
               predefined-parameters: |-
-                BOOTSTRAP_SERIES=${BOOTSTRAP_SERIES}
+                BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}
             - name: gating-integration-tests-arm64
               current-parameters: true
               predefined-parameters: |-
-                BOOTSTRAP_SERIES=${BOOTSTRAP_SERIES}
+                BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}

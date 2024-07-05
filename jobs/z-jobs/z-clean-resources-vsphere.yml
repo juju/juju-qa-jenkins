@@ -4,7 +4,7 @@
     - get-juju-cloud-creds
     - get-vsphere-creds
     - shell:
-        !include-raw: scripts/vsphere-cleanup.sh
+        !include-raw-verbatim: scripts/vsphere-cleanup.sh
     description: Remove VMs and datastore objects older that 4 hours.
     parameters:
     - string:

@@ -16,20 +16,20 @@
     builders:
       - get-build-details
       - get-s3-agent-payload:
-          dest: ${WORKSPACE}
+          dest: ${{WORKSPACE}}
           platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
       - shell: |-
           #!/bin/bash
           set -e
-          mkdir -p ${WORKSPACE}/agent_json
+          mkdir -p ${{WORKSPACE}}/agent_json
       - generate-agent-json:
           platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
           product_name: ubuntu
-          output_dir: "${WORKSPACE}/agent_json"
+          output_dir: "${{WORKSPACE}}/agent_json"
       - generate-agent-json:
           platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
           product_name: centos
-          output_dir: "${WORKSPACE}/agent_json"
+          output_dir: "${{WORKSPACE}}/agent_json"
       - install-simplestreams
       - install-s3cmd
       - get-s3-creds
@@ -39,18 +39,18 @@
 
           # Generate the streams data.
           mkdir -p generated
-          agent_json_file_path=${WORKSPACE}/agent_json/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}-agent.json
+          agent_json_file_path=${{WORKSPACE}}/agent_json/build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-agent.json
           json2streams --juju-format \
-            "${agent_json_file_path}" \
-            "${WORKSPACE}/generated/"
+            "${{agent_json_file_path}}" \
+            "${{WORKSPACE}}/generated/"
 
-           GENERATED_STREAMS_TARBALL=build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}-generated-streams.tar.xz
-           tar cfJ ${GENERATED_STREAMS_TARBALL} -C generated/ streams
+           GENERATED_STREAMS_TARBALL=build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-generated-streams.tar.xz
+           tar cfJ ${{GENERATED_STREAMS_TARBALL}} -C generated/ streams
 
            s3cmd --config $S3_CFG \
                put \
-               "${GENERATED_STREAMS_TARBALL}" \
-               s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/agents/
+               "${{GENERATED_STREAMS_TARBALL}}" \
+               s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/agents/
 
 - builder:
     # Used to generate agent metadata for CI tests
@@ -61,7 +61,7 @@
     # product_name: Product name to use (e.g. ubuntu, centos)
     # output_dir: The directory in which to place the resulting json files
     builders:
-      - shell: !include-raw: ../scripts/generate-agent-json.sh
+      - shell: !include-raw-expand: ../scripts/generate-agent-json.template.sh
 
 - job:
     name: publish-testing-streams-aws
@@ -89,9 +89,9 @@
           #!/bin/bash
           set -eu
 
-          mkdir -p ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}/
+          mkdir -p ${{WORKSPACE}}/agent/build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}/
       - get-s3-agent-payload:
-          dest: ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}
+          dest: ${{WORKSPACE}}/agent/build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}
           platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
       - retrieve-generated-streams
       - install-stream-patcher
@@ -105,20 +105,20 @@
           #  - builds/build-SHA
           #    - streams/v1
           #    - agents/*.tgz
-          ${WORKSPACE}/stream-patcher.py \
-            ${WORKSPACE}/streams \
-            ${SHORT_GIT_COMMIT}
+          ${{WORKSPACE}}/stream-patcher.py \
+            ${{WORKSPACE}}/streams \
+            ${{SHORT_GIT_COMMIT}}
 
           s3cmd sync --config $S3_CFG \
-            ${WORKSPACE}/streams \
-            s3://ci-run-streams/builds/build-${SHORT_GIT_COMMIT}/ \
+            ${{WORKSPACE}}/streams \
+            s3://ci-run-streams/builds/build-${{SHORT_GIT_COMMIT}}/ \
             --acl-public
 
           # NOTE: this sync removes the "build-$SHA" indirection and effectively
           # pulls the binaries one folder up (under agent/)
           s3cmd sync --config $S3_CFG \
-            ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}/ \
-            s3://ci-run-streams/builds/build-${SHORT_GIT_COMMIT}/agent/ \
+            ${{WORKSPACE}}/agent/build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}/ \
+            s3://ci-run-streams/builds/build-${{SHORT_GIT_COMMIT}}/agent/ \
             --acl-public
 
 
@@ -147,10 +147,10 @@
           #!/bin/bash
           set -e
 
-          rm -fr ${WORKSPACE}/agent || true
-          mkdir -p ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}/
+          rm -fr ${{WORKSPACE}}/agent || true
+          mkdir -p ${{WORKSPACE}}/agent/build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}/
       - get-s3-agent-payload:
-          dest: ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}
+          dest: ${{WORKSPACE}}/agent/build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}
           platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
       - retrieve-generated-streams
       - install-stream-patcher
@@ -165,24 +165,24 @@
           #  - builds/build-SHA
           #    - streams/v1
           #    - agents/*.tgz
-          ${WORKSPACE}/stream-patcher.py \
-            ${WORKSPACE}/streams \
-            ${SHORT_GIT_COMMIT}
+          ${{WORKSPACE}}/stream-patcher.py \
+            ${{WORKSPACE}}/streams \
+            ${{SHORT_GIT_COMMIT}}
 
           set +x
           az storage blob upload-batch \
-            --account-key=${AZURE_STORAGE_ACCESS_KEY} \
-            --account-name=${AZURE_STORAGE_ACCOUNT} \
+            --account-key=${{AZURE_STORAGE_ACCESS_KEY}} \
+            --account-name=${{AZURE_STORAGE_ACCOUNT}} \
             -d juju-agents \
-            -s ${WORKSPACE}/streams \
-            --destination-path ci-run-streams/builds/build-${SHORT_GIT_COMMIT}/streams
+            -s ${{WORKSPACE}}/streams \
+            --destination-path ci-run-streams/builds/build-${{SHORT_GIT_COMMIT}}/streams
 
           az storage blob upload-batch \
-            --account-key=${AZURE_STORAGE_ACCESS_KEY} \
-            --account-name=${AZURE_STORAGE_ACCOUNT} \
+            --account-key=${{AZURE_STORAGE_ACCESS_KEY}} \
+            --account-name=${{AZURE_STORAGE_ACCOUNT}} \
             -d juju-agents \
-            -s ${WORKSPACE}/agent/build-${JUJU_VERSION}-${SHORT_GIT_COMMIT} \
-            --destination-path ci-run-streams/builds/build-${SHORT_GIT_COMMIT}/agent
+            -s ${{WORKSPACE}}/agent/build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}} \
+            --destination-path ci-run-streams/builds/build-${{SHORT_GIT_COMMIT}}/agent
 
 - builder:
     name: retrieve-generated-streams
@@ -190,12 +190,12 @@
     - install-s3cmd
     - get-s3-creds
     - shell: |-
-        GENERATED_STREAMS_TARBALL=build-${JUJU_VERSION}-${SHORT_GIT_COMMIT}-generated-streams.tar.xz
+        GENERATED_STREAMS_TARBALL=build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-generated-streams.tar.xz
         s3cmd --config $S3_CFG \
           get \
-          s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/agents/${GENERATED_STREAMS_TARBALL} \
+          s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/agents/${{GENERATED_STREAMS_TARBALL}} \
           ./
-        tar xf ${GENERATED_STREAMS_TARBALL}
+        tar xf ${{GENERATED_STREAMS_TARBALL}}
 
 - builder:
     name: install-stream-patcher
@@ -206,11 +206,11 @@
           # Create the stream product/index patching script on the fly
 
           index_type="agents"
-          if [[ "${JUJU_VERSION}" == 2.8* ]]; then
+          if [[ "${{JUJU_VERSION}}" == 2.8* ]]; then
             index_type="tools"
           fi
 
-          cat  <<EOT > ${WORKSPACE}/stream-patcher.py
+          cat  <<EOT > ${{WORKSPACE}}/stream-patcher.py
           #!/usr/bin/env python3
 
           from argparse import ArgumentParser
@@ -234,7 +234,7 @@
               target = path.join(
                   stream_folder,
                   "v1",
-                  "com.ubuntu.juju-build-{}-${index_type}.json".format(build_sha)
+                  "com.ubuntu.juju-build-{{}}-${{index_type}}.json".format(build_sha)
               )
               with open(target) as f:
                   stream_data = json.load(f)
@@ -246,11 +246,11 @@
           def patch_agent_path_r(d, u, sha):
               for k, v in u.items():
                   if isinstance(v, collections.abc.Mapping):
-                      d[k] = patch_agent_path_r(d.get(k, {}), v, sha)
+                      d[k] = patch_agent_path_r(d.get(k, {{}}), v, sha)
                   elif isinstance(v, str):
                       if "agent/build-" in v:
-                          d[k] = "agent/{}".format(
-                              str.lstrip(v, "agent/build-{}/".format(sha))
+                          d[k] = "agent/{{}}".format(
+                              str.lstrip(v, "agent/build-{{}}/".format(sha))
                           )
               return d
           
@@ -259,4 +259,4 @@
               sys.exit(main())
           EOT
 
-          chmod +x ${WORKSPACE}/stream-patcher.py
+          chmod +x ${{WORKSPACE}}/stream-patcher.py

@@ -46,7 +46,7 @@
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -103,8 +103,8 @@
       - prepare-integration-test
       - conditional-step:
           condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([1-9]|\\d{2,})(\\.|-).*"
-          label: "${JUJU_VERSION}"
+          regex: "^[4-9].*|^3\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
           on-evaluation-failure: "dont-run"
           steps:
             - run-integration-test:
@@ -124,7 +124,7 @@
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -177,8 +177,8 @@
       - prepare-integration-test
       - conditional-step:
           condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([1-9]|\\d{2,})(\\.|-).*"
-          label: "${JUJU_VERSION}"
+          regex: "^[4-9].*|^3\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
           on-evaluation-failure: "dont-run"
           steps:
             - run-integration-test:

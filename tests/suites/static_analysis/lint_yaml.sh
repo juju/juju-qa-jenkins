@@ -6,7 +6,7 @@ yaml_check() {
 import yaml, sys
 
 def path(loader, tag_suffix, node):
-  tags = [u'!include-raw:', u'!include:', u'!include-raw-escape:']
+  tags = [u'!include-raw-expand:', u'!include:', u'!include-raw-verbatim:']
   if tag_suffix not in tags:
     raise Exception('unknown tag: {}, expected: {}'.format(tag_suffix, tags))
   return 'input-raw'

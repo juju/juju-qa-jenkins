@@ -68,14 +68,14 @@ var (
 //   - for versions 3.n, match if the minor version has 2+ digits or is a
 //     single digit greater than or equal to n
 var minVersionRegex = map[string]string{
-	"3.0": "^[4-9].*|^3\\\\.([0-9]|\\\\d{2,})(\\\\.|-).*",
-	"3.1": "^[4-9].*|^3\\\\.([1-9]|\\\\d{2,})(\\\\.|-).*",
-	"3.2": "^[4-9].*|^3\\\\.([2-9]|\\\\d{2,})(\\\\.|-).*",
-	"3.3": "^[4-9].*|^3\\\\.([3-9]|\\\\d{2,})(\\\\.|-).*",
-	"3.4": "^[4-9].*|^3\\\\.([4-9]|\\\\d{2,})(\\\\.|-).*",
-	"3.5": "^[4-9].*|^3\\\\.([5-9]|\\\\d{2,})(\\\\.|-).*",
-	"3.6": "^[4-9].*|^3\\\\.([6-9]|\\\\d{2,})(\\\\.|-).*",
-	"4.0": "^[5-9].*|^4\\\\.([0-9]|\\\\d{2,})(\\\\.|-).*",
+	"3.0": "^[4-9].*|^3\\\\.([0-9]|\\\\d{{2,}})(\\\\.|-).*",
+	"3.1": "^[4-9].*|^3\\\\.([1-9]|\\\\d{{2,}})(\\\\.|-).*",
+	"3.2": "^[4-9].*|^3\\\\.([2-9]|\\\\d{{2,}})(\\\\.|-).*",
+	"3.3": "^[4-9].*|^3\\\\.([3-9]|\\\\d{{2,}})(\\\\.|-).*",
+	"3.4": "^[4-9].*|^3\\\\.([4-9]|\\\\d{{2,}})(\\\\.|-).*",
+	"3.5": "^[4-9].*|^3\\\\.([5-9]|\\\\d{{2,}})(\\\\.|-).*",
+	"3.6": "^[4-9].*|^3\\\\.([6-9]|\\\\d{{2,}})(\\\\.|-).*",
+	"4.0": "^[5-9].*|^4\\\\.([0-9]|\\\\d{{2,}})(\\\\.|-).*",
 }
 
 // Gen-wire-tests will generate the integration test files for the juju
@@ -503,7 +503,7 @@ const Template = `
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{"{{7}}"}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -568,7 +568,7 @@ const Template = `
       - conditional-step:
           condition-kind: regex-match
           regex: "{{ $cond }}"
-          label: "${JUJU_VERSION}"
+          label: "{{ "${{JUJU_VERSION}}" }}"
           on-evaluation-failure: "dont-run"
           steps:
             - {{$builder}}:

@@ -17,7 +17,7 @@
       - validating-string:
           description: The git short hash for the commit you wish to test
           name: SHORT_GIT_COMMIT
-          regex: ^\S{7}$
+          regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
       - string:
           default: ""
@@ -53,7 +53,7 @@
       - validating-string:
           description: The git short hash for the commit you wish to test
           name: SHORT_GIT_COMMIT
-          regex: ^\S{7}$
+          regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
       - string:
           default: ""
@@ -71,42 +71,13 @@
       - get-build-details
       - set-test-description
       - system-groovy:
-          command: |
-            import hudson.model.*
-
-            def desc = build.getDescription().split(":")
-            def jujuVersion = desc[0]
-            def jujuVersionExploded = []
-            for (v in jujuVersion.split(/[.]/)) {
-              jujuVersionExploded.push(v)
-            }
-            if (jujuVersionExploded.size() > 3 || jujuVersionExploded[1].indexOf("-") != -1) {
-              jujuVersionExploded.pop()
-            }
-            jujuVersion = jujuVersionExploded.join(".")
-
-            println "Looking for $jujuVersion in previous builds..."
-
-            def b = build.getPreviousBuild()
-            while (b != null) {
-              if (b.result != Result.SUCCESS || b.getDescription() == null || b.getDescription().indexOf(jujuVersion) == -1) {
-                b = b.getPreviousBuild()
-                continue
-              }
-              if (b.getStartTimeInMillis()+(24*60*60*1000)>build.getStartTimeInMillis()) {
-                println "Found previous build less than a day ago ${b.getAbsoluteUrl()}"
-                throw new InterruptedException()
-              }
-              break
-            }
-
-            println "It has been one day since last build... triggering job"
+          command: !include-raw-verbatim: "scripts/once-daily.groovy"
     publishers:
       - trigger-parameterized-builds:
           - project: "ci-proving-ground-tests"
             condition: SUCCESS
             current-parameters: true
             predefined-parameters: |-
-              series=${series}
-              SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-              GOVERSION=${GOVERSION}
+              series=${{series}}
+              SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+              GOVERSION=${{GOVERSION}}

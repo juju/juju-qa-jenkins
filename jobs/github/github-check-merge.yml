@@ -188,11 +188,11 @@
           build_env: ""
           setup_steps: ""
           src_command:
-            !include-raw: "{build_script}"
+            !include-raw-verbatim: "{build_script}"
           checkout_command:
-            !include-raw: "./scripts/checkout.sh"
+            !include-raw-verbatim: "./scripts/checkout.sh"
           test_command:
-            !include-raw: "./scripts/snippet_clean-test-exit.sh"
+            !include-raw-verbatim: "./scripts/snippet_clean-test-exit.sh"
     publishers:
       - junit:
           results: tests.xml
@@ -286,11 +286,11 @@
           build_env: ""
           setup_steps: ""
           src_command:
-            !include-raw: "{build_script}"
+            !include-raw-verbatim: "{build_script}"
           checkout_command:
-            !include-raw: "./scripts/checkout.sh"
+            !include-raw-verbatim: "./scripts/checkout.sh"
           test_command:
-            !include-raw: "./scripts/snippet_clean-test-exit.sh"
+            !include-raw-verbatim: "./scripts/snippet_clean-test-exit.sh"
     publishers:
       - junit:
           results: tests.xml

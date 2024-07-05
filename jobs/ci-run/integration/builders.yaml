@@ -58,5 +58,5 @@
       - get-juju-cloud-creds
       - host-src-command-with-setup:
           src_command:
-            !include-raw: "common/test-runner.sh"
+            !include-raw-verbatim: "common/test-runner.sh"
           setup_steps: "{setup_steps}"
