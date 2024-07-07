@@ -1,2 +1,2 @@
-jenkins-job-builder==4.3.0
+jenkins-job-builder==6.3.0
 setuptools<=65.7.0

@@ -49,14 +49,14 @@
 
 - job:
     name: test-cli-test-block-commands-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_block_commands in cli suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -117,14 +117,14 @@
 
 - job:
     name: test-cli-test-display-clouds-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_display_clouds in cli suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -185,14 +185,14 @@
 
 - job:
     name: test-cli-test-local-charms-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_local_charms in cli suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -253,14 +253,14 @@
 
 - job:
     name: test-cli-test-model-config-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_model_config in cli suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -321,14 +321,14 @@
 
 - job:
     name: test-cli-test-model-constraints-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_model_constraints in cli suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -389,14 +389,14 @@
 
 - job:
     name: test-cli-test-model-defaults-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_model_defaults in cli suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -457,14 +457,14 @@
 
 - job:
     name: test-cli-test-unregister-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_unregister in cli suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'

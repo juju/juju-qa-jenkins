@@ -9,7 +9,7 @@
         set -x
         chmod +x $SCRIPTS_DIR/clean_equinix.py
         $SCRIPTS_DIR/clean_equinix.py am --hours=2
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     publishers:
     - email-ext:
         recipients: juju-qa-aws@canonical.com

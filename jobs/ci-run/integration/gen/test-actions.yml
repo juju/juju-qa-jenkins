@@ -43,14 +43,14 @@
 
 - job:
     name: test-actions-test-actions-params-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test actions suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -107,8 +107,8 @@
       - prepare-integration-test
       - conditional-step:
           condition-kind: regex-match
-          regex: "^[5-9].*|^4\\.([0-9]|\\d{2,})(\\.|-).*"
-          label: "${JUJU_VERSION}"
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
           on-evaluation-failure: "dont-run"
           steps:
             - run-integration-test:
@@ -121,14 +121,14 @@
 
 - job:
     name: test-actions-test-actions-params-azure
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test actions suite on azure
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -185,8 +185,8 @@
       - prepare-integration-test
       - conditional-step:
           condition-kind: regex-match
-          regex: "^[5-9].*|^4\\.([0-9]|\\d{2,})(\\.|-).*"
-          label: "${JUJU_VERSION}"
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
           on-evaluation-failure: "dont-run"
           steps:
             - run-integration-test:
@@ -199,14 +199,14 @@
 
 - job:
     name: test-actions-test-actions-params-google
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test actions suite on google
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -263,8 +263,8 @@
       - prepare-integration-test
       - conditional-step:
           condition-kind: regex-match
-          regex: "^[5-9].*|^4\\.([0-9]|\\d{2,})(\\.|-).*"
-          label: "${JUJU_VERSION}"
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
           on-evaluation-failure: "dont-run"
           steps:
             - run-integration-test:
@@ -277,14 +277,14 @@
 
 - job:
     name: test-actions-test-actions-params-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test actions suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -337,8 +337,8 @@
       - prepare-integration-test
       - conditional-step:
           condition-kind: regex-match
-          regex: "^[5-9].*|^4\\.([0-9]|\\d{2,})(\\.|-).*"
-          label: "${JUJU_VERSION}"
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
           on-evaluation-failure: "dont-run"
           steps:
             - run-integration-test:

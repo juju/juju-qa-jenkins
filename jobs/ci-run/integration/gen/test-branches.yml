@@ -43,14 +43,14 @@
 
 - job:
     name: test-branches-test-active-branch-output-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_active_branch_output in branches suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -115,14 +115,14 @@
 
 - job:
     name: test-branches-test-active-branch-output-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_active_branch_output in branches suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -183,14 +183,14 @@
 
 - job:
     name: test-branches-test-branch-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_branch in branches suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -255,14 +255,14 @@
 
 - job:
     name: test-branches-test-branch-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_branch in branches suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'

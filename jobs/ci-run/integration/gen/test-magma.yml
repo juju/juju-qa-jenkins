@@ -37,14 +37,14 @@
 
 - job:
     name: test-magma-test-deploy-magma-microk8s
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test magma suite on microk8s
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'

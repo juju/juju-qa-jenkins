@@ -5,7 +5,7 @@
     name: install-docker
     builders:
       - shell:
-          !include-raw: scripts/setup_steps-install-docker.sh
+          !include-raw-verbatim: scripts/setup_steps-install-docker.sh
 
 # docker-login will run the login steps for connecting this host's docker daemon
 # to the Juju docker hub account.
@@ -19,7 +19,7 @@
             set -eu
             set +x
 
-            echo "Logging into Dockerhub with username ${DOCKERHUB_U}"
+            echo "Logging into Dockerhub with username ${{DOCKERHUB_U}}"
             echo "$DOCKERHUB_P" | docker login -u "$DOCKERHUB_U" --password-stdin
 
 # docker-ecr-login will run the login steps for connecting this host's docker
@@ -77,7 +77,7 @@
     name: install-go
     builders:
     - shell:
-        !include-raw: "scripts/install-go.sh"
+        !include-raw-verbatim: "scripts/install-go.sh"
 
 - builder:
     name: install-charmcraft
@@ -131,7 +131,7 @@
       - install-go
       - inject:
           properties-content: |-
-            GOPATH=${WORKSPACE}/go-path
+            GOPATH=${{WORKSPACE}}/go-path
       - shell: |-
           #!/bin/bash
           set -ex
@@ -152,7 +152,7 @@
           set -eux
 
           touch build.properties
-          echo "BUILD_DIR=${WORKSPACE}/build" >> build.properties
+          echo "BUILD_DIR=${{WORKSPACE}}/build" >> build.properties
 
           cat build.properties
       - inject:
@@ -161,7 +161,7 @@
           #!/bin/bash
           set -e
 
-          mkdir -p ${BUILD_DIR}
+          mkdir -p ${{BUILD_DIR}}
 
 # wait-for-cloud-init is a pre-req utility for jobs running on on ephemeral
 # nodes where we use cloud-init to stepup the node. We are waiting for the locks
@@ -276,10 +276,10 @@
 
         cd scripts
         git checkout origin/main -- jobs/z-jobs/scripts/clean_lxd.py
-        cd ${WORKSPACE}
+        cd ${{WORKSPACE}}
     - inject:
         properties-content: |-
-            SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
+            SCRIPTS_DIR=${{WORKSPACE}}/scripts/jobs/z-jobs/scripts/
 
 - builder:
     name: get-aws-cleanup-scripts
@@ -292,10 +292,10 @@
 
         cd scripts
         git checkout origin/main -- jobs/z-jobs/scripts/aws.py
-        cd ${WORKSPACE}
+        cd ${{WORKSPACE}}
     - inject:
         properties-content: |-
-            SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
+            SCRIPTS_DIR=${{WORKSPACE}}/scripts/jobs/z-jobs/scripts/
 
 
 - builder:
@@ -311,10 +311,10 @@
 
         cd scripts
         git checkout origin/main -- jobs/z-jobs/scripts/gce.py
-        cd ${WORKSPACE}
+        cd ${{WORKSPACE}}
     - inject:
         properties-content: |-
-            SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
+            SCRIPTS_DIR=${{WORKSPACE}}/scripts/jobs/z-jobs/scripts/
 
 - builder:
     name: get-maas-cleanup-scripts
@@ -326,10 +326,10 @@
 
         cd scripts
         git checkout origin/main -- jobs/z-jobs/scripts/clean_maas
-        cd ${WORKSPACE}
+        cd ${{WORKSPACE}}
     - inject:
         properties-content: |-
-            SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/clean_maas
+            SCRIPTS_DIR=${{WORKSPACE}}/scripts/jobs/z-jobs/scripts/clean_maas
 
 - builder:
     name: get-equinix-cleanup-scripts
@@ -342,10 +342,10 @@
 
         cd scripts
         git checkout origin/main -- jobs/z-jobs/scripts/clean_equinix.py
-        cd ${WORKSPACE}
+        cd ${{WORKSPACE}}
     - inject:
         properties-content: |-
-            SCRIPTS_DIR=${WORKSPACE}/scripts/jobs/z-jobs/scripts/
+            SCRIPTS_DIR=${{WORKSPACE}}/scripts/jobs/z-jobs/scripts/
 
 - builder:
     name: checkout-qa-repo
@@ -354,8 +354,8 @@
         #!/bin/bash
         set -eux
 
-        cd ${WORKSPACE}
-        if [ ! -d "${WORKSPACE}/scripts" ]; then
+        cd ${{WORKSPACE}}
+        if [ ! -d "${{WORKSPACE}}/scripts" ]; then
             git clone git@github.com:juju/juju-qa-jenkins.git --no-checkout --depth 1 scripts
         fi
 
@@ -363,4 +363,4 @@
     name: install-mongo4.4
     builders:
     - shell:
-        !include-raw: "scripts/install-mongo4.4.sh"
+        !include-raw-verbatim: "scripts/install-mongo4.4.sh"

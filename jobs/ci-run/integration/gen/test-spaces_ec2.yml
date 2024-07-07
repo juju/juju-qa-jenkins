@@ -41,14 +41,14 @@
 
 - job:
     name: test-spaces_ec2-test-juju-bind-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_juju_bind in spaces_ec2 suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -113,14 +113,14 @@
 
 - job:
     name: test-spaces_ec2-test-machines-in-spaces-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_machines_in_spaces in spaces_ec2 suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -185,14 +185,14 @@
 
 - job:
     name: test-spaces_ec2-test-upgrade-charm-with-bind-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_upgrade_charm_with_bind in spaces_ec2 suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'

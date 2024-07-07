@@ -37,14 +37,14 @@
 
 - job:
     name: test-upgrade_series-test-upgrade-series-relation-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test upgrade_series suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'

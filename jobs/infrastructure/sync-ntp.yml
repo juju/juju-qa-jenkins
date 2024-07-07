@@ -17,7 +17,7 @@
     concurrent: true
     builders:
       - shell:
-          !include-raw: "scripts/sync-ntp.sh"
+          !include-raw-verbatim: "scripts/sync-ntp.sh"
     triggers:
     - timed: H */4 * * *
     wrappers:

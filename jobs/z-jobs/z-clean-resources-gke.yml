@@ -23,7 +23,7 @@
             echo "deleting cluster -> $name $zone"
             gcloud container clusters delete $name --zone=$zone --quiet
         done
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     publishers:
     - email-ext:
         recipients: juju-qa-aws@canonical.com

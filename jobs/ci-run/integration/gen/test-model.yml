@@ -77,14 +77,14 @@
 
 - job:
     name: test-model-test-model-config-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_config in model suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -149,14 +149,14 @@
 
 - job:
     name: test-model-test-model-config-google
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_config in model suite on google
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -221,14 +221,14 @@
 
 - job:
     name: test-model-test-model-config-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_model_config in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -289,14 +289,14 @@
 
 - job:
     name: test-model-test-model-destroy-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_destroy in model suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -361,14 +361,14 @@
 
 - job:
     name: test-model-test-model-destroy-google
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_destroy in model suite on google
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -433,14 +433,14 @@
 
 - job:
     name: test-model-test-model-destroy-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_model_destroy in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -501,14 +501,14 @@
 
 - job:
     name: test-model-test-model-metrics-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_metrics in model suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -573,14 +573,14 @@
 
 - job:
     name: test-model-test-model-metrics-google
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_metrics in model suite on google
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -645,14 +645,14 @@
 
 - job:
     name: test-model-test-model-metrics-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_model_metrics in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -713,14 +713,14 @@
 
 - job:
     name: test-model-test-model-migration-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_migration in model suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -785,14 +785,14 @@
 
 - job:
     name: test-model-test-model-migration-google
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_migration in model suite on google
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -857,14 +857,14 @@
 
 - job:
     name: test-model-test-model-migration-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_model_migration in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -925,14 +925,14 @@
 
 - job:
     name: test-model-test-model-migration-saas-common-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_migration_saas_common in model suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -997,14 +997,14 @@
 
 - job:
     name: test-model-test-model-migration-saas-common-google
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_migration_saas_common in model suite on google
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -1069,14 +1069,14 @@
 
 - job:
     name: test-model-test-model-migration-saas-common-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_model_migration_saas_common in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -1137,14 +1137,14 @@
 
 - job:
     name: test-model-test-model-migration-saas-external-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_migration_saas_external in model suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -1209,14 +1209,14 @@
 
 - job:
     name: test-model-test-model-migration-saas-external-google
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_migration_saas_external in model suite on google
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -1281,14 +1281,14 @@
 
 - job:
     name: test-model-test-model-migration-saas-external-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_model_migration_saas_external in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -1349,14 +1349,14 @@
 
 - job:
     name: test-model-test-model-migration-version-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_migration_version in model suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -1421,14 +1421,14 @@
 
 - job:
     name: test-model-test-model-migration-version-google
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_migration_version in model suite on google
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -1493,14 +1493,14 @@
 
 - job:
     name: test-model-test-model-migration-version-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_model_migration_version in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -1561,14 +1561,14 @@
 
 - job:
     name: test-model-test-model-multi-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_multi in model suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -1633,14 +1633,14 @@
 
 - job:
     name: test-model-test-model-multi-google
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_multi in model suite on google
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -1705,14 +1705,14 @@
 
 - job:
     name: test-model-test-model-multi-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_model_multi in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -1773,14 +1773,14 @@
 
 - job:
     name: test-model-test-model-status-aws
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_status in model suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -1845,14 +1845,14 @@
 
 - job:
     name: test-model-test-model-status-google
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     description: |-
       Test test_model_status in model suite on google
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -1917,14 +1917,14 @@
 
 - job:
     name: test-model-test-model-status-lxd
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_model_status in model suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'

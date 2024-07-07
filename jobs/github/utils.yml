@@ -7,7 +7,7 @@
     # Note: Any deps need to be installed by the supplied snippet
     #
     # Note: To generate a xunit report the snippet must create the file
-    # "${WORKSPACE}/go-unittest.out" with the verbose test output (i.e. from "go
+    # "${{WORKSPACE}}/go-unittest.out" with the verbose test output (i.e. from "go
     # test -v")
     #
     # Note: To inject the contents of a file use:
@@ -21,7 +21,7 @@
     name: 'run-build-check-lxd'
     builders:
     - shell:
-        !include-raw: "scripts/run-snippet-lxd.sh"
+        !include-raw-verbatim: "scripts/run-snippet-lxd.sh"
 
 
 - builder:
@@ -29,68 +29,39 @@
     name: 'run-build-check-raw'
     builders:
     - shell:
-        !include-raw: "scripts/run-snippet-compat.sh"
+        !include-raw-expand: "scripts/run-snippet-compat.template.sh"
 
 
 - builder:
     name: 'detect-merge-go-version'
     builders:
     - shell:
-        !include-raw: "scripts/goversion.sh"
+        !include-raw-verbatim: "scripts/goversion.sh"
     - inject:
-        properties-file: ${WORKSPACE}/goversion
+        properties-file: ${{WORKSPACE}}/goversion
 
 - builder:
     name: github-merge
     builders:
     - shell:
-        !include-raw: "scripts/github-merge.sh"
+        !include-raw-expand: "scripts/github-merge.template.sh"
 
 - builder:
     name: 'resolve-merge-commit'
     builders:
     - shell:
-        !include-raw: "scripts/merge-commit.sh"
+        !include-raw-verbatim: "scripts/merge-commit.sh"
     - inject:
-        properties-file: ${WORKSPACE}/merge-commit
+        properties-file: ${{WORKSPACE}}/merge-commit
 
 - builder:
     name: 'set-check-description'
     builders:
         - description-setter:
-            description: "PR=${ghprbPullLink} GOVERSION=${GOVERSION} MERGE_COMMIT=${MERGE_COMMIT}"
+            description: "PR=${{ghprbPullLink}} GOVERSION=${{GOVERSION}} MERGE_COMMIT=${{MERGE_COMMIT}}"
 
 - builder:
     name: 'should-skip-juju-make-check'
     builders:
         - system-groovy:
-            command: |
-                import hudson.model.*
-                import jenkins.model.Jenkins
-                import org.jenkinsci.plugins.envinject.EnvInjectPluginAction
-
-                def pr = build.getEnvironment(listener).get("ghprbPullLink")
-                def goversion = build.getEnvironment(listener).get("GOVERSION")
-                def mergecommit = build.getEnvironment(listener).get("MERGE_COMMIT")
-                def b = Jenkins.getInstance().getItem("github-make-check-juju").getLastBuild()
-                def limit = 100
-                while (b != null && limit > 0) {
-                    def current = b
-                    limit = limit - 1
-                    b = b.getPreviousBuild()
-                    if (current.result == null) {
-                        continue
-                    }
-                    if (current.result != Result.SUCCESS) {
-                        continue
-                    }
-                    def vars = current.buildVariableResolver
-                    println "${vars.resolve("ghprbPullLink")} ${vars.resolve("GOVERSION")} ${vars.resolve("MERGE_COMMIT")}"
-                    if (vars.resolve("ghprbPullLink").equals(pr) &&
-                        vars.resolve("GOVERSION").equals(goversion) &&
-                        vars.resolve("MERGE_COMMIT").equals(mergecommit)) {
-                        println "Found previous successful build ${current.getAbsoluteUrl()} with the same parameters"
-                        build.getAction(EnvInjectPluginAction.class).overrideAll([SKIP_CHECK: '1'])
-                        break
-                    }
-                }
+            command: !include-raw-verbatim: "scripts/should-skip-juju-make-check.groovy"

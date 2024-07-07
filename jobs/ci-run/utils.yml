@@ -3,221 +3,22 @@
 - builder:
     name: 'resolve-git-sha'
     builders:
-    - shell: |-
-        #!/bin/bash
-        set -xe
-
-        echo "GITHUB_BRANCH_NAME=$GITHUB_BRANCH_NAME"
-        echo "GITHUB_BRANCH_HEAD_SHA=$GITHUB_BRANCH_HEAD_SHA"
-        echo "GIT_COMMIT=$GIT_COMMIT"
-        echo "SHORT_GIT_COMMIT=$SHORT_GIT_COMMIT"
-
-        TMP_CLONE=$(mktemp -d -u)
-
-        function cleanup {
-            rm -Rf "$TMP_CLONE"
-        }
-
-        trap cleanup EXIT
-
-        function query_github_simple {
-            curl -s "https://api.github.com/repos/juju/juju/commits/$1" | jq -r ".sha // empty"
-        }
-
-        function query_github_treeish {
-            curl -s "https://api.github.com/repos/juju/juju/git/trees/$1" | jq -r ".sha // empty"
-        }
-
-        function search_github_hash {
-            curl -s -H "Accept: application/vnd.github.cloak-preview+json" "https://api.github.com/search/commits?q=repo:juju/juju+hash:$1" | jq -r ".items[0].sha // empty"
-        }
-
-        function clone_search {
-            if [ ! -d "$TMP_CLONE" ]; then
-                git clone -q --no-checkout "https://github.com/juju/juju.git" "$TMP_CLONE"
-            fi
-            git -C "$TMP_CLONE" rev-parse "$1"
-        }
-
-        function select_git_sha {
-            MODE="$1"
-            ARG_SEARCH="$2"
-            ARG_LAST_COMMIT="$3"
-            if [ -z "$ARG_SEARCH" ]; then
-                # skip if we don't have a search term.
-                echo "$ARG_LAST_COMMIT"
-                return
-            fi
-            if [ -n "$ARG_LAST_COMMIT" ]; then
-                # skip if we already found a full commit.
-                echo "$ARG_LAST_COMMIT"
-                return
-            fi
-            case $MODE in
-            api-simple)
-                # use higher level commit api
-                SHA=$(query_github_simple $ARG_SEARCH)
-            ;;
-            api-treeish)
-                # use git database tree api
-                SHA=$(query_github_treeish $ARG_SEARCH)
-            ;;
-            api-short-commit)
-                # use github search api if tree api fails.
-                SHA=$(search_github_hash $ARG_SEARCH)
-            ;;
-            full-clone)
-                # slow path if Github api fails, full clone
-                SHA=$(clone_search $ARG_SEARCH)
-            ;;
-            esac
-            echo "$SHA"
-        }
-
-        EXACT_COMMIT=
-
-        # Try GIT_COMMIT
-        EXACT_COMMIT=$(select_git_sha "api-simple" "$GIT_COMMIT" "$EXACT_COMMIT")
-        EXACT_COMMIT=$(select_git_sha "api-treeish" "$GIT_COMMIT" "$EXACT_COMMIT")
-        EXACT_COMMIT=$(select_git_sha "full-clone" "$GIT_COMMIT" "$EXACT_COMMIT")
-
-        # Try SHORT_GIT_COMMIT
-        EXACT_COMMIT=$(select_git_sha "api-simple" "$SHORT_GIT_COMMIT" "$EXACT_COMMIT")
-        EXACT_COMMIT=$(select_git_sha "api-short-commit" "$SHORT_GIT_COMMIT" "$EXACT_COMMIT")
-        EXACT_COMMIT=$(select_git_sha "full-clone" "$SHORT_GIT_COMMIT" "$EXACT_COMMIT")
-        
-        # Try GITHUB_BRANCH_HEAD_SHA
-        EXACT_COMMIT=$(select_git_sha "api-simple" "$GITHUB_BRANCH_HEAD_SHA" "$EXACT_COMMIT")
-        EXACT_COMMIT=$(select_git_sha "api-treeish" "$GITHUB_BRANCH_HEAD_SHA" "$EXACT_COMMIT")
-        EXACT_COMMIT=$(select_git_sha "full-clone" "$GITHUB_BRANCH_HEAD_SHA" "$EXACT_COMMIT")
-        
-        # Try GITHUB_BRANCH_NAME
-        EXACT_COMMIT=$(select_git_sha "api-simple" "$GITHUB_BRANCH_NAME" "$EXACT_COMMIT")
-        EXACT_COMMIT=$(select_git_sha "api-treeish" "$GITHUB_BRANCH_NAME" "$EXACT_COMMIT")
-        EXACT_COMMIT=$(select_git_sha "full-clone" "$GITHUB_BRANCH_NAME" "$EXACT_COMMIT")
-
-        PROPS_PATH=${WORKSPACE}/build.properties
-        echo "SHORT_GIT_COMMIT=${EXACT_COMMIT:0:7}" > $PROPS_PATH
-        echo "GIT_COMMIT=${EXACT_COMMIT}" >> $PROPS_PATH
-        echo "GITHUB_BRANCH_HEAD_SHA=${EXACT_COMMIT}" >> $PROPS_PATH
-        echo "GITHUB_BRANCH_NAME=${GITHUB_BRANCH_NAME}" >> $PROPS_PATH
-        
-        cat $PROPS_PATH
+    - shell: !include-raw-verbatim: "scripts/resolve-git-sha.sh"
     - inject:
-        properties-file: ${WORKSPACE}/build.properties
+        properties-file: ${{WORKSPACE}}/build.properties
 
 - builder:
     name: 'package-juju-source'
     builders:
-    - shell: |-
-        #!/bin/bash
-        set -xe
-
-        if [ -z "$GITHUB_BRANCH_NAME" ] && [ -z "$GITHUB_BRANCH_HEAD_SHA" ]; then
-            echo "Must specify one of GITHUB_BRANCH_NAME or GITHUB_BRANCH_HEAD_SHA"
-            exit 1
-        fi
-
-        if [ -z "$JUJU_SOURCE_CHECKOUT" ]; then
-            echo "Must specify JUJU_SOURCE_CHECKOUT"
-            exit 1
-        fi
-
-        export PATH="/snap/bin:$PATH"
-        sudo snap refresh go --channel=1.21/stable || sudo snap install go --channel=1.21/stable --classic
-
-        # TODO - fix this workaround
-        # As we clone the full history (can't shallow clone otherwise queued jobs miss
-        # out when only the most recent commit is pulled).
-        # To limit the sizes of the tarballs moved around (and no need to have full
-        # history for a build)
-        # We do a 2 part clone, the initial clone done by the job, then reduce that to
-        # depth=1
-        export GOPATH=${WORKSPACE}/build
-        full_path=${GOPATH}/src/github.com/juju/juju
-
-        export PATH=/snap/bin:$PATH:$GOPATH/bin
-
-        # If run with an overriding SHORT_GIT_COMMIT we need to
-        # determine the branch name ourselves.
-        if [ -z ${GITHUB_BRANCH_NAME} ]; then
-            GITHUB_BRANCH_NAME=$(git -C ${JUJU_SOURCE_CHECKOUT} branch --all \
-                --contains ${GITHUB_BRANCH_HEAD_SHA} \
-                --column \
-                | awk '{print$NF}' \
-                | awk -F/ '{print$NF}')
-        fi
-        rm -rf ${full_path}
-        git clone --depth 1 file://${JUJU_SOURCE_CHECKOUT} ${full_path}
-        rm -fr ${JUJU_SOURCE_CHECKOUT}
-
-        # TODO - remove vendor mode for go mod
-        # It currently is needed for s390x builds since the s390x slave
-        # is on a restricted network.
-        echo "Resolving dependencies"
-        export JUJU_MAKE_DEP=true
-        export JUJU_GOMOD_MODE=vendor
-        make -C ${full_path} godeps || make -C ${full_path} dep || make -C ${full_path} vendor-dependencies
-
-        echo "Removing non-free data."
-        rm -rf ${GOPATH}/src/github.com/rogpeppe/godeps
-        rm -rf ${GOPATH}/src/github.com/golang/dep
-        rm -rf ${GOPATH}/src/github.com/kisielk
-        rm -rf ${GOPATH}/src/code.google.com/p/go.net/html/charset/testdata/
-        rm -f ${GOPATH}/src/code.google.com/p/go.net/html/charset/*test.go
-        rm -rf ${GOPATH}/src/golang.org/x/net/html/charset/testdata/
-        rm -f ${GOPATH}/src/golang.org/x/net/html/charset/*test.go
-        rm -rf ${GOPATH}/src/github.com/prometheus/procfs/fixtures
-
-        # Remove backup files that confuse lintian.
-        echo "Removing backup files"
-        find ${GOPATH}/src/ -type f -name *.go.orig -delete
-
-        echo "Attempting to apply patches"
-        (cd ${full_path} && GOPATH=${GOPATH} make add-patches || true)
-
-        echo "Removing binaries and build artifacts"
-        if [[ -d ${GOPATH}/bin ]]; then
-            rm -r ${GOPATH}/bin
-        fi
-        if [[ -d ${GOPATH}/pkg ]]; then
-            # go mod prevents writes
-            chmod +w -R ${GOPATH}/pkg
-            rm -r ${GOPATH}/pkg
-        fi
-
-        PROPS_PATH=${WORKSPACE}/build.properties
-        #  Need to prepare some variables used through out the process
-        JUJU_VERSION=$(sed -n 's/^const version = "\(.*\)"/\1/p' ${full_path}/version/version.go)
-        if [[ -n ${JUJU_BUILD_NUMBER:-} ]]; then
-            JUJU_VERSION="${JUJU_VERSION}.${JUJU_BUILD_NUMBER}"
-        fi
-
-        # GIT_COMMIT is used by juju Makefile for version info.
-        GIT_COMMIT=$(git -C ${full_path} rev-parse HEAD)
-        SHORT_GIT_COMMIT=${GIT_COMMIT:0:7}
-        echo "SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}" >> $PROPS_PATH
-        echo "GIT_COMMIT=${GIT_COMMIT}" >> $PROPS_PATH
-        echo "GOVERSION=${GOVERSION}" >> $PROPS_PATH
-        echo "JUJU_BUILD_NUMBER=${JUJU_BUILD_NUMBER}" >> $PROPS_PATH
-        echo "JUJU_VERSION=${JUJU_VERSION}" >> $PROPS_PATH
-        echo "JUJU_GOMOD_MODE=${JUJU_GOMOD_MODE}" >> $PROPS_PATH
-        echo "JUJU_SRC_TARBALL=juju-source-${JUJU_VERSION}-${SHORT_GIT_COMMIT}.tar.xz" >> $PROPS_PATH
-        echo "JUJU_VERSION_MAJOR_MINOR=$(echo ${JUJU_VERSION} | cut -d'-' -f 1 | cut -d'.' -f 1,2)" >> $PROPS_PATH
-
-        source ${WORKSPACE}/build.properties
-
-        tar cfJ ${JUJU_SRC_TARBALL} \
-          --exclude .git --exclude .bzr --exclude .hg \
-          -C ${GOPATH} ./
+    - shell: !include-raw-verbatim: "scripts/package-juju-source.sh"
     - inject:
-        properties-file: ${WORKSPACE}/build.properties
+        properties-file: ${{WORKSPACE}}/build.properties
 
 - builder:
     name: 'set-test-description'
     builders:
         - description-setter:
-            description: "${JUJU_VERSION}:${SHORT_GIT_COMMIT}"
+            description: "${{JUJU_VERSION}}:${{SHORT_GIT_COMMIT}}"
 
 - builder:
     name: 'set-build-description'
@@ -236,42 +37,6 @@
             default-excludes: true
             case-sensitive: true
 
-- builder:
-    name: 'lxd-src-command-base'
-    builders:
-    - get-juju-cloud-creds
-    - inject:
-        properties-content: |-
-            JUJU_UNITTEST_IMAGE=ubuntu
-            JUJU_UNITTEST_SERIES=jammy
-    # This takes the param:
-    #  {src_command} which should be a the commands to run within the workspace.
-    #  {setup_steps} commands to run before the src_command step (e.g. install things, add to groups)
-    #  {env_file} is a file that will be sourced before src_command and setup_steps (pass a blank string to ignore this step)
-    - shell:
-        !include-raw: "scripts/lxd-runner.sh"
-
-
-# This should go somewhere else.
-- builder:
-    name: 'lxd-src-command'
-    builders:
-        - lxd-src-command-base:
-            env_file: ""
-            setup_steps: ""
-            src_command: "{src_command}"
-
-- builder:
-    name: 'lxd-src-command-focal-base'
-    builders:
-      - get-juju-cloud-creds
-      - inject:
-          properties-content: |-
-            JUJU_UNITTEST_IMAGE=ubuntu
-            JUJU_UNITTEST_SERIES=focal
-      - shell:
-          !include-raw: "scripts/lxd-runner.sh"
-
 - publisher:
     name: 'log-panic-check'
     publishers:
@@ -282,8 +47,7 @@
                   - SUCCESS
                   - UNSTABLE
                 build-steps:
-                  - shell: !include-raw: ./scripts/panic_search.sh
-
+                  - shell: !include-raw-verbatim: ./scripts/panic_search.sh
 
 # Basic timeout wrapper for all functional tests
 - wrapper:
@@ -307,38 +71,18 @@
     name: host-src-command-with-setup
     builders:
       - shell:
-          !include-raw: "scripts/host-command.sh"
+          !include-raw-expand: "scripts/host-command.template.sh"
 
 - builder:
     name: 'detect-commit-go-version'
     builders:
     - shell:
-        !include-raw: "scripts/goversion.sh"
+        !include-raw-verbatim: "scripts/goversion.sh"
     - inject:
-          properties-file: ${WORKSPACE}/goversion
+          properties-file: ${{WORKSPACE}}/goversion
 
 - builder:
     name: 'ensure-aws-credentials'
     builders:
     - get-juju-cloud-creds
-    - shell: |-
-        #!/bin/bash
-        set -eux
-
-        juju_data="$HOME/.local/share/juju"
-        mkdir -p "$juju_data"
-        sudo cp -R "$JUJU_DATA/credentials.yaml" "$juju_data"
-        sudo chown -R "$USER" "$juju_data"
-
-        REGION="${REGION:-us-east-1}"
-
-        mkdir -p "$HOME"/.aws
-        echo "[default]" > "$HOME"/.aws/credentials
-        cat "$juju_data/credentials.yaml" |\
-            grep aws: -A 4 | grep key: |\
-            tail -2 |\
-            sed -e 's/      access-key:/aws_access_key_id =/' \
-                -e 's/      secret-key:/aws_secret_access_key =/' \
-            >> "$HOME"/.aws/credentials
-        echo -e "[default]\nregion = ${REGION}" > "$HOME"/.aws/config
-        chmod 600 ~/.aws/*
+    - shell: !include-raw-verbatim: "scripts/ensure-aws-credentials.sh"

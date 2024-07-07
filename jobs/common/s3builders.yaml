@@ -18,21 +18,21 @@
 
         # Create buildvars file
         cat >buildvars <<EOF
-        JUJU_VERSION=${JUJU_VERSION}
-        JUJU_SRC_TARBALL=${JUJU_SRC_TARBALL}
-        SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-        GIT_COMMIT=${GIT_COMMIT}
-        JUJU_BUILD_NUMBER=${JUJU_BUILD_NUMBER}
-        JUJU_GOMOD_MODE=${JUJU_GOMOD_MODE}
-        GOVERSION=${GOVERSION}
+        JUJU_VERSION=${{JUJU_VERSION}}
+        JUJU_SRC_TARBALL=${{JUJU_SRC_TARBALL}}
+        SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+        GIT_COMMIT=${{GIT_COMMIT}}
+        JUJU_BUILD_NUMBER=${{JUJU_BUILD_NUMBER}}
+        JUJU_GOMOD_MODE=${{JUJU_GOMOD_MODE}}
+        GOVERSION=${{GOVERSION}}
         EOF
 
-        FILES_OF_INTEREST="${WORKSPACE}/${JUJU_SRC_TARBALL} buildvars"
+        FILES_OF_INTEREST="${{WORKSPACE}}/${{JUJU_SRC_TARBALL}} buildvars"
         s3cmd --config $S3_CFG \
             put \
             --no-progress \
-            ${FILES_OF_INTEREST} \
-            s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/src/
+            ${{FILES_OF_INTEREST}} \
+            s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/src/
 
 # upload-s3-binaries is responsible for uploading a binaries tarball after a
 # successful make-juju for the specified platform.
@@ -142,14 +142,14 @@
         #!/bin/bash
         set -eu
 
-        echo "Getting Juju src tarball ${JUJU_SRC_TARBALL}"
+        echo "Getting Juju src tarball ${{JUJU_SRC_TARBALL}}"
         s3cmd --config $S3_CFG \
             --recursive get \
             --no-progress \
             --force \
             --exclude="*" \
-            --include="${JUJU_SRC_TARBALL}" \
-            s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/src/ \
+            --include="${{JUJU_SRC_TARBALL}}" \
+            s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/src/ \
             ./
     - shell: |-
         #!/bin/bash
@@ -158,8 +158,8 @@
 
         if [ ! -z $GOPATH ]; then
           echo "GOPATH is defined. Unpacking Juju src tarball onto GOPATH"
-          tar xf "${JUJU_SRC_TARBALL}" -C "${GOPATH}"
-          echo "JUJU_SRC_PATH=${GOPATH}/src/github.com/juju/juju" >> juju-src.properties
+          tar xf "${{JUJU_SRC_TARBALL}}" -C "${{GOPATH}}"
+          echo "JUJU_SRC_PATH=${{GOPATH}}/src/github.com/juju/juju" >> juju-src.properties
         else
           echo "GOPATH is not defined. Doing nothing with the Juju src tarball"
         fi
@@ -306,19 +306,19 @@
         # directory so that we get the JUJU_BUILD_NUMBER and pull the correct
         # src artifacts.
         #
-        echo "Downloading buildvars for Juju source ${SHORT_GIT_COMMIT}"
+        echo "Downloading buildvars for Juju source ${{SHORT_GIT_COMMIT}}"
         s3cmd --config $S3_CFG \
-          get --force s3://juju-qa-data/ci-run/build-${SHORT_GIT_COMMIT}/src/buildvars
+          get --force s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/src/buildvars
 
-        echo "Contents of buildvars for Juju source ${SHORT_GIT_COMMIT}"
+        echo "Contents of buildvars for Juju source ${{SHORT_GIT_COMMIT}}"
         cat buildvars
-        echo "Injecting Juju source ${SHORT_GIT_COMMIT} buildvars"
+        echo "Injecting Juju source ${{SHORT_GIT_COMMIT}} buildvars"
     - inject:
-        properties-file: ${WORKSPACE}/buildvars
+        properties-file: ${{WORKSPACE}}/buildvars
     - shell: |-
           #!/bin/bash
           set -e
-          echo "Removing Juju source ${SHORT_GIT_COMMIT} buildvars file"
+          echo "Removing Juju source ${{SHORT_GIT_COMMIT}} buildvars file"
           rm -rf buildvars
 
 
@@ -328,7 +328,7 @@
     - shell: |-
         #!/bin/bash
         set -e
-        echo "OPERATOR_IMAGE_ACCOUNT=public.ecr.aws/jujuqabot/build-${SHORT_GIT_COMMIT}" > juju-oci.properties
+        echo "OPERATOR_IMAGE_ACCOUNT=public.ecr.aws/jujuqabot/build-${{SHORT_GIT_COMMIT}}" > juju-oci.properties
         cat juju-oci.properties
     - inject:
         properties-file: juju-oci.properties

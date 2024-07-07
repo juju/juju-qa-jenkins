@@ -41,14 +41,14 @@
 
 - job:
     name: test-sidecar-test-deploy-and-force-remove-application-microk8s
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_deploy_and_force_remove_application in sidecar suite on microk8s
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -109,14 +109,14 @@
 
 - job:
     name: test-sidecar-test-deploy-and-remove-application-microk8s
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_deploy_and_remove_application in sidecar suite on microk8s
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -177,14 +177,14 @@
 
 - job:
     name: test-sidecar-test-pebble-notices-microk8s
-    node: ephemeral-focal-8c-32g-amd64
+    node: ephemeral-noble-8c-32g-amd64
     description: |-
       Test test_pebble_notices in sidecar suite on microk8s
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
         description: 'Enable sub job to be run individually.'
-        regex: ^\S{7}$
+        regex: ^\S{{7}}$
         msg: Enter a valid 7 char git sha
     - choice:
         default: 'amd64'
@@ -237,8 +237,8 @@
       - prepare-integration-test
       - conditional-step:
           condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([4-9]|\\d{2,})(\\.|-).*"
-          label: "${JUJU_VERSION}"
+          regex: "^[4-9].*|^3\\.([4-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
           on-evaluation-failure: "dont-run"
           steps:
             - run-integration-test-microk8s:

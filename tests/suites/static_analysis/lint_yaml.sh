@@ -6,7 +6,7 @@ yaml_check() {
 import yaml, sys
 
 def path(loader, tag_suffix, node):
-  tags = [u'!include-raw:', u'!include:', u'!include-raw-escape:']
+  tags = [u'!include-raw-expand:', u'!include:', u'!include-raw-verbatim:']
   if tag_suffix not in tags:
     raise Exception('unknown tag: {}, expected: {}'.format(tag_suffix, tags))
   return 'input-raw'
@@ -68,7 +68,6 @@ jobs:
     - z-clean-resources-windows
     - z-clean-resources-eks
     - z-clean-resources-ecr
-    - run-unit-tests-lxd
     - upload-s3-agent-binaries
     - unit-tests-s390x
     - unit-tests-race-arm64
@@ -84,7 +83,6 @@ jobs:
     # jenkins suite. We should clean them up to ensure that they do run, or
     # are removed.
     - integration-tests
-    - lxd-src-command-focal-base
     - test-controllercharm-multijob
 EOF
 	)

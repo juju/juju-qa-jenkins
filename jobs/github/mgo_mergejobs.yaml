@@ -48,8 +48,8 @@
             - name: github-make-check-mgo
               current-parameters: true
               predefined-parameters: |-
-                GOVERSION=${GOVERSION}
-                MERGE_COMMIT=${MERGE_COMMIT}
+                GOVERSION=${{GOVERSION}}
+                MERGE_COMMIT=${{MERGE_COMMIT}}
 
 - job:
     name: github-make-check-mgo
@@ -92,9 +92,9 @@
       - run-build-check-raw:
           build_env: ""
           setup_steps: ""
-          src_command: !include-raw: "./scripts/snippet_build_check-juju-mgo.sh"
-          checkout_command: !include-raw: "./scripts/checkout.sh"
-          test_command: !include-raw: "./scripts/snippet_clean-test-exit.sh"
+          src_command: !include-raw-verbatim: "./scripts/snippet_build_check-juju-mgo.sh"
+          checkout_command: !include-raw-verbatim: "./scripts/checkout.sh"
+          test_command: !include-raw-verbatim: "./scripts/snippet_clean-test-exit.sh"
     publishers:
       - junit:
           results: tests.xml
@@ -143,10 +143,10 @@
           #!/bin/bash
           # Sanatise the PR description for merge commit message.
           cat >prdesc <<EOT
-              pr_descr=$(echo ${ghprbPullLongDescription} | sed $'s/\\r\\n/ \\\\\\n/g')
+              pr_descr=$(echo ${{ghprbPullLongDescription}} | sed $'s/\\r\\n/ \\\\\\n/g')
           EOT
       - inject:
-          properties-file: ${WORKSPACE}/prdesc
+          properties-file: ${{WORKSPACE}}/prdesc
       - resolve-merge-commit
       - detect-merge-go-version
       - multijob:
@@ -155,8 +155,8 @@
             - name: github-make-check-mgo
               current-parameters: true
               predefined-parameters: |-
-                GOVERSION=${GOVERSION}
-                MERGE_COMMIT=${MERGE_COMMIT}
+                GOVERSION=${{GOVERSION}}
+                MERGE_COMMIT=${{MERGE_COMMIT}}
     publishers:
       - junit:
           results: tests.xml

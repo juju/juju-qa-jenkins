@@ -4,8 +4,8 @@
     builders:
     - get-ec2-creds
     - shell:
-        !include-raw: scripts/eks-cleanup.sh
-    node: ephemeral-focal-small-amd64
+        !include-raw-verbatim: scripts/eks-cleanup.sh
+    node: ephemeral-noble-small-amd64
     publishers:
     - email-ext:
         recipients: juju-qa-aws@canonical.com

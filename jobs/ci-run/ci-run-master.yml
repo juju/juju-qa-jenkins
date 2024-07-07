@@ -88,10 +88,10 @@
             - name: "package-juju-source"
               current-parameters: true
               predefined-parameters: |-
-                GITHUB_BRANCH_HEAD_SHA=${GITHUB_BRANCH_HEAD_SHA}
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                JUJU_BUILD_NUMBER=${BUILD_NUMBER}
-                GOVERSION=${GOVERSION}
+                GITHUB_BRANCH_HEAD_SHA=${{GITHUB_BRANCH_HEAD_SHA}}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+                JUJU_BUILD_NUMBER=${{BUILD_NUMBER}}
+                GOVERSION=${{GOVERSION}}
 
       - get-s3-source-payload
       - inject:
@@ -100,7 +100,7 @@
             series=focal
       - get-build-details
       - description-setter:
-          description: "${JUJU_VERSION}:${SHORT_GIT_COMMIT} (go ${GOVERSION})"
+          description: "${{JUJU_VERSION}}:${{SHORT_GIT_COMMIT}} (go ${{GOVERSION}})"
       - multijob:
           name: "Building Juju Binaries"
           condition: SUCCESSFUL
@@ -112,56 +112,56 @@
               predefined-parameters: |-
                 PLATFORM=linux/amd64
                 BUILD_LABEL=linux-amd64
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+                GOVERSION=${{GOVERSION}}
             - name: build-juju
               alias: build-juju-linux-arm64
               current-parameters: true
               predefined-parameters: |-
                 PLATFORM=linux/arm64
                 BUILD_LABEL=linux-arm64
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+                GOVERSION=${{GOVERSION}}
             - name: build-juju
               alias: build-juju-linux-s390x
               current-parameters: true
               predefined-parameters: |-
                 PLATFORM=linux/s390x
                 BUILD_LABEL=linux-s390x
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+                GOVERSION=${{GOVERSION}}
             - name: build-juju
               alias: build-juju-linux-ppc64el
               current-parameters: true
               predefined-parameters: |-
                 PLATFORM=linux/ppc64el
                 BUILD_LABEL=linux-ppc64el
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+                GOVERSION=${{GOVERSION}}
             - name: build-juju
               alias: build-juju-darwin-amd64
               current-parameters: true
               predefined-parameters: |-
                 PLATFORM=darwin/amd64
                 BUILD_LABEL=darwin-amd64
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+                GOVERSION=${{GOVERSION}}
             - name: build-juju
               alias: build-juju-darwin-arm64
               current-parameters: true
               predefined-parameters: |-
                 PLATFORM=darwin/arm64
                 BUILD_LABEL=darwin-arm64
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+                GOVERSION=${{GOVERSION}}
             - name: build-juju
               alias: build-juju-windows-amd64
               current-parameters: true
               predefined-parameters: |-
                 PLATFORM=windows/amd64
                 BUILD_LABEL=windows-amd64
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+                GOVERSION=${{GOVERSION}}
             - name: build-juju
               alias: build-juju-k8s-linux-amd64
               current-parameters: true
@@ -170,8 +170,8 @@
                 LABEL=k8s
                 BUILD_TAGS=minimal,provider_kubernetes
                 BUILD_LABEL=k8s-linux-amd64
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+                GOVERSION=${{GOVERSION}}
 
       - multijob:
           name: "Building Juju OCI Images"
@@ -180,8 +180,8 @@
             - name: build-jujud-operator
               current-parameters: true
               predefined-parameters: |-
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+                GOVERSION=${{GOVERSION}}
 
       - multijob:
           name: "Simple Streams"
@@ -191,7 +191,7 @@
             - name: generate-agent-testing-streams
               current-parameters: true
               predefined-parameters: |-
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
 
       - multijob:
           name: "Simple Streams Publish"
@@ -201,11 +201,11 @@
             - name: publish-testing-streams-aws
               current-parameters: true
               predefined-parameters: |-
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
             - name: publish-testing-streams-azure
               current-parameters: true
               predefined-parameters: |-
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
 
     publishers:
       - trigger-parameterized-builds:
@@ -213,9 +213,9 @@
             condition: SUCCESS
             current-parameters: true
             predefined-parameters: |-
-              series=${series}
-              SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-              GOVERSION=${GOVERSION}
+              series=${{series}}
+              SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+              GOVERSION=${{GOVERSION}}
 
 - job:
     name: "ci-gating-tests"
@@ -240,7 +240,7 @@
       - validating-string:
           description: The git short hash for the commit you wish to test
           name: SHORT_GIT_COMMIT
-          regex: ^\S{7}$
+          regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
       - string:
           default: ""
@@ -264,28 +264,28 @@
             - name: "gating-tests"
               current-parameters: true
               predefined-parameters: |-
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                series=${series}
-                GOVERSION=${GOVERSION}
-                BOOTSTRAP_SERIES=${BOOTSTRAP_SERIES}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+                series=${{series}}
+                GOVERSION=${{GOVERSION}}
+                BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}
             - name: "unit-tests"
               current-parameters: true
               predefined-parameters: |-
-                SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-                GOVERSION=${GOVERSION}
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+                GOVERSION=${{GOVERSION}}
     publishers:
       - trigger-parameterized-builds:
           - project: "ci-proving-ground-tests-once-daily"
             condition: ALWAYS
             current-parameters: true
             predefined-parameters: |-
-              series=${series}
-              SHORT_GIT_COMMIT=${SHORT_GIT_COMMIT}
-              GOVERSION=${GOVERSION}
+              series=${{series}}
+              SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+              GOVERSION=${{GOVERSION}}
 
 - job:
     name: "package-juju-source"
-    node: ephemeral-focal-small-amd64
+    node: ephemeral-noble-small-amd64
     project-type: "multijob"
     condition: SUCCESSFUL
     wrappers:
@@ -309,7 +309,7 @@
       - install-go
       - inject:
           properties-content: |-
-            JUJU_SOURCE_CHECKOUT=${WORKSPACE}/tmp_initial_clone
+            JUJU_SOURCE_CHECKOUT=${{WORKSPACE}}/tmp_initial_clone
       - shell: |-
           git init "$JUJU_SOURCE_CHECKOUT"
           cd "$JUJU_SOURCE_CHECKOUT"

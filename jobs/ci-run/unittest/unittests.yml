@@ -48,17 +48,6 @@
 #               current-parameters: true
 #               current-parameters: true
 
-
-- builder:
-    # Takes parameter: GOTEST_TYPE. 'race' for go test race, 'xunit-report' for
-    # make test w/ verbose and generating an xml report and anything else for
-    # straight 'make test'
-    name: 'run-unit-tests-lxd'
-    builders:
-    - lxd-src-command:
-          src_command:
-              !include-raw: ../scripts/snippet_run-unit-tests.sh
-
 - builder:
     # Takes parameter: GOTEST_TYPE. 'race' for go test race, 'xunit-report' for
     # make test w/ verbose and generating an xml report and anything else for
@@ -67,12 +56,12 @@
     builders:
     - host-src-command:
           src_command:
-              !include-raw: ../scripts/snippet_run-unit-tests.sh
+              !include-raw-expand: ../scripts/snippet_run-unit-tests.template.sh
 
 
 - job:
     name: unit-tests-amd64
-    node: ephemeral-focal-16c-64g-amd64
+    node: ephemeral-noble-16c-64g-amd64
     description: |-
       Build and run unit tests for amd64.
     wrappers:
@@ -110,12 +99,12 @@
           modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
-          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+          description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "xunit-report"
-          TEST_TIMEOUT: "${TEST_TIMEOUT}"
-          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          TEST_TIMEOUT: "${{TEST_TIMEOUT}}"
+          USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 1
     publishers:
       - junit:
@@ -124,7 +113,7 @@
 
 - job:
     name: 'unit-tests-arm64'
-    node: ephemeral-focal-16c-64g-arm64
+    node: ephemeral-noble-16c-64g-arm64
     description: |-
       Build and run unit tests for arm64.
     wrappers:
@@ -162,12 +151,12 @@
           modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
-          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+          description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "xunit-report"
-          TEST_TIMEOUT: "${TEST_TIMEOUT}"
-          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          TEST_TIMEOUT: "${{TEST_TIMEOUT}}"
+          USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 0
     publishers:
       - junit:
@@ -210,12 +199,12 @@
           modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
-          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+          description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "xunit-report"
-          TEST_TIMEOUT: "${TEST_TIMEOUT}"
-          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          TEST_TIMEOUT: "${{TEST_TIMEOUT}}"
+          USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 0
     publishers:
       - junit:
@@ -262,12 +251,12 @@
           modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
-          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+          description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "xunit-report"
-          TEST_TIMEOUT: "${TEST_TIMEOUT}"
-          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          TEST_TIMEOUT: "${{TEST_TIMEOUT}}"
+          USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 0
     publishers:
       - junit:
@@ -277,7 +266,7 @@
 
 - job:
     name: 'unit-tests-race-amd64'
-    node: ephemeral-focal-16c-64g-amd64
+    node: ephemeral-noble-16c-64g-amd64
     description: |-
       Build and run unit race tests for amd64.
     wrappers:
@@ -315,12 +304,12 @@
           modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
-          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+          description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "race"
-          TEST_TIMEOUT: "${TEST_TIMEOUT}"
-          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          TEST_TIMEOUT: "${{TEST_TIMEOUT}}"
+          USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 0
     publishers:
         - junit:
@@ -329,7 +318,7 @@
 
 - job:
     name: 'unit-tests-race-arm64'
-    node: ephemeral-focal-16c-64g-arm64
+    node: ephemeral-noble-16c-64g-arm64
     description: |-
       Build and run unit race tests for arm64.
     wrappers:
@@ -367,12 +356,12 @@
           modules: github.com/tebeka/go2xunit@latest
       - get-s3-source-payload
       - description-setter:
-          description: "${JUJU_VERSION} ${SHORT_GIT_COMMIT}"
+          description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
       - run-unit-tests-host:
           GOTEST_TYPE: "race"
-          TEST_TIMEOUT: "${TEST_TIMEOUT}"
-          USE_TMPFS_FOR_MGO: "${USE_TMPFS_FOR_MGO}"
+          TEST_TIMEOUT: "${{TEST_TIMEOUT}}"
+          USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 0
     publishers:
         - junit:
