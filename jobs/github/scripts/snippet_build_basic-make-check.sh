@@ -8,7 +8,7 @@ if [ "${NEEDS_MGO}" = "true" ]; then
   fi
 
   # when running inside a privileged container, snapd fails because udevd isn't
-  # running, but on the second occurance it is.
+  # running, but on the second occurrence it is.
   # see: https://github.com/lxc/lxd/issues/4308
   for i in {1..3}; do
     echo "${action}ing juju-db snap. Attempt ${i}"
