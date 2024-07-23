@@ -62,6 +62,8 @@
       - python-libjuju:
           project_dir: "github.com/juju/python-libjuju"
           build_script: "scripts/snippet_build_check-juju-python-libjuju.sh"
+      - terraform-provider-juju:
+          project_dir: "github.com/juju/terraform-provider-juju"
       - schemagen:
           project_dir: "github.com/juju/schemagen"
       - ratelimit:
