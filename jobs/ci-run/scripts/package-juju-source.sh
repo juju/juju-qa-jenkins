@@ -76,7 +76,11 @@ fi
 
 PROPS_PATH=${WORKSPACE}/build.properties
 #  Need to prepare some variables used through out the process
-JUJU_VERSION=$(sed -n 's/^const version = "\(.*\)"/\1/p' ${full_path}/version/version.go)
+VERSION_FILE="${full_path}/version/version.go"
+if [ -f "${full_path}/core/version/version.go" ]; then
+VERSION_FILE="${full_path}/core/version/version.go"
+fi
+JUJU_VERSION=$(sed -n 's/^const version = "\(.*\)"/\1/p' "${VERSION_FILE}")
 if [[ -n ${JUJU_BUILD_NUMBER:-} ]]; then
     JUJU_VERSION="${JUJU_VERSION}.${JUJU_BUILD_NUMBER}"
 fi
