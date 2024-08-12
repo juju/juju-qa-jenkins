@@ -190,6 +190,10 @@ func extractMultiJobNames(multijob map[interface{}]interface{}) []string {
 
 func ignore(dir string, skip []string, fn func(string, os.FileInfo) error) func(string, os.FileInfo) error {
 	return func(path string, info os.FileInfo) error {
+		if strings.HasSuffix(path, ".private.yml") ||
+			strings.HasSuffix(path, ".private.yaml") {
+			return nil
+		}
 		b, err := filepath.Rel(dir, path)
 		if err != nil {
 			return err
