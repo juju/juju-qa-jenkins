@@ -42,6 +42,7 @@ jobs:
   ignore:
     - build-dqlite
     - build-musl
+    - ci-trigger-github-com-juju-juju
     - ci-build-juju
     - ci-gating-tests
     - ci-proving-ground-tests
@@ -78,7 +79,6 @@ jobs:
     - gating-functional-tests-ppc64el
     - test-refresh-multijob
     - build-jujud-operator-test
-
     # TODO (stickupkid): The followng jobs seem to be orphan jobs with in the
     # jenkins suite. We should clean them up to ensure that they do run, or
     # are removed.

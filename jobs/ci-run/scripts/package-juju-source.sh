@@ -1,11 +1,6 @@
 #!/bin/bash
 set -xe
 
-if [ -z "$GITHUB_BRANCH_NAME" ] && [ -z "$GITHUB_BRANCH_HEAD_SHA" ]; then
-    echo "Must specify one of GITHUB_BRANCH_NAME or GITHUB_BRANCH_HEAD_SHA"
-    exit 1
-fi
-
 if [ -z "$JUJU_SOURCE_CHECKOUT" ]; then
     echo "Must specify JUJU_SOURCE_CHECKOUT"
     exit 1
@@ -26,15 +21,6 @@ full_path=${GOPATH}/src/github.com/juju/juju
 
 export PATH=/snap/bin:$PATH:$GOPATH/bin
 
-# If run with an overriding SHORT_GIT_COMMIT we need to
-# determine the branch name ourselves.
-if [ -z ${GITHUB_BRANCH_NAME} ]; then
-    GITHUB_BRANCH_NAME=$(git -C ${JUJU_SOURCE_CHECKOUT} branch --all \
-        --contains ${GITHUB_BRANCH_HEAD_SHA} \
-        --column \
-        | awk '{print$NF}' \
-        | awk -F/ '{print$NF}')
-fi
 rm -rf ${full_path}
 git clone --depth 1 file://${JUJU_SOURCE_CHECKOUT} ${full_path}
 rm -fr ${JUJU_SOURCE_CHECKOUT}

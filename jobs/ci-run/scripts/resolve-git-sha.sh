@@ -1,6 +1,7 @@
 #!/bin/bash
 set -xe
 
+echo "GITHUB_REPO=$GITHUB_REPO"
 echo "GITHUB_BRANCH_NAME=$GITHUB_BRANCH_NAME"
 echo "GITHUB_BRANCH_HEAD_SHA=$GITHUB_BRANCH_HEAD_SHA"
 echo "GIT_COMMIT=$GIT_COMMIT"
@@ -14,21 +15,21 @@ function cleanup {
 
 trap cleanup EXIT
 
-function query_github_simple {
-    curl -s "https://api.github.com/repos/juju/juju/commits/$1" | jq -r ".sha // empty"
+function query_github_simple { \
+    curl -s "https://api.github.com/repos/$GITHUB_REPO/commits/$1" --header "Authorization: Bearer $GITHUB_TOKEN" --header "X-GitHub-Api-Version: 2022-11-28" | jq -r ".sha // empty"
 }
 
 function query_github_treeish {
-    curl -s "https://api.github.com/repos/juju/juju/git/trees/$1" | jq -r ".sha // empty"
+    curl -s "https://api.github.com/repos/$GITHUB_REPO/git/trees/$1" --header "Authorization: Bearer $GITHUB_TOKEN" --header "X-GitHub-Api-Version: 2022-11-28" | jq -r ".sha // empty"
 }
 
 function search_github_hash {
-    curl -s -H "Accept: application/vnd.github.cloak-preview+json" "https://api.github.com/search/commits?q=repo:juju/juju+hash:$1" | jq -r ".items[0].sha // empty"
+    curl -s -H "Accept: application/vnd.github.cloak-preview+json" "https://api.github.com/search/commits?q=repo:$GITHUB_REPO+hash:$1" --header "Authorization: Bearer $GITHUB_TOKEN" --header "X-GitHub-Api-Version: 2022-11-28" | jq -r ".items[0].sha // empty"
 }
 
 function clone_search {
     if [ ! -d "$TMP_CLONE" ]; then
-        git clone -q --no-checkout "https://github.com/juju/juju.git" "$TMP_CLONE"
+        git clone -q --no-checkout "https://github.com/$GITHUB_REPO.git" "$TMP_CLONE"
     fi
     git -C "$TMP_CLONE" rev-parse "$1"
 }
@@ -95,5 +96,6 @@ echo "SHORT_GIT_COMMIT=${EXACT_COMMIT:0:7}" > $PROPS_PATH
 echo "GIT_COMMIT=${EXACT_COMMIT}" >> $PROPS_PATH
 echo "GITHUB_BRANCH_HEAD_SHA=${EXACT_COMMIT}" >> $PROPS_PATH
 echo "GITHUB_BRANCH_NAME=${GITHUB_BRANCH_NAME}" >> $PROPS_PATH
+echo "GITHUB_REPO=${GITHUB_REPO}" >> $PROPS_PATH
 
 cat $PROPS_PATH

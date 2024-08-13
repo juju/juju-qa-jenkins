@@ -1,30 +1,9 @@
 - job:
-    name: "ci-build-juju"
+    name: "ci-trigger-github-com-juju-juju"
     disabled: false
     concurrent: false
-    description: |
-      Build Juju for subsequent CI run jobs to use.
-      <br/>
-      The rough outline of a build stage is:
-        <ul>
-            <li>Checkout the code that triggered the change (a build run uses the commit hash as the ID.)</li>
-            <li>Create a tarball of the source that also contains the dependencies</li>
-            <li>Build the code and upload the resulting binaries and buildvars to s3</li>
-            <li>Package the resulting jujud as an agent and upload that too for later processing</li>
-            <li>Generate streams for this builds version (and only this version, no historic stream data) and upload results to testing stream servers</li>
-            <li>
-                for phase in [unit-tests, functional-tests]:
-                <ul>
-                    <li>Pull down the binaries (or source) for this build and run the test using it.</li>
-                </ul>
-            </li>
-        </ul>
     project-type: "multijob"
     node: noop-parent-jobs
-    # Any changes to the refspec for branches watched must be updated in the
-    # 'generate-testing-streams' job otherwise they will never persist in
-    # streams.
-    #
     properties:
       - github:
           url: https://github.com/juju/juju/
@@ -62,7 +41,39 @@
               </events>
               <preStatus>false</preStatus>
             </com.github.kostyasha.github.integration.branch.GitHubBranchTrigger>
+    publishers:
+      - trigger-parameterized-builds:
+          - project: "ci-build-juju"
+            condition: SUCCESS
+            current-parameters: false
+            predefined-parameters: |-
+              GITHUB_REPO=juju/juju
+              GITHUB_BRANCH_HEAD_SHA=${{GITHUB_BRANCH_HEAD_SHA}}
 
+
+- job:
+    name: "ci-build-juju"
+    disabled: false
+    concurrent: false
+    description: |
+      Build Juju for subsequent CI run jobs to use.
+      <br/>
+      The rough outline of a build stage is:
+        <ul>
+            <li>Checkout the code that triggered the change (a build run uses the commit hash as the ID.)</li>
+            <li>Create a tarball of the source that also contains the dependencies</li>
+            <li>Build the code and upload the resulting binaries and buildvars to s3</li>
+            <li>Package the resulting jujud as an agent and upload that too for later processing</li>
+            <li>Generate streams for this builds version (and only this version, no historic stream data) and upload results to testing stream servers</li>
+            <li>
+                for phase in [unit-tests, functional-tests]:
+                <ul>
+                    <li>Pull down the binaries (or source) for this build and run the test using it.</li>
+                </ul>
+            </li>
+        </ul>
+    project-type: "multijob"
+    node: noop-parent-jobs
     wrappers:
       - ansicolor
       - workspace-cleanup
@@ -71,28 +82,36 @@
           timeout: 120
           fail: true
           type: absolute
-
+      - credentials-binding:
+          - text:
+              credential-id: github-token-private
+              variable: GITHUB_TOKEN
     parameters:
       - string:
+          name: GITHUB_REPO
+          default: juju/juju
+          description: "Specifc github repo to pull from"
+      - string:
+          name: GITHUB_BRANCH_HEAD_SHA
           default: ""
           description: "Specific git SHA to build (used to overwrite triggered runs)."
-          name: GITHUB_BRANCH_HEAD_SHA
-
     builders:
       - resolve-git-sha
       - detect-commit-go-version
+      - inject:
+          properties-content: |-
+            GITHUB_TOKEN=
       - multijob:
           name: "Packaging"
           condition: SUCCESSFUL
           projects:
             - name: "package-juju-source"
-              current-parameters: true
+              current-parameters: false
               predefined-parameters: |-
+                GITHUB_REPO=${{GITHUB_REPO}}
                 GITHUB_BRANCH_HEAD_SHA=${{GITHUB_BRANCH_HEAD_SHA}}
-                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
                 JUJU_BUILD_NUMBER=${{BUILD_NUMBER}}
                 GOVERSION=${{GOVERSION}}
-
       - get-s3-source-payload
       - inject:
           properties-content: |-
@@ -100,7 +119,7 @@
             series=focal
       - get-build-details
       - description-setter:
-          description: "${{JUJU_VERSION}}:${{SHORT_GIT_COMMIT}} (go ${{GOVERSION}})"
+          description: "${{GITHUB_REPO}} ${{JUJU_VERSION}}:${{SHORT_GIT_COMMIT}} (go ${{GOVERSION}})"
       - multijob:
           name: "Building Juju Binaries"
           condition: SUCCESSFUL
@@ -172,7 +191,6 @@
                 BUILD_LABEL=k8s-linux-amd64
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
                 GOVERSION=${{GOVERSION}}
-
       - multijob:
           name: "Building Juju OCI Images"
           condition: SUCCESSFUL
@@ -182,7 +200,6 @@
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
                 GOVERSION=${{GOVERSION}}
-
       - multijob:
           name: "Simple Streams"
           condition: SUCCESSFUL
@@ -192,7 +209,6 @@
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-
       - multijob:
           name: "Simple Streams Publish"
           condition: SUCCESSFUL
@@ -206,7 +222,6 @@
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-
     publishers:
       - trigger-parameterized-builds:
           - project: "ci-gating-tests"
@@ -235,25 +250,24 @@
           timeout: 1200
           fail: true
           type: absolute
-
     parameters:
       - validating-string:
-          description: The git short hash for the commit you wish to test
           name: SHORT_GIT_COMMIT
+          description: The git short hash for the commit you wish to test
           regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
       - string:
+          name: series
           default: ""
           description: "Series to use with charms in the functional tests"
-          name: series
       - string:
+          name: BOOTSTRAP_SERIES
           default: ''
           description: 'Ubuntu series to use when bootstrapping Juju'
-          name: BOOTSTRAP_SERIES
       - string:
+          name: GOVERSION
           default: ''
           description: 'Go version used for build.'
-          name: GOVERSION
     builders:
       - get-build-details
       - set-test-description
@@ -296,24 +310,37 @@
           fail: true
           timeout: 240 # Might have to queue for nodes, give some flex
           type: absolute
+      - credentials-binding:
+          - ssh-user-private-key:
+              credential-id: github-pull-ssh-key
+              key-file-variable: GITHUB_SSH_KEY
     parameters:
+      - string:
+          name: GITHUB_REPO
+          default: ""
+          description: "Specifc github repo to pull from."
       - string:
           name: GITHUB_BRANCH_HEAD_SHA
           default: ""
           description: "Specific git SHA to package."
       - string:
-          default: ''
-          description: 'Go version used for build.'
           name: GOVERSION
+          default: ""
+          description: 'Go version used for build.'
+      - string:
+          name: JUJU_BUILD_NUMBER
+          default: ""
+          description: "Juju build number."
     builders:
       - install-go
       - inject:
           properties-content: |-
             JUJU_SOURCE_CHECKOUT=${{WORKSPACE}}/tmp_initial_clone
       - shell: |-
+          export GIT_SSH_COMMAND="ssh -o IdentitiesOnly=yes -i $GITHUB_SSH_KEY -F /dev/null"
           git init "$JUJU_SOURCE_CHECKOUT"
           cd "$JUJU_SOURCE_CHECKOUT"
-          git remote add origin "https://github.com/juju/juju.git"
+          git remote add origin "git@github.com:$GITHUB_REPO.git"
           git config --local gc.auto 0
           git fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin "+$GITHUB_BRANCH_HEAD_SHA"
           git checkout --progress --force $GITHUB_BRANCH_HEAD_SHA

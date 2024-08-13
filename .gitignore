@@ -26,3 +26,6 @@ venv.bak/
 
 .DS_Store
 .vscode
+
+*.private.yml
+*.private.yaml
