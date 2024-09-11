@@ -82,6 +82,10 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: 'test-authorized_keys-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: 'test-backup-multijob'
               current-parameters: true
               predefined-parameters: |-

@@ -289,6 +289,9 @@ func writeJobDefinitions(
 		if introduced, ok := config.Folders.Introduced[suiteName+"-"+task]; ok {
 			minVersions[suiteName+"-"+task] = minVersionRegex[introduced]
 		}
+		if introduced, ok := config.Folders.Introduced[suiteName+"-*"]; ok {
+			minVersions[suiteName+"-"+task] = minVersionRegex[introduced]
+		}
 	}
 
 	if err := t.Execute(f, struct {
@@ -493,6 +496,7 @@ const Template = `
 - job:
     name: {{$full_task_name}}
     node: {{$run_on}}
+    concurrent: true
     description: |-
     {{- if eq (len $node.SkipTasks) 1 }}
       Test {{$.SuiteName}} suite on {{$cloud.Name}}

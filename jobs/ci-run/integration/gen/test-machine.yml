@@ -40,6 +40,7 @@
 - job:
     name: test-machine-test-logs-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test machine suite on aws
     parameters:
@@ -112,6 +113,7 @@
 - job:
     name: test-machine-test-logs-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test machine suite on lxd
     parameters:

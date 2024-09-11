@@ -38,6 +38,7 @@
 - job:
     name: test-deploy_caas-test-deploy-charm-microk8s
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test deploy_caas suite on microk8s
     parameters:

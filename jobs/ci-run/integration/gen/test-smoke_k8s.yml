@@ -38,6 +38,7 @@
 - job:
     name: test-smoke_k8s-test-deploy-microk8s
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test smoke_k8s suite on microk8s
     parameters:
