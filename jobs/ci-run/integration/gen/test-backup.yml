@@ -40,6 +40,7 @@
 - job:
     name: test-backup-test-basic-backup-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test backup suite on aws
     parameters:
@@ -112,6 +113,7 @@
 - job:
     name: test-backup-test-basic-backup-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test backup suite on lxd
     parameters:

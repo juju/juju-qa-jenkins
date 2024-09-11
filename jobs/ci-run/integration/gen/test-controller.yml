@@ -52,6 +52,7 @@
 - job:
     name: test-controller-test-enable-ha-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_enable_ha in controller suite on aws
     parameters:
@@ -124,6 +125,7 @@
 - job:
     name: test-controller-test-enable-ha-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_enable_ha in controller suite on lxd
     parameters:
@@ -192,6 +194,7 @@
 - job:
     name: test-controller-test-metrics-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_metrics in controller suite on aws
     parameters:
@@ -264,6 +267,7 @@
 - job:
     name: test-controller-test-metrics-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_metrics in controller suite on lxd
     parameters:
@@ -332,6 +336,7 @@
 - job:
     name: test-controller-test-mongo-memory-profile-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_mongo_memory_profile in controller suite on aws
     parameters:
@@ -404,6 +409,7 @@
 - job:
     name: test-controller-test-mongo-memory-profile-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_mongo_memory_profile in controller suite on lxd
     parameters:
@@ -472,6 +478,7 @@
 - job:
     name: test-controller-test-query-tracing-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_query_tracing in controller suite on aws
     parameters:
@@ -550,6 +557,7 @@
 - job:
     name: test-controller-test-query-tracing-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_query_tracing in controller suite on lxd
     parameters:

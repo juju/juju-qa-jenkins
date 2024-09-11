@@ -40,6 +40,7 @@
 - job:
     name: test-controllercharm-test-prometheus-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test controllercharm suite on lxd
     parameters:
@@ -114,6 +115,7 @@
 - job:
     name: test-controllercharm-test-prometheus-microk8s
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test controllercharm suite on microk8s
     parameters:

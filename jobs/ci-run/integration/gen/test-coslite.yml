@@ -38,6 +38,7 @@
 - job:
     name: test-coslite-test-deploy-coslite-microk8s
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test coslite suite on microk8s
     parameters:

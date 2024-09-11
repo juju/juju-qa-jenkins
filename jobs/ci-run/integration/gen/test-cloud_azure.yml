@@ -38,6 +38,7 @@
 - job:
     name: test-cloud_azure-test-managed-identity-azure
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test cloud_azure suite on azure
     parameters:

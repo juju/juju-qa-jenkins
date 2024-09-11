@@ -40,6 +40,7 @@
 - job:
     name: test-agents-test-charmrevisionupdater-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test agents suite on aws
     parameters:
@@ -112,6 +113,7 @@
 - job:
     name: test-agents-test-charmrevisionupdater-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test agents suite on lxd
     parameters:

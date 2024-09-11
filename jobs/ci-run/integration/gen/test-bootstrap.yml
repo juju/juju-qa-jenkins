@@ -38,6 +38,7 @@
 - job:
     name: test-bootstrap-test-bootstrap-simplestream-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test bootstrap suite on lxd
     parameters:
