@@ -42,6 +42,7 @@
 - job:
     name: test-spaces_ec2-test-juju-bind-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_juju_bind in spaces_ec2 suite on aws
     parameters:
@@ -114,6 +115,7 @@
 - job:
     name: test-spaces_ec2-test-machines-in-spaces-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_machines_in_spaces in spaces_ec2 suite on aws
     parameters:
@@ -186,6 +188,7 @@
 - job:
     name: test-spaces_ec2-test-upgrade-charm-with-bind-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_upgrade_charm_with_bind in spaces_ec2 suite on aws
     parameters:

@@ -44,6 +44,7 @@
 - job:
     name: test-refresh-test-basic-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_basic in refresh suite on aws
     parameters:
@@ -116,6 +117,7 @@
 - job:
     name: test-refresh-test-basic-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_basic in refresh suite on lxd
     parameters:
@@ -184,6 +186,7 @@
 - job:
     name: test-refresh-test-switch-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_switch in refresh suite on aws
     parameters:
@@ -256,6 +259,7 @@
 - job:
     name: test-refresh-test-switch-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_switch in refresh suite on lxd
     parameters:

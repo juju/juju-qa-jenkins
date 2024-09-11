@@ -38,6 +38,7 @@
 - job:
     name: test-upgrade-test-upgrade-simplestream-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test upgrade suite on lxd
     parameters:

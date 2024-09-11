@@ -40,6 +40,7 @@
 - job:
     name: test-appdata-test-appdata-int-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test appdata suite on aws
     parameters:
@@ -112,6 +113,7 @@
 - job:
     name: test-appdata-test-appdata-int-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test appdata suite on lxd
     parameters:

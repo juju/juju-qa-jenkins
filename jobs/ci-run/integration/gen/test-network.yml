@@ -44,6 +44,7 @@
 - job:
     name: test-network-test-network-health-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test network suite on aws
     parameters:
@@ -116,6 +117,7 @@
 - job:
     name: test-network-test-network-health-azure
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test network suite on azure
     parameters:
@@ -188,6 +190,7 @@
 - job:
     name: test-network-test-network-health-google
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test network suite on google
     parameters:
@@ -260,6 +263,7 @@
 - job:
     name: test-network-test-network-health-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test network suite on lxd
     parameters:

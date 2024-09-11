@@ -44,6 +44,7 @@
 - job:
     name: test-actions-test-actions-params-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test actions suite on aws
     parameters:
@@ -122,6 +123,7 @@
 - job:
     name: test-actions-test-actions-params-azure
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test actions suite on azure
     parameters:
@@ -200,6 +202,7 @@
 - job:
     name: test-actions-test-actions-params-google
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test actions suite on google
     parameters:
@@ -278,6 +281,7 @@
 - job:
     name: test-actions-test-actions-params-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test actions suite on lxd
     parameters:
