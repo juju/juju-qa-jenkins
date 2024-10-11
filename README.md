@@ -2,11 +2,36 @@
 
 The collection of jobs found in this repository make up the CI Run project.
 CI Runs' aim is, when triggered by a commit to the juju repository is to:
-  - Create s tarball snapshot of the codebase
+  - Create a tarball snapshot of the codebase
   - Build binaries (for use in testing and as agents)
   - Update the testing streams
   - Run the unit tests
-  - Run the suite of functional tests
+  - Run the suite of integration tests
+
+The integration tests themselves are not in this repo, they are in
+`github.com/juju/juju/tests/suites`. This repo contains the informaion Jekins
+needs to run the tests.
+## Changing the tests
+
+To change which clouds and which versions the tests run on, edit
+`./tools/gen-wire-tests/juju.config`. To change which tests are run,
+edit `./jobs/ci-run/integration/integrationtests.yml`.
+
+To build the job descriptions run:
+```
+JUJU_REPO_PATH="<juju-repo-on-branch-to-generate-jobs-from>" make gen-wire-tests
+```
+
+## Uploading to Jenkins
+
+To push, you need to be on the Canonical VPN. Check that everything is working with:
+```bash
+make push-test
+```
+And push to https://jenkins.juju.canonical.com/ with:
+```bash
+make push
+```
 
 ## Run on Noble 24.04
 

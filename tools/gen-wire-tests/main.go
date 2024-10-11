@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -106,11 +107,13 @@ func main() {
 			log.Fatal("unable to create output dir", outputDir)
 		}
 	} else {
-		log.Println("Warning: Output Directory already exists. It may overwrite files!")
+		log.Printf("Warning: Output directory %q already exists. It may overwrite files!\n", outputDir)
 		// Remove all yaml files so that git can track deleted files as well as new ones.
 		outFiles, err := outDir.Readdirnames(0)
 		if err != nil {
-			log.Fatalf("unable to read output dir files: %v", err)
+			log.Println("")
+			log.Fatalf("unable to read output dir files: %v\n "+
+				"If you are having an issue reading from stdin, check your terminal is not part of a strictly confined snap (e.g. an built-in IDE terminal)", err)
 		}
 		for _, f := range outFiles {
 			if !strings.HasSuffix(f, ".yml") {
@@ -123,13 +126,13 @@ func main() {
 	}
 
 	reader := bufio.NewReader(os.Stdin)
-	bytes, err := ioutil.ReadAll(reader)
+	bytes, err := io.ReadAll(reader)
 	if err != nil {
-		log.Fatal("unexpected config", err)
+		log.Fatal("unexpected config: ", err)
 	}
 	var config Config
 	if err := yaml.Unmarshal(bytes, &config); err != nil {
-		log.Fatal("config parse error", err)
+		log.Fatal("config parse error: ", err)
 	}
 
 	dirs, err := ioutil.ReadDir(inputDir)
