@@ -139,7 +139,7 @@
 
 - job:
     name: build-jujud-operator
-    node: ephemeral-noble-8c-32g-amd64
+    node: ephemeral-noble-16c-64g-amd64
     description: Build juju docker image for caas operator on all platforms.
     wrappers:
       - ansicolor
@@ -147,7 +147,7 @@
       - timestamps
       - timeout:
           fail: true
-          timeout: 20
+          timeout: 45
           type: absolute
     parameters:
       - validating-string:
