@@ -74,6 +74,12 @@
           current-parameters: true
         - name: 'test-model-test-model-migration-version-lxd'
           current-parameters: true
+        - name: 'test-model-test-model-multi-aws'
+          current-parameters: true
+        - name: 'test-model-test-model-multi-google'
+          current-parameters: true
+        - name: 'test-model-test-model-multi-lxd'
+          current-parameters: true
         - name: 'test-model-test-model-status-aws'
           current-parameters: true
         - name: 'test-model-test-model-status-google'
