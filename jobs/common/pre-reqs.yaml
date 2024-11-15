@@ -80,14 +80,6 @@
         !include-raw-verbatim: "scripts/install-go.sh"
 
 - builder:
-    name: install-charmcraft
-    builders:
-    - shell: |-
-        #!/bin/bash
-        set -ex
-        sudo snap install charmcraft --classic --channel=latest/stable
-
-- builder:
     name: install-microk8s
     builders:
     - shell: |-

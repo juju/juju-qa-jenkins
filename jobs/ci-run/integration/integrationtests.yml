@@ -1,44 +1,4 @@
 - job:
-    name: "integration-tests"
-    project-type: "multijob"
-    description: "Run integration tests"
-    condition: SUCCESSFUL
-    node: noop-parent-jobs
-    concurrent: true
-    wrappers:
-      - ansicolor
-      - workspace-cleanup
-      - timestamps
-      - timeout:
-          timeout: 300
-          fail: true
-          type: absolute
-    parameters:
-      - string:
-          default: ""
-          description: "Enable sub job to be run individually."
-          name: SHORT_GIT_COMMIT
-      - string:
-          default: ""
-          description: "Series to use with charms in the integration tests"
-          name: series
-      - string:
-          default: ''
-          description: 'Ubuntu series to use when bootstrapping Juju'
-          name: BOOTSTRAP_SERIES
-    builders:
-      - get-build-details
-      - set-test-description
-      - multijob:
-          name: IntegrationTests
-          projects:
-          - name: gating-integration-tests-amd64
-            current-parameters: true
-          - name: proving-grounds-integration-tests-amd64
-            current-parameters: true
-
-
-- job:
     name: "gating-integration-tests-amd64"
     project-type: "multijob"
     description: |-
@@ -150,6 +110,10 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: 'test-deploy_caas-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: 'test-firewall-multijob'
               current-parameters: true
               predefined-parameters: |-
@@ -159,6 +123,10 @@
               predefined-parameters: |-
                 BUILD_ARCH=amd64
             - name: 'test-hooktools-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: 'test-kubeflow-multijob'
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
@@ -235,58 +203,7 @@
               predefined-parameters: |-
                 BUILD_ARCH=amd64
 
-- job:
-    name: proving-grounds-integration-tests-amd64
-    project-type: "multijob"
-    description: |-
-      intergration-amd64 runs the new shell integration tests.
-    node: noop-parent-jobs
-    concurrent: true
-    wrappers:
-      - default-integration-test-wrapper
-    parameters:
-      - string:
-          default: ""
-          description: "Enable sub job to be run individually."
-          name: SHORT_GIT_COMMIT
-      - string:
-          default: ""
-          description: "Series to use with charms in the integration tests"
-          name: series
-      - string:
-          default: ''
-          description: 'Ubuntu series to use when bootstrapping Juju'
-          name: BOOTSTRAP_SERIES
-    builders:
-      - get-build-details
-      - set-test-description
-      - shell: |-
-          echo "BUILD_ARCH=amd64" > build.properties
-      - inject:
-          properties-file: build.properties
-      - multijob:
-          name: proving-grounds-integration-tests-amd64
-          projects:
-            - name: 'test-deploy-unstable-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-            - name: 'test-deploy_caas-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-            - name: 'test-kubeflow'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-            - name: 'test-magma-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
-            - name: 'test-model-unstable-multijob'
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
+
 - job:
     name: "gating-integration-tests-arm64"
     project-type: "multijob"

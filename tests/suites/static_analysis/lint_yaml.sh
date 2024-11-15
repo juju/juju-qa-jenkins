@@ -45,8 +45,6 @@ jobs:
     - ci-trigger-github-com-juju-juju
     - ci-build-juju
     - ci-gating-tests
-    - ci-proving-ground-tests
-    - ci-proving-ground-tests-once-daily
     - clean-lxd-environments
     - clean-maas-environments
     - clean-workspaces
@@ -79,11 +77,6 @@ jobs:
     - gating-functional-tests-ppc64el
     - test-refresh-multijob
     - build-jujud-operator-test
-    # TODO (stickupkid): The followng jobs seem to be orphan jobs with in the
-    # jenkins suite. We should clean them up to ensure that they do run, or
-    # are removed.
-    - integration-tests
-    - test-controllercharm-multijob
 EOF
 	)
 	if [ -n "${OUT}" ]; then
@@ -115,14 +108,12 @@ jobs:
     - github-juju-merge-jobs-{branch_name}:github-juju-merge-jobs
     - github-juju-pylibjuju-jobs:github-juju-pylibjuju-jobs
     - github-juju-check-jobs:github-juju-check-jobs
-    - ci-proving-ground-tests:CI ProvingGrounds Tests
     - test-bootstrap-multijob:IntegrationTests-bootstrap
     - test-coslite-multijob:IntegrationTests-cloud_azure
     - test-coslite-multijob:IntegrationTests-coslite
     - test-deploy_aks-multijob:IntegrationTests-deploy_aks
     - test-deploy_caas-multijob:IntegrationTests-deploy_caas
     - test-expose_ec2-multijob:IntegrationTests-expose_ec2
-    - test-magma-multijob:IntegrationTests-magma
     - test-upgrade-multijob:IntegrationTests-upgrade
     - test-upgrade_series-multijob:IntegrationTests-upgrade_series
     - test-secrets_k8s-multijob:IntegrationTests-secrets_k8s
