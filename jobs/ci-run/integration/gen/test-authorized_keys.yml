@@ -68,6 +68,7 @@
 - job:
     name: test-authorized_keys-test-bootstrap-authorized-keys-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_bootstrap_authorized_keys in authorized_keys suite on aws
     parameters:
@@ -146,6 +147,7 @@
 - job:
     name: test-authorized_keys-test-bootstrap-authorized-keys-azure
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_bootstrap_authorized_keys in authorized_keys suite on azure
     parameters:
@@ -224,6 +226,7 @@
 - job:
     name: test-authorized_keys-test-bootstrap-authorized-keys-google
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_bootstrap_authorized_keys in authorized_keys suite on google
     parameters:
@@ -302,6 +305,7 @@
 - job:
     name: test-authorized_keys-test-bootstrap-authorized-keys-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_bootstrap_authorized_keys in authorized_keys suite on lxd
     parameters:
@@ -376,6 +380,7 @@
 - job:
     name: test-authorized_keys-test-machine-ssh-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_machine_ssh in authorized_keys suite on aws
     parameters:
@@ -437,17 +442,24 @@
       - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'authorized_keys'
-            setup_steps: ''
-            task_name: 'test_machine_ssh'
-            skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'authorized_keys'
+                  setup_steps: ''
+                  task_name: 'test_machine_ssh'
+                  skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
     publishers:
       - integration-artifacts
 
 - job:
     name: test-authorized_keys-test-machine-ssh-azure
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_machine_ssh in authorized_keys suite on azure
     parameters:
@@ -509,17 +521,24 @@
       - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'authorized_keys'
-            setup_steps: ''
-            task_name: 'test_machine_ssh'
-            skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'authorized_keys'
+                  setup_steps: ''
+                  task_name: 'test_machine_ssh'
+                  skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
     publishers:
       - integration-artifacts
 
 - job:
     name: test-authorized_keys-test-machine-ssh-google
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_machine_ssh in authorized_keys suite on google
     parameters:
@@ -581,17 +600,24 @@
       - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'authorized_keys'
-            setup_steps: ''
-            task_name: 'test_machine_ssh'
-            skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'authorized_keys'
+                  setup_steps: ''
+                  task_name: 'test_machine_ssh'
+                  skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
     publishers:
       - integration-artifacts
 
 - job:
     name: test-authorized_keys-test-machine-ssh-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_machine_ssh in authorized_keys suite on lxd
     parameters:
@@ -649,17 +675,24 @@
       - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'authorized_keys'
-            setup_steps: ''
-            task_name: 'test_machine_ssh'
-            skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'authorized_keys'
+                  setup_steps: ''
+                  task_name: 'test_machine_ssh'
+                  skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
     publishers:
       - integration-artifacts
 
 - job:
     name: test-authorized_keys-test-migrate-authorized-keys-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_migrate_authorized_keys in authorized_keys suite on aws
     parameters:
@@ -738,6 +771,7 @@
 - job:
     name: test-authorized_keys-test-migrate-authorized-keys-azure
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_migrate_authorized_keys in authorized_keys suite on azure
     parameters:
@@ -816,6 +850,7 @@
 - job:
     name: test-authorized_keys-test-migrate-authorized-keys-google
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_migrate_authorized_keys in authorized_keys suite on google
     parameters:
@@ -894,6 +929,7 @@
 - job:
     name: test-authorized_keys-test-migrate-authorized-keys-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_migrate_authorized_keys in authorized_keys suite on lxd
     parameters:
@@ -968,6 +1004,7 @@
 - job:
     name: test-authorized_keys-test-user-ssh-keys-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_user_ssh_keys in authorized_keys suite on aws
     parameters:
@@ -1029,17 +1066,24 @@
       - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'authorized_keys'
-            setup_steps: ''
-            task_name: 'test_user_ssh_keys'
-            skip_tasks: 'test_bootstrap_authorized_keys,test_machine_ssh,test_migrate_authorized_keys'
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'authorized_keys'
+                  setup_steps: ''
+                  task_name: 'test_user_ssh_keys'
+                  skip_tasks: 'test_bootstrap_authorized_keys,test_machine_ssh,test_migrate_authorized_keys'
     publishers:
       - integration-artifacts
 
 - job:
     name: test-authorized_keys-test-user-ssh-keys-azure
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_user_ssh_keys in authorized_keys suite on azure
     parameters:
@@ -1101,17 +1145,24 @@
       - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'authorized_keys'
-            setup_steps: ''
-            task_name: 'test_user_ssh_keys'
-            skip_tasks: 'test_bootstrap_authorized_keys,test_machine_ssh,test_migrate_authorized_keys'
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'authorized_keys'
+                  setup_steps: ''
+                  task_name: 'test_user_ssh_keys'
+                  skip_tasks: 'test_bootstrap_authorized_keys,test_machine_ssh,test_migrate_authorized_keys'
     publishers:
       - integration-artifacts
 
 - job:
     name: test-authorized_keys-test-user-ssh-keys-google
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_user_ssh_keys in authorized_keys suite on google
     parameters:
@@ -1173,17 +1224,24 @@
       - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'authorized_keys'
-            setup_steps: ''
-            task_name: 'test_user_ssh_keys'
-            skip_tasks: 'test_bootstrap_authorized_keys,test_machine_ssh,test_migrate_authorized_keys'
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'authorized_keys'
+                  setup_steps: ''
+                  task_name: 'test_user_ssh_keys'
+                  skip_tasks: 'test_bootstrap_authorized_keys,test_machine_ssh,test_migrate_authorized_keys'
     publishers:
       - integration-artifacts
 
 - job:
     name: test-authorized_keys-test-user-ssh-keys-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_user_ssh_keys in authorized_keys suite on lxd
     parameters:
@@ -1241,10 +1299,16 @@
       - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'authorized_keys'
-            setup_steps: ''
-            task_name: 'test_user_ssh_keys'
-            skip_tasks: 'test_bootstrap_authorized_keys,test_machine_ssh,test_migrate_authorized_keys'
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'authorized_keys'
+                  setup_steps: ''
+                  task_name: 'test_user_ssh_keys'
+                  skip_tasks: 'test_bootstrap_authorized_keys,test_machine_ssh,test_migrate_authorized_keys'
     publishers:
       - integration-artifacts

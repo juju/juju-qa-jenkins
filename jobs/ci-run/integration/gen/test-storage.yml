@@ -40,6 +40,7 @@
 - job:
     name: test-storage-test-charm-storage-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_charm_storage in storage suite on aws
     parameters:
@@ -112,6 +113,7 @@
 - job:
     name: test-storage-test-persistent-storage-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_persistent_storage in storage suite on aws
     parameters:

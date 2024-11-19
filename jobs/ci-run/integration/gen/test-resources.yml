@@ -44,6 +44,7 @@
 - job:
     name: test-resources-test-basic-resources-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_basic_resources in resources suite on aws
     parameters:
@@ -116,6 +117,7 @@
 - job:
     name: test-resources-test-basic-resources-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_basic_resources in resources suite on lxd
     parameters:
@@ -184,6 +186,7 @@
 - job:
     name: test-resources-test-upgrade-resources-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_upgrade_resources in resources suite on aws
     parameters:
@@ -256,6 +259,7 @@
 - job:
     name: test-resources-test-upgrade-resources-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_upgrade_resources in resources suite on lxd
     parameters:

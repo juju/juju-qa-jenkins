@@ -42,6 +42,7 @@
 - job:
     name: test-firewall-test-bundle-with-exposed-endpoints-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_bundle_with_exposed_endpoints in firewall suite on aws
     parameters:
@@ -114,6 +115,7 @@
 - job:
     name: test-firewall-test-expose-app-ec2-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_expose_app_ec2 in firewall suite on aws
     parameters:
@@ -186,6 +188,7 @@
 - job:
     name: test-firewall-test-firewall-ssh-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_firewall_ssh in firewall suite on aws
     parameters:

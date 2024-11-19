@@ -40,6 +40,7 @@
 - job:
     name: test-hooktools-test-state-hook-tools-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test hooktools suite on aws
     parameters:
@@ -112,6 +113,7 @@
 - job:
     name: test-hooktools-test-state-hook-tools-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test hooktools suite on lxd
     parameters:

@@ -40,6 +40,7 @@
 - job:
     name: test-dashboard-test-dashboard-deploy-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test dashboard suite on aws
     parameters:
@@ -118,6 +119,7 @@
 - job:
     name: test-dashboard-test-dashboard-deploy-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test dashboard suite on lxd
     parameters:

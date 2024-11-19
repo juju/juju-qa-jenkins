@@ -44,6 +44,7 @@
 - job:
     name: test-manual-test-deploy-manual-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_deploy_manual in manual suite on aws
     parameters:
@@ -116,6 +117,7 @@
 - job:
     name: test-manual-test-deploy-manual-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_deploy_manual in manual suite on lxd
     parameters:
@@ -184,6 +186,7 @@
 - job:
     name: test-manual-test-spaces-manual-aws
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test test_spaces_manual in manual suite on aws
     parameters:
@@ -256,6 +259,7 @@
 - job:
     name: test-manual-test-spaces-manual-lxd
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_spaces_manual in manual suite on lxd
     parameters:

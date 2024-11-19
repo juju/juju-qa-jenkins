@@ -38,6 +38,7 @@
 - job:
     name: test-deploy_aks-test-deploy-aks-charms-azure
     node: ephemeral-noble-small-amd64
+    concurrent: true
     description: |-
       Test deploy_aks suite on azure
     parameters:

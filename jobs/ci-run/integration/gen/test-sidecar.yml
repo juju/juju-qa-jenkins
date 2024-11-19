@@ -46,6 +46,7 @@
 - job:
     name: test-sidecar-test-deploy-and-force-remove-application-microk8s
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_deploy_and_force_remove_application in sidecar suite on microk8s
     parameters:
@@ -114,6 +115,7 @@
 - job:
     name: test-sidecar-test-deploy-and-remove-application-microk8s
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_deploy_and_remove_application in sidecar suite on microk8s
     parameters:
@@ -182,6 +184,7 @@
 - job:
     name: test-sidecar-test-pebble-checks-microk8s
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_pebble_checks in sidecar suite on microk8s
     parameters:
@@ -239,17 +242,24 @@
       - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test-microk8s:
-            test_name: 'sidecar'
-            setup_steps: ''
-            task_name: 'test_pebble_checks'
-            skip_tasks: 'test_deploy_and_force_remove_application,test_deploy_and_remove_application,test_pebble_notices,test_rootless'
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                  test_name: 'sidecar'
+                  setup_steps: ''
+                  task_name: 'test_pebble_checks'
+                  skip_tasks: 'test_deploy_and_force_remove_application,test_deploy_and_remove_application,test_pebble_notices,test_rootless'
     publishers:
       - integration-artifacts
 
 - job:
     name: test-sidecar-test-pebble-notices-microk8s
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_pebble_notices in sidecar suite on microk8s
     parameters:
@@ -324,6 +334,7 @@
 - job:
     name: test-sidecar-test-rootless-microk8s
     node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
     description: |-
       Test test_rootless in sidecar suite on microk8s
     parameters:
@@ -381,10 +392,16 @@
       - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
-      - run-integration-test-microk8s:
-            test_name: 'sidecar'
-            setup_steps: ''
-            task_name: 'test_rootless'
-            skip_tasks: 'test_deploy_and_force_remove_application,test_deploy_and_remove_application,test_pebble_checks,test_pebble_notices'
+      - conditional-step:
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                  test_name: 'sidecar'
+                  setup_steps: ''
+                  task_name: 'test_rootless'
+                  skip_tasks: 'test_deploy_and_force_remove_application,test_deploy_and_remove_application,test_pebble_checks,test_pebble_notices'
     publishers:
       - integration-artifacts
