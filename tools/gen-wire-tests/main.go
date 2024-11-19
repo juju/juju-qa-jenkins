@@ -21,26 +21,26 @@ import (
 // Config represents the different ways to config the linter
 type Config struct {
 	Folders struct {
-		Skip         []string                       `yaml:"skip-all"`
-		SkipLXD      []string                       `yaml:"skip-lxd"`
-		SkipAWS      []string                       `yaml:"skip-aws"`
-		SkipGoogle   []string                       `yaml:"skip-google"`
-		SkipAzure    []string                       `yaml:"skip-azure"`
-		SkipMicrok8s []string                       `yaml:"skip-microk8s"`
-		SkipSubTasks []string                       `yaml:"skip-subtasks"`
-		PreventSplit []string                       `yaml:"prevent-split"`
-		Ephemeral    []string                       `yaml:"ephemeral"`
-		CrossCloud   []string                       `yaml:"cross-cloud"`
-		Timeout      map[string]map[string]int      `yaml:"timeout"`
-		Introduced   map[string]string              `yaml:"introduced"`
+		Skip         []string                  `yaml:"skip-all"`
+		SkipLXD      []string                  `yaml:"skip-lxd"`
+		SkipAWS      []string                  `yaml:"skip-aws"`
+		SkipGoogle   []string                  `yaml:"skip-google"`
+		SkipAzure    []string                  `yaml:"skip-azure"`
+		SkipMicrok8s []string                  `yaml:"skip-microk8s"`
+		SkipSubTasks []string                  `yaml:"skip-subtasks"`
+		PreventSplit []string                  `yaml:"prevent-split"`
+		Ephemeral    []string                  `yaml:"ephemeral"`
+		CrossCloud   []string                  `yaml:"cross-cloud"`
+		Timeout      map[string]map[string]int `yaml:"timeout"`
+		Introduced   map[string]string         `yaml:"introduced"`
 	}
 }
 
 type Task struct {
-	Clouds                   []Cloud
-	SubTasks                 []string
-	ExcludedTasks            []string
-	Timeout                  map[string]int
+	Clouds        []Cloud
+	SubTasks      []string
+	ExcludedTasks []string
+	Timeout       map[string]int
 }
 
 type Cloud struct {
@@ -180,10 +180,10 @@ func main() {
 		}
 
 		testSuites[suiteName] = Task{
-			Clouds:                   clouds,
-			SubTasks:                 taskNames,
-			ExcludedTasks:            excluded,
-			Timeout:                  config.Folders.Timeout[suiteName],
+			Clouds:        clouds,
+			SubTasks:      taskNames,
+			ExcludedTasks: excluded,
+			Timeout:       config.Folders.Timeout[suiteName],
 		}
 	}
 
@@ -443,6 +443,7 @@ const Template = `
     builders:
     - get-build-details
     - set-test-description
+{{- if gt (len $node.TaskNames) 0 }}
     - multijob:
         name: 'IntegrationTests-{{.SuiteName}}'
         projects:
@@ -451,6 +452,7 @@ const Template = `
     {{- $task_name := index $node.TaskNames $k}}
         - name: 'test-{{$.SuiteName}}-{{ensureHyphen $task_name}}-{{$cloud.Name}}'
           current-parameters: true
+{{- end}}
 {{- end}}
 {{- end}}
 

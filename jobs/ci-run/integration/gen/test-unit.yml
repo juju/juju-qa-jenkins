@@ -29,6 +29,3 @@
     builders:
     - get-build-details
     - set-test-description
-    - multijob:
-        name: 'IntegrationTests-unit'
-        projects:
