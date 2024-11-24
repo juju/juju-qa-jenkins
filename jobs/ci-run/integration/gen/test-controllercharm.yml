@@ -99,6 +99,9 @@
       - wait-for-cloud-init
       - prepare-integration-test
       - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
           condition-kind: regex-match
           regex: "^[4-9].*|^3\\.([3-9]|\\d{{2,}})(\\.|-).*"
           label: "${{JUJU_VERSION}}"
@@ -174,6 +177,9 @@
       - wait-for-cloud-init
       - prepare-integration-test
       - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
           condition-kind: regex-match
           regex: "^[4-9].*|^3\\.([3-9]|\\d{{2,}})(\\.|-).*"
           label: "${{JUJU_VERSION}}"
