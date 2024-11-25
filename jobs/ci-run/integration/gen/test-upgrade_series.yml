@@ -29,3 +29,88 @@
     builders:
     - get-build-details
     - set-test-description
+    - multijob:
+        name: 'IntegrationTests-upgrade_series'
+        projects:
+        - name: 'test-upgrade_series-test-upgrade-series-relation-lxd'
+          current-parameters: true
+
+- job:
+    name: test-upgrade_series-test-upgrade-series-relation-lxd
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test upgrade_series suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'localhost'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - select-oci-registry
+      - wait-for-cloud-init
+      - prepare-integration-test
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                test_name: 'upgrade_series'
+                setup_steps: ''
+                task_name: ''
+                skip_tasks: ''
+    publishers:
+      - integration-artifacts

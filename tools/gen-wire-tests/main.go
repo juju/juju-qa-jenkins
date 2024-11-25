@@ -2,18 +2,18 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"regexp"
 	"sort"
 	"strings"
 	"text/template"
 
+	"github.com/schollz/progressbar/v3"
 	"gopkg.in/yaml.v2"
 	"mvdan.cc/sh/v3/syntax"
 )
@@ -33,6 +33,7 @@ type Config struct {
 		CrossCloud   []string                  `yaml:"cross-cloud"`
 		Timeout      map[string]map[string]int `yaml:"timeout"`
 		Introduced   map[string]string         `yaml:"introduced"`
+		Removed      map[string]string         `yaml:"removed"`
 	}
 }
 
@@ -77,28 +78,28 @@ var minVersionRegex = map[string]string{
 	"4.0": "^[5-9].*|^4\\\\.([0-9]|\\\\d{{2,}})(\\\\.|-).*",
 }
 
+// Override tests if testing on personal branches.
+const (
+	v4BranchName = "main"
+	v3BranchName = "3.6"
+	repoOrg      = "juju"
+)
+
 // Gen-wire-tests will generate the integration test files for the juju
 // integration tests. This will help prevent wire up mistakes or any missing
 // test suite tests.
 //
 // It expects two arguments to be passed in:
-// - inputDir: the juju test suite location
 // - outputDir: the location of the new jenkins config files
 //
 // Additionally it expects a config file passed in via stdin, this allows the
 // configuration of the gen-wire-tests. In reality it allows the skipping of
 // folders that are custom and don't follow the generic setup.
 func main() {
-	if len(os.Args) < 3 {
+	if len(os.Args) < 1 {
 		log.Fatal("expected directory argument only.")
 	}
-	inputDir := os.Args[1]
-	outputDir := os.Args[2]
-	trackingBranch := os.Args[3]
-
-	if !isTrackingBranch(inputDir, trackingBranch) {
-		log.Fatalf("not on the tracking branch %q, or not update to date with HEAD", trackingBranch)
-	}
+	outputDir := os.Args[1]
 
 	if outDir, err := os.Open(outputDir); os.IsNotExist(err) {
 		if err := os.MkdirAll(outputDir, os.ModePerm); err != nil {
@@ -133,15 +134,125 @@ func main() {
 		log.Fatal("config parse error: ", err)
 	}
 
-	dirs, err := ioutil.ReadDir(inputDir)
-	if err != nil {
-		log.Fatalf("unable to get listing dir %q with error %v", inputDir, err)
+	v4fourSuiteInfo := fetchSuitesFromRepo(v4BranchName)
+
+	// Create progress bar ASAP with known info.
+	pb := progressbar.NewOptions(2*len(v4fourSuiteInfo),
+		progressbar.OptionUseANSICodes(false),
+		progressbar.OptionSetTheme(progressbar.ThemeASCII),
+		progressbar.OptionShowElapsedTimeOnFinish(),
+		progressbar.OptionSetWidth(50),
+		progressbar.OptionSetDescription("Reading test suites..."),
+		progressbar.OptionSetTheme(progressbar.Theme{
+			Saucer:        "=",
+			SaucerHead:    ">",
+			SaucerPadding: " ",
+			BarStart:      "[",
+			BarEnd:        "]",
+		}))
+
+	v3SuiteInfo := fetchSuitesFromRepo(v3BranchName)
+
+	v4Tests := fetchTestsFromRepo(pb, config, v4fourSuiteInfo)
+	v3Tests := fetchTestsFromRepo(pb, config, v3SuiteInfo)
+
+	// Finish the progress bar.
+	_ = pb.Exit()
+	fmt.Println()
+
+	funcMap := map[string]interface{}{
+		"ensureHyphen": func(s string) string {
+			return strings.ReplaceAll(s, "_", "-")
+		},
+		"contains": func(arr []string, s string) bool {
+			for _, v := range arr {
+				if s == v {
+					return true
+				}
+			}
+			return false
+		},
+	}
+	t := template.Must(template.New("integration").Funcs(funcMap).Parse(Template))
+
+	allTests := make(map[string]Task)
+	for suiteName, task := range v3Tests {
+		allTests[suiteName] = task
+		if _, ok := v4Tests[suiteName]; !ok {
+			config.Folders.Removed[suiteName] = "4.0"
+		}
+	}
+	for suiteName, task := range v4Tests {
+		allTests[suiteName] = task
 	}
 
+	for suiteName, task := range allTests {
+		writeJobDefinitions(t, config, outputDir, task, suiteName)
+	}
+}
+
+type ghObject struct {
+	Name        string `json:"name"`
+	Path        string `json:"path"`
+	Type        string `json:"type"`
+	URL         string `json:"url"`
+	DownloadURL string `json:"download_url"`
+}
+
+func fetchGithubObjects(url string) ([]ghObject, error) {
+	client := http.DefaultClient
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("Accept", "application/vnd.github+json")
+	token := os.Getenv("GH_TOKEN")
+	if token != "" {
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatalf("unable to fetch URL %q: %v", url, err)
+	}
+	if resp.StatusCode != 200 {
+		log.Fatalf("unable to fetch URL %q; status code %d", url, resp.StatusCode)
+	}
+	defer resp.Body.Close()
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalf("unable to get URL %q content: %v", url, err)
+	}
+	var ghObjects []ghObject
+	err = json.Unmarshal(data, &ghObjects)
+	if err != nil {
+		log.Fatalf("unable to unmarshal URL %q content: %v", url, err)
+	}
+	return ghObjects, nil
+}
+
+func fetchSuitesFromRepo(branch string) []ghObject {
+	url := fmt.Sprintf("https://api.github.com/repos/%s/juju/contents/tests/suites?ref=%s", repoOrg, branch)
+	ghObjects, err := fetchGithubObjects(url)
+	if err != nil {
+		log.Fatal("unable to fetch GitHub objects: ", err)
+	}
+
+	var ghDirectories []ghObject
+	for _, o := range ghObjects {
+		if o.Type != "dir" {
+			continue
+		}
+		ghDirectories = append(ghDirectories, o)
+	}
+	return ghDirectories
+}
+
+func fetchTestsFromRepo(pb *progressbar.ProgressBar, config Config, suiteInfo []ghObject) map[string]Task {
 	var suiteNames []string
 	testSuites := make(map[string]Task)
-	for _, dir := range dirs {
-		suiteName := dir.Name()
+	for _, dir := range suiteInfo {
+		suiteName := dir.Name
+		pb.Add(1)
+
 		if contains(config.Folders.Skip, suiteName) {
 			continue
 		}
@@ -150,7 +261,7 @@ func main() {
 		excluded := []string{}
 		if !contains(config.Folders.PreventSplit, suiteName) {
 			taskNames = []string{}
-			subTaskNames := parseTaskNames(inputDir, dir)
+			subTaskNames := parseTaskNames(dir)
 			for _, subTask := range subTaskNames {
 				if !contains(config.Folders.SkipSubTasks, subTask) {
 					taskNames = append(taskNames, subTask)
@@ -186,49 +297,7 @@ func main() {
 			Timeout:       config.Folders.Timeout[suiteName],
 		}
 	}
-
-	funcMap := map[string]interface{}{
-		"ensureHyphen": func(s string) string {
-			return strings.ReplaceAll(s, "_", "-")
-		},
-		"contains": func(arr []string, s string) bool {
-			for _, v := range arr {
-				if s == v {
-					return true
-				}
-			}
-			return false
-		},
-	}
-	t := template.Must(template.New("integration").Funcs(funcMap).Parse(Template))
-
-	for _, name := range suiteNames {
-		task := testSuites[name]
-		writeJobDefinitions(t, config, outputDir, task, name)
-	}
-}
-
-func isTrackingBranch(inputDir, trackingBranch string) bool {
-	cmd := exec.Command("git", "-C", inputDir, "branch", "--show-current")
-	result, err := cmd.Output()
-	if err != nil {
-		log.Fatalf("unable to get current branch: %v", err)
-	}
-	if strings.TrimSpace(string(result)) != trackingBranch {
-		return false
-	}
-
-	cmd = exec.Command("git", "-C", inputDir, "fetch", "upstream")
-	if err := cmd.Run(); err != nil {
-		log.Fatalf("unable to fetch: %v", err)
-	}
-
-	cmd = exec.Command("git", "-C", inputDir, "diff", "--quiet", fmt.Sprintf("upstream/%s", trackingBranch))
-	if err := cmd.Run(); err != nil {
-		log.Fatalf("unable to diff: %v", err)
-	}
-
-	return true
+	return testSuites
 }
 
 func writeJobDefinitions(
@@ -274,6 +343,7 @@ func writeJobDefinitions(
 	}
 
 	minVersions := make(map[string]string)
+	maxVersions := make(map[string]string)
 	for _, task := range task.SubTasks {
 		if introduced, ok := config.Folders.Introduced[task]; ok {
 			minVersions[task] = minVersionRegex[introduced]
@@ -281,8 +351,14 @@ func writeJobDefinitions(
 		if introduced, ok := config.Folders.Introduced[suiteName+"-"+task]; ok {
 			minVersions[suiteName+"-"+task] = minVersionRegex[introduced]
 		}
-		if introduced, ok := config.Folders.Introduced[suiteName+"-*"]; ok {
+		if introduced, ok := config.Folders.Introduced[suiteName]; ok {
 			minVersions[suiteName+"-"+task] = minVersionRegex[introduced]
+		}
+		if removed, ok := config.Folders.Removed[suiteName+"-"+task]; ok {
+			maxVersions[suiteName+"-"+task] = minVersionRegex[removed]
+		}
+		if removed, ok := config.Folders.Removed[suiteName]; ok {
+			maxVersions[suiteName+"-"+task] = minVersionRegex[removed]
 		}
 	}
 
@@ -296,6 +372,7 @@ func writeJobDefinitions(
 		CrossCloud    map[string]bool
 		Timeout       map[string]int
 		MinVersions   map[string]string
+		MaxVersions   map[string]string
 	}{
 		SuiteName:     suiteName,
 		Clouds:        task.Clouds,
@@ -306,39 +383,48 @@ func writeJobDefinitions(
 		CrossCloud:    crossCloud,
 		Timeout:       task.Timeout,
 		MinVersions:   minVersions,
+		MaxVersions:   maxVersions,
 	}); err != nil {
 		log.Fatalf("unable to execute template %q with error %v", suiteName, err)
 	}
 	f.Sync()
 }
 
-func parseTaskNames(rootDir string, dir os.FileInfo) []string {
+func parseTaskNames(dir ghObject) []string {
 	tasks := make(map[string]int)
 
-	leaf := filepath.Join(rootDir, dir.Name())
-	filepath.Walk(leaf, func(s string, d os.FileInfo, e error) error {
-		if e != nil {
-			return e
-		}
-		matched, err := regexp.Match("^"+leaf+"/\\w+.sh$", []byte(s))
-		if err != nil {
-			return err
-		}
-		if !matched {
-			return nil
+	ghObjects, err := fetchGithubObjects(dir.URL)
+	if err != nil {
+		log.Fatalf("unable to fetch test suite %q files: %v", dir.Name, err)
+	}
+
+	for _, f := range ghObjects {
+		if !strings.HasSuffix(f.Name, ".sh") {
+			continue
 		}
 
-		// Now we've got a match, read the file.
-		file, err := os.Open(filepath.Join(leaf, d.Name()))
+		req, _ := http.NewRequest("GET", f.DownloadURL, nil)
+		token := os.Getenv("GH_TOKEN")
+		if token == "" {
+			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
+		}
+
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
-			return err
+			log.Fatalf("unable to get test file %q context: %v", f.Name, err)
+		}
+		if resp.StatusCode != 200 {
+			_ = resp.Body.Close()
+			log.Fatalf("unable to get test file %q context; status code: %d", f.Name, resp.StatusCode)
 		}
 
 		parser := syntax.NewParser(syntax.Variant(syntax.LangBash))
-		prog, err := parser.Parse(file, d.Name())
+		prog, err := parser.Parse(resp.Body, "task.sh")
 		if err != nil {
-			return err
+			_ = resp.Body.Close()
+			log.Fatalf("unable to parse test suite task content with error %v", err)
 		}
+		_ = resp.Body.Close()
 		syntax.Walk(prog, func(node syntax.Node) bool {
 			switch t := node.(type) {
 			case *syntax.FuncDecl:
@@ -383,12 +469,7 @@ func parseTaskNames(rootDir string, dir os.FileInfo) []string {
 			}
 			return true
 		})
-		if err != nil {
-			return err
-		}
-
-		return nil
-	})
+	}
 
 	subtasks := make([]string, 0, len(tasks))
 	for name, count := range tasks {
@@ -460,8 +541,8 @@ const Template = `
 {{- range $cloud := $node.Clouds -}}
     {{- $task_name := "" -}}
     {{- $test_name := (printf "%s-%s" $.SuiteName $cloud.Name) -}}
-	{{- $task_name = index $node.TaskNames $k -}}
-	{{- $full_task_name := (printf "test-%s-%s-%s" $.SuiteName (ensureHyphen $task_name) $cloud.Name) -}}
+    {{- $task_name = index $node.TaskNames $k -}}
+    {{- $full_task_name := (printf "test-%s-%s-%s" $.SuiteName (ensureHyphen $task_name) $cloud.Name) -}}
 
     {{- $builder := "run-integration-test" -}}
     {{- $run_on := "ephemeral-noble-small-amd64" -}}
@@ -545,39 +626,97 @@ const Template = `
       - select-oci-registry
       - wait-for-cloud-init
       - prepare-integration-test
-{{- if or (index $.MinVersions $task_name) (index $.MinVersions (printf "%s-%s" $.SuiteName $task_name)) }}
-      {{- $cond := index $.MinVersions $task_name -}}
-      {{- if eq $cond "" }}
-        {{- $cond = index $.MinVersions (printf "%s-%s" $.SuiteName $task_name) -}}
-      {{- end }}
+{{- $minRegexp := index $.MinVersions $task_name -}}
+{{- if eq $minRegexp "" }}
+  {{- $minRegexp = index $.MinVersions (printf "%s-%s" $.SuiteName $task_name) -}}
+{{- end }}
+{{- $excludeRegexp := index $.MaxVersions (printf "%s-%s" $.SuiteName $task_name) -}}
+{{- if or (ne $minRegexp "") (ne $excludeRegexp "") }}
       - conditional-step:
+  {{- if and (ne $minRegexp "") (ne $excludeRegexp "") }}
+          condition-kind: and
+          condition-operands:
+            # Do not run on regexp version match.
+            # Accounts for tests which do not exist
+            # in later Juju versions.
+            - condition-kind: not
+              condition-operand:
+                condition-kind: regex-match
+                regex: "{{ $excludeRegexp }}"
+                label: "{{ "${{JUJU_VERSION}}" }}"
+            # Only run on regexp version match.
+            # Accounts for tests which do not exist
+            # until a given Juju version.
+            - condition-kind: regex-match
+              regex: "{{ $minRegexp }}"
+              label: "{{ "${{JUJU_VERSION}}" }}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - {{$builder}}:
+                  test_name: '{{$.SuiteName}}'
+                  setup_steps: ''
+    {{- if gt (len $node.SkipTasks) 1 }}
+                  task_name: '{{$task_name}}'
+                  skip_tasks: '{{$skip_tasks}}'
+    {{- else }}
+                  task_name: ''
+                  skip_tasks: '{{$node.ExcludedTasks}}'
+    {{- end}}
+  {{- else }}
+        {{- if ne $excludeRegexp "" }}
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            regex: "{{ $excludeRegexp }}"
+            label: "{{ "${{JUJU_VERSION}}" }}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - {{$builder}}:
+                test_name: '{{$.SuiteName}}'
+                setup_steps: ''
+    {{- if gt (len $node.SkipTasks) 1 }}
+                task_name: '{{$task_name}}'
+                skip_tasks: '{{$skip_tasks}}'
+    {{- else }}
+                task_name: ''
+                skip_tasks: '{{$node.ExcludedTasks}}'
+    {{- end}}
+        {{- else }}
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
           condition-kind: regex-match
-          regex: "{{ $cond }}"
+          regex: "{{ $minRegexp }}"
           label: "{{ "${{JUJU_VERSION}}" }}"
           on-evaluation-failure: "dont-run"
           steps:
             - {{$builder}}:
                   test_name: '{{$.SuiteName}}'
                   setup_steps: ''
-  {{- if gt (len $node.SkipTasks) 1 }}
+    {{- if gt (len $node.SkipTasks) 1 }}
                   task_name: '{{$task_name}}'
                   skip_tasks: '{{$skip_tasks}}'
-  {{- else }}
+    {{- else }}
                   task_name: ''
                   skip_tasks: '{{$node.ExcludedTasks}}'
-  {{- end}}
+    {{- end}}
+        {{- end }}
+  {{- end }}
 {{- else }}
       - {{$builder}}:
             test_name: '{{$.SuiteName}}'
             setup_steps: ''
-  {{- if gt (len $node.SkipTasks) 1 }}
+    {{- if gt (len $node.SkipTasks) 1 }}
             task_name: '{{$task_name}}'
             skip_tasks: '{{$skip_tasks}}'
-  {{- else }}
+    {{- else }}
             task_name: ''
             skip_tasks: '{{$node.ExcludedTasks}}'
-  {{- end}}
-{{- end}}
+    {{- end}}
+{{- end }}
     publishers:
       - integration-artifacts
 {{- end }}

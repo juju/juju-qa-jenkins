@@ -138,6 +138,10 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: 'test-metrics-multijob'
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: 'test-model-multijob'
               current-parameters: true
               predefined-parameters: |-
