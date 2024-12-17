@@ -24,9 +24,19 @@ JUJU_REPO_PATH="<juju-repo-on-branch-to-generate-jobs-from>" make gen-wire-tests
 
 ## Uploading to Jenkins
 
-To push, you need to be on the Canonical VPN. Check that everything is working with:
+To push, you need to be on the Canonical VPN and have your authentication token ready. If you don't have any, create an 
+[API Token on jenkins](https://www.jenkins.io/doc/book/system-administration/authenticating-scripted-clients/)
+
+Then setup the environment variables:
+
+```shell
+export JENKINS_USER=<your username>
+export JENKINS_ACCESS_TOKEN=<your access token>
+```
+
+Check that everything is working with:
 ```bash
-make push-test
+make test-push
 ```
 And push to https://jenkins.juju.canonical.com/ with:
 ```bash
