@@ -37,6 +37,9 @@ sudo apt-get -y update
 # set, so retries succeed.
 attempts=0
 while [ $attempts -lt 3 ]; do
+    if ! which charmcraft >/dev/null 2>&1; then
+        sudo snap install charmcraft --classic || true
+    fi
     if ! which jq >/dev/null 2>&1; then
         sudo snap install jq || true
     fi
