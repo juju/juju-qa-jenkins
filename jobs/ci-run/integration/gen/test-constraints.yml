@@ -36,13 +36,17 @@
           current-parameters: true
         - name: 'test-constraints-test-constraints-common-lxd'
           current-parameters: true
+        - name: 'test-constraints-test-constraints-model-google'
+          current-parameters: true
+        - name: 'test-constraints-test-constraints-model-lxd'
+          current-parameters: true
 
 - job:
     name: test-constraints-test-constraints-common-google
     node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test constraints suite on google
+      Test test_constraints_common in constraints suite on google
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -105,8 +109,8 @@
       - run-integration-test:
             test_name: 'constraints'
             setup_steps: ''
-            task_name: ''
-            skip_tasks: ''
+            task_name: 'test_constraints_common'
+            skip_tasks: 'test_constraints_model'
     publishers:
       - integration-artifacts
 
@@ -115,7 +119,7 @@
     node: ephemeral-noble-8c-32g-amd64
     concurrent: true
     description: |-
-      Test constraints suite on lxd
+      Test test_constraints_common in constraints suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -174,7 +178,167 @@
       - run-integration-test:
             test_name: 'constraints'
             setup_steps: ''
-            task_name: ''
-            skip_tasks: ''
+            task_name: 'test_constraints_common'
+            skip_tasks: 'test_constraints_model'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-constraints-test-constraints-model-google
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_constraints_model in constraints suite on google
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'google'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'gce'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - select-oci-registry
+      - wait-for-cloud-init
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'constraints'
+                  setup_steps: ''
+                  task_name: 'test_constraints_model'
+                  skip_tasks: 'test_constraints_common'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-constraints-test-constraints-model-lxd
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_constraints_model in constraints suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'localhost'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: ''
+        description: 'Ubuntu series to use when bootstrapping Juju'
+        name: BOOTSTRAP_SERIES
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - select-oci-registry
+      - wait-for-cloud-init
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'constraints'
+                  setup_steps: ''
+                  task_name: 'test_constraints_model'
+                  skip_tasks: 'test_constraints_common'
     publishers:
       - integration-artifacts
