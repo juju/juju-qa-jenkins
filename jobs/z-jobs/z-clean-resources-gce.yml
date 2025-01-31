@@ -50,5 +50,5 @@
     wrappers:
     - timeout:
         fail: true
-        timeout: 10
+        timeout: 30
         type: absolute
