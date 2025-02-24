@@ -13,10 +13,6 @@
           description: "Enable sub job to be run individually."
           name: SHORT_GIT_COMMIT
       - string:
-          default: ""
-          description: "Series to use with charms in the integration tests"
-          name: series
-      - string:
           default: ''
           description: 'Ubuntu series to use when bootstrapping Juju'
           name: BOOTSTRAP_SERIES
@@ -222,10 +218,6 @@
           default: ""
           description: "Enable sub job to be run individually."
           name: SHORT_GIT_COMMIT
-      - string:
-          default: ""
-          description: "Series to use with charms in the integration tests"
-          name: series
       - string:
           default: ''
           description: 'Ubuntu series to use when bootstrapping Juju'
