@@ -255,10 +255,6 @@
           regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
       - string:
-          name: BOOTSTRAP_SERIES
-          default: ''
-          description: 'Ubuntu series to use when bootstrapping Juju'
-      - string:
           name: GOVERSION
           default: ''
           description: 'Go version used for build.'
@@ -274,7 +270,6 @@
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
                 GOVERSION=${{GOVERSION}}
-                BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}
             - name: "unit-tests"
               current-parameters: true
               predefined-parameters: |-

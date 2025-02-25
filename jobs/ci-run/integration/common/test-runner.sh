@@ -107,7 +107,6 @@ set -x
 set +u
 export BOOTSTRAP_PROVIDER
 export BOOTSTRAP_CLOUD
-export BOOTSTRAP_SERIES
 export BOOTSTRAP_REUSE_LOCAL
 export OPERATOR_IMAGE_ACCOUNT
 # shellcheck source=/dev/null

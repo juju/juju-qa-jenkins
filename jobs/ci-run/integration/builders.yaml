@@ -45,7 +45,6 @@
           set -ex
 
           touch build.properties
-          [[ ! -z "${{BOOTSTRAP_SERIES}}" ]] && echo "BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}" >> build.properties
           [[ ! -z "${{BOOTSTRAP_PROVIDER}}" ]] && echo "BOOTSTRAP_PROVIDER=${{BOOTSTRAP_PROVIDER}}" >> build.properties
           [[ ! -z "${{BOOTSTRAP_CLOUD}}" ]] && echo "BOOTSTRAP_CLOUD=${{BOOTSTRAP_CLOUD}}" >> build.properties
           [[ ! -z "${{BOOTSTRAP_REUSE_LOCAL}}" ]] && echo "BOOTSTRAP_REUSE_LOCAL=${{BOOTSTRAP_REUSE_LOCAL}}" >> build.properties

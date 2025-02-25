@@ -12,10 +12,6 @@
           default: ""
           description: "Enable sub job to be run individually."
           name: SHORT_GIT_COMMIT
-      - string:
-          default: ''
-          description: 'Ubuntu series to use when bootstrapping Juju'
-          name: BOOTSTRAP_SERIES
     builders:
       - get-build-details
       - set-test-description
@@ -218,10 +214,6 @@
           default: ""
           description: "Enable sub job to be run individually."
           name: SHORT_GIT_COMMIT
-      - string:
-          default: ''
-          description: 'Ubuntu series to use when bootstrapping Juju'
-          name: BOOTSTRAP_SERIES
     builders:
       - get-build-details
       - set-test-description

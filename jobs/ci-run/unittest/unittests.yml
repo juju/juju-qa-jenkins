@@ -14,10 +14,6 @@
         description: "Enable sub job to be run individually."
         name: SHORT_GIT_COMMIT
     - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
-    - string:
         name: GOVERSION
         default: ""
         description: "Go version to use for unit tests"
@@ -74,10 +70,6 @@
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
-    - string:
         name: GOVERSION
         default: ""
         description: "Go version to use for unit tests"
@@ -122,10 +114,6 @@
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
-    - string:
         name: GOVERSION
         default: ""
         description: "Go version to use for unit tests"
@@ -169,10 +157,6 @@
     - string:
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
     builders:
       - wait-for-cloud-init
       - install-common-tools
@@ -217,10 +201,6 @@
       # we are happy with this, we can set the flag to 1 for the root job.
         default: "1"
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
     builders:
       - wait-for-cloud-init
       - install-common-tools
@@ -262,10 +242,6 @@
     - string:
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
     - string:
         name: GOVERSION
         default: ""
@@ -310,10 +286,6 @@
     - string:
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
     - string:
         name: GOVERSION
         default: ""
