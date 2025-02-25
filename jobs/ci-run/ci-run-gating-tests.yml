@@ -20,10 +20,6 @@
           regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
       - string:
-          default: ""
-          description: "Series to use with charms in the functional tests"
-          name: series
-      - string:
           default: ''
           description: 'Ubuntu series to use when bootstrapping Juju'
           name: BOOTSTRAP_SERIES

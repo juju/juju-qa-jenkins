@@ -45,8 +45,6 @@ jobs:
     - ci-trigger-github-com-juju-juju
     - ci-build-juju
     - ci-gating-tests
-    - clean-lxd-environments
-    - clean-maas-environments
     - clean-workspaces
     - run-build-check-lxd
     - github-juju-check-jobs
@@ -62,9 +60,7 @@ jobs:
     - z-clean-resources-gce
     - z-clean-resources-gke
     - z-clean-resources-aks
-    - z-clean-resources-equinix
     - z-clean-resources-vsphere
-    - z-clean-resources-windows
     - z-clean-resources-eks
     - z-clean-resources-ecr
     - upload-s3-agent-binaries

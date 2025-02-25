@@ -116,7 +116,6 @@
       - inject:
           properties-content: |-
             PATH=/snap/bin:$PATH
-            series=focal
       - get-build-details
       - description-setter:
           description: "${{GITHUB_REPO}} ${{JUJU_VERSION}}:${{SHORT_GIT_COMMIT}} (go ${{GOVERSION}})"
@@ -228,7 +227,6 @@
             condition: SUCCESS
             current-parameters: true
             predefined-parameters: |-
-              series=${{series}}
               SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
               GOVERSION=${{GOVERSION}}
 
@@ -257,10 +255,6 @@
           regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
       - string:
-          name: series
-          default: ""
-          description: "Series to use with charms in the functional tests"
-      - string:
           name: BOOTSTRAP_SERIES
           default: ''
           description: 'Ubuntu series to use when bootstrapping Juju'
@@ -279,7 +273,6 @@
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-                series=${{series}}
                 GOVERSION=${{GOVERSION}}
                 BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}
             - name: "unit-tests"

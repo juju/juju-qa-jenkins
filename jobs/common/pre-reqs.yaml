@@ -248,32 +248,6 @@
         sudo pip3 install apache-libcloud;
 
 - builder:
-    name: install-equinix-libs
-    builders:
-    - shell: |-
-        #!/bin/bash
-        set -xeu
-
-        sudo DEBIAN_FRONTEND=noninteractive apt update;
-        sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
-        sudo pip3 install pytz;
-
-- builder:
-    name: get-lxd-cleanup-scripts
-    builders:
-    - checkout-qa-repo
-    - shell: |-
-        #!/bin/bash
-        set -eux
-
-        cd scripts
-        git checkout origin/main -- jobs/z-jobs/scripts/clean_lxd.py
-        cd ${{WORKSPACE}}
-    - inject:
-        properties-content: |-
-            SCRIPTS_DIR=${{WORKSPACE}}/scripts/jobs/z-jobs/scripts/
-
-- builder:
     name: get-aws-cleanup-scripts
     builders:
     - checkout-qa-repo
@@ -303,37 +277,6 @@
 
         cd scripts
         git checkout origin/main -- jobs/z-jobs/scripts/gce.py
-        cd ${{WORKSPACE}}
-    - inject:
-        properties-content: |-
-            SCRIPTS_DIR=${{WORKSPACE}}/scripts/jobs/z-jobs/scripts/
-
-- builder:
-    name: get-maas-cleanup-scripts
-    builders:
-    - checkout-qa-repo
-    - shell: |-
-        #!/bin/bash
-        set -eux
-
-        cd scripts
-        git checkout origin/main -- jobs/z-jobs/scripts/clean_maas
-        cd ${{WORKSPACE}}
-    - inject:
-        properties-content: |-
-            SCRIPTS_DIR=${{WORKSPACE}}/scripts/jobs/z-jobs/scripts/clean_maas
-
-- builder:
-    name: get-equinix-cleanup-scripts
-    builders:
-    - checkout-qa-repo
-    - install-equinix-libs
-    - shell: |-
-        #!/bin/bash
-        set -eux
-
-        cd scripts
-        git checkout origin/main -- jobs/z-jobs/scripts/clean_equinix.py
         cd ${{WORKSPACE}}
     - inject:
         properties-content: |-

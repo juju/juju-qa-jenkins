@@ -14,10 +14,6 @@
         description: "Enable sub job to be run individually."
         name: SHORT_GIT_COMMIT
     - string:
-        name: series
-        default: ""
-        description: "Series used for deploying"
-    - string:
         name: BOOTSTRAP_SERIES
         default: ""
         description: "Series to used for bootstrapping"
@@ -78,10 +74,6 @@
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     - string:
-        name: series
-        default: ""
-        description: "Series used for deploying"
-    - string:
         name: BOOTSTRAP_SERIES
         default: ""
         description: "Series to used for bootstrapping"
@@ -129,10 +121,6 @@
     - string:
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: series
-        default: ""
-        description: "Series used for deploying"
     - string:
         name: BOOTSTRAP_SERIES
         default: ""
@@ -182,10 +170,6 @@
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     - string:
-        name: series
-        default: ""
-        description: "Series used for deploying"
-    - string:
         name: BOOTSTRAP_SERIES
         default: ""
         description: "Series to used for bootstrapping"
@@ -234,10 +218,6 @@
         default: "1"
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     - string:
-        name: series
-        default: ""
-        description: "Series used for deploying"
-    - string:
         name: BOOTSTRAP_SERIES
         default: ""
         description: "Series to used for bootstrapping"
@@ -282,10 +262,6 @@
     - string:
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: series
-        default: ""
-        description: "Series used for deploying"
     - string:
         name: BOOTSTRAP_SERIES
         default: ""
@@ -334,10 +310,6 @@
     - string:
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: series
-        default: ""
-        description: "Series used for deploying"
     - string:
         name: BOOTSTRAP_SERIES
         default: ""
