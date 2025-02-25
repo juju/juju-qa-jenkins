@@ -137,7 +137,7 @@
     builders:
     - install-s3cmd
     - get-s3-creds
-    - get-build-details
+    - get-s3-build-details
     - shell: |-
         #!/bin/bash
         set -eu
@@ -156,13 +156,8 @@
         set -e
         touch juju-src.properties
 
-        if [ ! -z $GOPATH ]; then
-          echo "GOPATH is defined. Unpacking Juju src tarball onto GOPATH"
-          tar xf "${{JUJU_SRC_TARBALL}}" -C "${{GOPATH}}"
-          echo "JUJU_SRC_PATH=${{GOPATH}}/src/github.com/juju/juju" >> juju-src.properties
-        else
-          echo "GOPATH is not defined. Doing nothing with the Juju src tarball"
-        fi
+        tar xf "${{JUJU_SRC_TARBALL}}" -C "${{WORKSPACE}}"
+        echo "JUJU_SRC_PATH=${{WORKSPACE}}/src/github.com/juju/juju" >> juju-src.properties
 
         echo "Juju source properties being injected"
         cat juju-src.properties
@@ -260,7 +255,7 @@
 # get-s3-agent-payload is a new utility builder for fetching a list of build
 # agents for a given set of platforms of a Juju version and git commit.
 # Expected pre-reqs:
-# - get-build-details or get-s3-source has been run to set the buildvars
+# - get-s3-build-details or get-s3-source-payload has been run to set the buildvars
 #   correctly.
 # Required properties:
 # - dest: destination where to persist the download agent tarballs
@@ -292,9 +287,9 @@
 
         done
 
-# get-build-details is responsible for
+# get-s3-build-details is responsible for
 - builder:
-    name: get-build-details
+    name: get-s3-build-details
     builders:
     - install-s3cmd
     - get-s3-creds

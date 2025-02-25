@@ -14,7 +14,7 @@
           description: "Enable sub job to be run individually."
           name: SHORT_GIT_COMMIT
     builders:
-      - get-build-details
+      - get-s3-build-details
       - get-s3-agent-payload:
           dest: ${{WORKSPACE}}
           platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
@@ -25,10 +25,6 @@
       - generate-agent-json:
           platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
           product_name: ubuntu
-          output_dir: "${{WORKSPACE}}/agent_json"
-      - generate-agent-json:
-          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
-          product_name: centos
           output_dir: "${{WORKSPACE}}/agent_json"
       - install-simplestreams
       - install-s3cmd
@@ -57,8 +53,8 @@
     name: generate-agent-json
     # Note: This builder expects the following parameters
     #  (they are used within the script)
-    # platforms: space seperated list of go style platforms (e.g. linux/arm64 centos/amd64)
-    # product_name: Product name to use (e.g. ubuntu, centos)
+    # platforms: space seperated list of go style platforms (e.g. linux/arm64)
+    # product_name: Product name to use (e.g. ubuntu)
     # output_dir: The directory in which to place the resulting json files
     builders:
       - shell: !include-raw-expand: ../scripts/generate-agent-json.template.sh
@@ -83,7 +79,7 @@
       - install-common-tools
       - install-s3cmd
       - get-s3-creds
-      - get-build-details
+      - get-s3-build-details
       - set-test-description
       - shell: |-
           #!/bin/bash
@@ -141,7 +137,7 @@
       - wait-for-cloud-init
       - install-common-tools
       - install-azure-cli
-      - get-build-details
+      - get-s3-build-details
       - set-test-description
       - shell: |-
           #!/bin/bash

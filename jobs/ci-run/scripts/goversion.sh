@@ -2,6 +2,7 @@
 set -ex
 
 GITHUB_REPO=${GITHUB_REPO:-juju/juju}
+GIT_COMMIT=${GIT_COMMIT:-$SHORT_GIT_COMMIT}
 
 if [ -z "${GITHUB_TOKEN}" ]; then
 gomod=$(curl -s "https://raw.githubusercontent.com/$GITHUB_REPO/$GIT_COMMIT/go.mod")
@@ -19,6 +20,7 @@ elif [[ "$goversion" > "1.99" ]]; then
 fi
 
 echo "GOVERSION=$goversion" > "${WORKSPACE}/goversion"
+export GOVERSION=$goversion
 
 cat "${WORKSPACE}/goversion"
 exit 0

@@ -33,7 +33,7 @@
             <br>
             $DEFAULT_CONTENT
     builders:
-      - get-build-details
+      - get-s3-build-details
       - set-test-description
       - multijob:
           name: GatingTests

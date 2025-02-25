@@ -518,7 +518,7 @@ const Template = `
         description: 'Build arch used to download the build tar.gz.'
         name: BUILD_ARCH
     builders:
-    - get-build-details
+    - get-s3-build-details
     - set-test-description
 {{- if gt (len $node.TaskNames) 0 }}
     - multijob:

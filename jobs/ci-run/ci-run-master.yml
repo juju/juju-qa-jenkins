@@ -105,7 +105,7 @@
           name: "Packaging"
           condition: SUCCESSFUL
           projects:
-            - name: "package-juju-source"
+            - name: package-juju-source
               current-parameters: false
               predefined-parameters: |-
                 GITHUB_REPO=${{GITHUB_REPO}}
@@ -116,7 +116,6 @@
       - inject:
           properties-content: |-
             PATH=/snap/bin:$PATH
-      - get-build-details
       - description-setter:
           description: "${{GITHUB_REPO}} ${{JUJU_VERSION}}:${{SHORT_GIT_COMMIT}} (go ${{GOVERSION}})"
       - multijob:
@@ -131,7 +130,6 @@
                 PLATFORM=linux/amd64
                 BUILD_LABEL=linux-amd64
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-                GOVERSION=${{GOVERSION}}
             - name: build-juju
               alias: build-juju-linux-arm64
               current-parameters: true
@@ -139,7 +137,6 @@
                 PLATFORM=linux/arm64
                 BUILD_LABEL=linux-arm64
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-                GOVERSION=${{GOVERSION}}
             - name: build-juju
               alias: build-juju-linux-s390x
               current-parameters: true
@@ -147,7 +144,6 @@
                 PLATFORM=linux/s390x
                 BUILD_LABEL=linux-s390x
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-                GOVERSION=${{GOVERSION}}
             - name: build-juju
               alias: build-juju-linux-ppc64el
               current-parameters: true
@@ -155,7 +151,6 @@
                 PLATFORM=linux/ppc64el
                 BUILD_LABEL=linux-ppc64el
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-                GOVERSION=${{GOVERSION}}
             - name: build-juju
               alias: build-juju-darwin-amd64
               current-parameters: true
@@ -163,7 +158,6 @@
                 PLATFORM=darwin/amd64
                 BUILD_LABEL=darwin-amd64
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-                GOVERSION=${{GOVERSION}}
             - name: build-juju
               alias: build-juju-darwin-arm64
               current-parameters: true
@@ -171,7 +165,6 @@
                 PLATFORM=darwin/arm64
                 BUILD_LABEL=darwin-arm64
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-                GOVERSION=${{GOVERSION}}
             - name: build-juju
               alias: build-juju-windows-amd64
               current-parameters: true
@@ -179,7 +172,6 @@
                 PLATFORM=windows/amd64
                 BUILD_LABEL=windows-amd64
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-                GOVERSION=${{GOVERSION}}
             - name: build-juju
               alias: build-juju-k8s-linux-amd64
               current-parameters: true
@@ -189,7 +181,6 @@
                 BUILD_TAGS=minimal,provider_kubernetes
                 BUILD_LABEL=k8s-linux-amd64
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-                GOVERSION=${{GOVERSION}}
       - multijob:
           name: "Building Juju OCI Images"
           condition: SUCCESSFUL
@@ -198,7 +189,6 @@
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-                GOVERSION=${{GOVERSION}}
       - multijob:
           name: "Simple Streams"
           condition: SUCCESSFUL
@@ -228,8 +218,6 @@
             current-parameters: true
             predefined-parameters: |-
               SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-              GOVERSION=${{GOVERSION}}
-
 - job:
     name: "ci-gating-tests"
     disabled: false
@@ -254,30 +242,24 @@
           description: The git short hash for the commit you wish to test
           regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
-      - string:
-          name: GOVERSION
-          default: ''
-          description: 'Go version used for build.'
     builders:
-      - get-build-details
+      - get-s3-build-details
       - set-test-description
       - multijob:
           name: "Testing"
           condition: SUCCESSFUL
           projects:
-            - name: "gating-tests"
+            - name: gating-tests
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-                GOVERSION=${{GOVERSION}}
-            - name: "unit-tests"
+            - name: unit-tests
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-                GOVERSION=${{GOVERSION}}
 
 - job:
-    name: "package-juju-source"
+    name: package-juju-source
     node: ephemeral-noble-small-amd64
     project-type: "multijob"
     condition: SUCCESSFUL
@@ -302,10 +284,6 @@
           name: GITHUB_BRANCH_HEAD_SHA
           default: ""
           description: "Specific git SHA to package."
-      - string:
-          name: GOVERSION
-          default: ""
-          description: 'Go version used for build.'
       - string:
           name: JUJU_BUILD_NUMBER
           default: ""

@@ -8,7 +8,12 @@ set -eux
 export TERM=""
 export TEST_RUNNER_NAME="${TEST_RUNNER_NAME}"
 
-if [ ! -d "$JUJU_SRC_PATH"/tests ]; then
+if [ -z "${JUJU_SRC_PATH}" ]; then
+  echo "Source path is not set."
+  exit 1
+fi
+
+if [ ! -d "${JUJU_SRC_PATH}"/tests ]; then
     echo "Test directory not found."
     echo "Assuming pre tests setup found, exiting early."
     exit 0

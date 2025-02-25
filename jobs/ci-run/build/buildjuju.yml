@@ -24,10 +24,6 @@
           name: SHORT_GIT_COMMIT
           regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
-      - string:
-          default: ''
-          description: 'Go version used for build.'
-          name: GOVERSION
       - validating-string:
           description: 'Platform for which to build.'
           name: PLATFORM
@@ -50,8 +46,8 @@
       - wait-for-cloud-init
       - set-common-environment
       - install-common-tools
-      - setup-go-environment
       - get-s3-source-payload
+      - setup-go-environment
       - set-build-description:
           GOVERSION: "${{GOVERSION}}"
       - make-juju:
@@ -156,10 +152,6 @@
           regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
       - string:
-          default: ""
-          description: 'Go version used for build.'
-          name: GOVERSION
-      - string:
           default: "linux/amd64 linux/arm64 linux/s390x linux/ppc64el"
           description: "Space seperated list of Go Platforms to build the OCI images for"
           name: BUILD_PLATFORMS
@@ -167,8 +159,8 @@
       - wait-for-cloud-init
       - set-common-environment
       - install-common-tools
-      - setup-go-environment
       - get-s3-source-payload
+      - setup-go-environment
       - set-build-description:
           GOVERSION: "${{GOVERSION}}"
       - shell: |-

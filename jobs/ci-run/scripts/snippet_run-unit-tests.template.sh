@@ -4,14 +4,6 @@ set -eux
 # Make sure github is known to us.
 ssh-keyscan github.com >> $HOME/.ssh/known_hosts
 
-# Set path for bionic, if running in bionic
-release=$(lsb_release -c -s)
-if [[ $release == 'bionic' ]]; then
-    export JUJU_MONGOD=/usr/bin/mongod
-else
-    export JUJU_MONGOD=/usr/lib/juju/mongo3.2/bin/mongod
-fi
-
 echo TEST_TIMEOUT=$TEST_TIMEOUT
 
 cd ${{JUJU_SRC_PATH}}

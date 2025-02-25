@@ -13,7 +13,7 @@
           description: "Enable sub job to be run individually."
           name: SHORT_GIT_COMMIT
     builders:
-      - get-build-details
+      - get-s3-build-details
       - set-test-description
       - shell: |-
           echo "BUILD_ARCH=amd64" > build.properties
@@ -215,7 +215,7 @@
           description: "Enable sub job to be run individually."
           name: SHORT_GIT_COMMIT
     builders:
-      - get-build-details
+      - get-s3-build-details
       - set-test-description
       - multijob:
           name: 'gating-integration-tests-arm64'
