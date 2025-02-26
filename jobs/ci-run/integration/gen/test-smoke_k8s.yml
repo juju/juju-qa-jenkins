@@ -22,12 +22,8 @@
         default: ''
         description: 'Build arch used to download the build tar.gz.'
         name: BUILD_ARCH
-    - string:
-        default: ''
-        description: 'Ubuntu series to use when bootstrapping Juju'
-        name: BOOTSTRAP_SERIES
     builders:
-    - get-build-details
+    - get-s3-build-details
     - set-test-description
     - multijob:
         name: 'IntegrationTests-smoke_k8s'
@@ -82,10 +78,6 @@
         default: 'k8s'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
-    - string:
-        default: ''
-        description: 'Ubuntu series to use when bootstrapping Juju'
-        name: BOOTSTRAP_SERIES
     wrappers:
       - default-integration-test-wrapper
       - timeout:

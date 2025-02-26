@@ -13,16 +13,8 @@
         default: ""
         description: "Enable sub job to be run individually."
         name: SHORT_GIT_COMMIT
-    - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
-    - string:
-        name: GOVERSION
-        default: ""
-        description: "Go version to use for unit tests"
     builders:
-      - get-build-details
+      - get-s3-build-details
       - set-test-description
       - multijob:
             name: UnitTests
@@ -73,23 +65,15 @@
     - string:
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
-    - string:
-        name: GOVERSION
-        default: ""
-        description: "Go version to use for unit tests"
     builders:
       - wait-for-cloud-init
       - install-common-tools
       - apt-install:
           packages: gcc squashfuse
+      - get-s3-source-payload
       - setup-go-environment
       - go-install:
           modules: github.com/tebeka/go2xunit@latest
-      - get-s3-source-payload
       - description-setter:
           description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
@@ -121,23 +105,15 @@
     - string:
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
-    - string:
-        name: GOVERSION
-        default: ""
-        description: "Go version to use for unit tests"
     builders:
       - wait-for-cloud-init
       - install-common-tools
       - apt-install:
           packages: gcc squashfuse
+      - get-s3-source-payload
       - setup-go-environment
       - go-install:
           modules: github.com/tebeka/go2xunit@latest
-      - get-s3-source-payload
       - description-setter:
           description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
@@ -169,19 +145,15 @@
     - string:
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
     builders:
       - wait-for-cloud-init
       - install-common-tools
       - apt-install:
           packages: gcc squashfuse
+      - get-s3-source-payload
       - setup-go-environment
       - go-install:
           modules: github.com/tebeka/go2xunit@latest
-      - get-s3-source-payload
       - description-setter:
           description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
@@ -217,19 +189,15 @@
       # we are happy with this, we can set the flag to 1 for the root job.
         default: "1"
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
     builders:
       - wait-for-cloud-init
       - install-common-tools
       - apt-install:
           packages: gcc squashfuse
+      - get-s3-source-payload
       - setup-go-environment
       - go-install:
           modules: github.com/tebeka/go2xunit@latest
-      - get-s3-source-payload
       - description-setter:
           description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
@@ -262,23 +230,15 @@
     - string:
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
-    - string:
-        name: GOVERSION
-        default: ""
-        description: "Go version to use for unit tests"
     builders:
       - wait-for-cloud-init
       - install-common-tools
       - apt-install:
           packages: gcc squashfuse
+      - get-s3-source-payload
       - setup-go-environment
       - go-install:
           modules: github.com/tebeka/go2xunit@latest
-      - get-s3-source-payload
       - description-setter:
           description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
@@ -310,23 +270,15 @@
     - string:
         name: USE_TMPFS_FOR_MGO
         description: "Set to 1 to use a tmpfs volume for hosting mongo data"
-    - string:
-        name: BOOTSTRAP_SERIES
-        default: ""
-        description: "Series to used for bootstrapping"
-    - string:
-        name: GOVERSION
-        default: ""
-        description: "Go version to use for unit tests"
     builders:
       - wait-for-cloud-init
       - install-common-tools
       - apt-install:
           packages: gcc squashfuse
+      - get-s3-source-payload
       - setup-go-environment
       - go-install:
           modules: github.com/tebeka/go2xunit@latest
-      - get-s3-source-payload
       - description-setter:
           description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.

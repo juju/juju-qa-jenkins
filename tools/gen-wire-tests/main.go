@@ -517,12 +517,8 @@ const Template = `
         default: ''
         description: 'Build arch used to download the build tar.gz.'
         name: BUILD_ARCH
-    - string:
-        default: ''
-        description: 'Ubuntu series to use when bootstrapping Juju'
-        name: BOOTSTRAP_SERIES
     builders:
-    - get-build-details
+    - get-s3-build-details
     - set-test-description
 {{- if gt (len $node.TaskNames) 0 }}
     - multijob:
@@ -612,10 +608,6 @@ const Template = `
         description: 'Cloud Region to use when bootstrapping Juju'
         name: BOOTSTRAP_REGION
 {{- end }}
-    - string:
-        default: ''
-        description: 'Ubuntu series to use when bootstrapping Juju'
-        name: BOOTSTRAP_SERIES
     wrappers:
       - default-integration-test-wrapper
       - timeout:

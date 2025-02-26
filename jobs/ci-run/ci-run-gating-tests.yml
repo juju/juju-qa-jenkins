@@ -19,10 +19,6 @@
           name: SHORT_GIT_COMMIT
           regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
-      - string:
-          default: ''
-          description: 'Ubuntu series to use when bootstrapping Juju'
-          name: BOOTSTRAP_SERIES
     publishers:
       - email-ext:
           recipients: juju-crew@lists.canonical.com
@@ -37,7 +33,7 @@
             <br>
             $DEFAULT_CONTENT
     builders:
-      - get-build-details
+      - get-s3-build-details
       - set-test-description
       - multijob:
           name: GatingTests
@@ -45,9 +41,5 @@
           projects:
             - name: gating-integration-tests-amd64
               current-parameters: true
-              predefined-parameters: |-
-                BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}
             - name: gating-integration-tests-arm64
               current-parameters: true
-              predefined-parameters: |-
-                BOOTSTRAP_SERIES=${{BOOTSTRAP_SERIES}}
