@@ -63,34 +63,6 @@ while [ $attempts -lt 3 ]; do
     if [ ! "$(which microceph >/dev/null 2>&1)" ]; then
         sudo snap install microceph || true
     fi
-    # shellcheck disable=SC2193
-    if [ "${BOOTSTRAP_PROVIDER:-}" = "ec2" ]; then
-        if ! which aws >/dev/null 2>&1; then
-            sudo snap install aws-cli --classic || true
-        fi
-
-        mkdir -p "$HOME"/.aws
-        echo "[default]" > "$HOME"/.aws/credentials
-        cat "$HOME"/.local/share/juju/credentials.yaml |\
-            grep aws: -A 4 | grep key: |\
-            tail -2 |\
-            sed -e 's/      access-key:/aws_access_key_id =/' \
-                -e 's/      secret-key:/aws_secret_access_key =/' \
-            >> "$HOME"/.aws/credentials
-        echo -e "[default]\nregion = us-east-1" > "$HOME"/.aws/config
-        chmod 600 ~/.aws/*
-    fi
-    # shellcheck disable=SC2193
-    if [ "${BOOTSTRAP_PROVIDER:-}" = "azure" ]; then
-        if ! which az >/dev/null 2>&1; then
-            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-        fi
-
-        az login --service-principal \
-          -u "$(cat "$HOME"/.local/share/juju/credentials.yaml | yq ".credentials.azure.credentials.application-id")" \
-          -p "$(cat "$HOME"/.local/share/juju/credentials.yaml | yq ".credentials.azure.credentials.application-password")" \
-          --tenant "${AZURE_TENANT}"
-    fi
     attempts=$((attempts + 1))
 done
 

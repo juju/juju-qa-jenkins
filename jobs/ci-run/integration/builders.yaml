@@ -4,6 +4,8 @@
     name: 'prepare-integration-test'
     builders:
     - set-common-environment
+    # TODO - the test itself should install the az cli if needed.
+    - install-azure-cli
     - get-s3-source-payload
     - set-test-description
 
