@@ -19,6 +19,7 @@ edit `./jobs/ci-run/integration/integrationtests.yml`.
 
 To build the job descriptions run:
 ```
+export GH_TOKEN=<your github token>
 JUJU_REPO_PATH="<juju-repo-on-branch-to-generate-jobs-from>" make gen-wire-tests
 ```
 
