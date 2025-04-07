@@ -2,15 +2,17 @@
 
 The collection of jobs found in this repository make up the CI Run project.
 CI Runs' aim is, when triggered by a commit to the juju repository is to:
-  - Create a tarball snapshot of the codebase
-  - Build binaries (for use in testing and as agents)
-  - Update the testing streams
-  - Run the unit tests
-  - Run the suite of integration tests
+
+- Create a tarball snapshot of the codebase
+- Build binaries (for use in testing and as agents)
+- Update the testing streams
+- Run the unit tests
+- Run the suite of integration tests
 
 The integration tests themselves are not in this repo, they are in
 `github.com/juju/juju/tests/suites`. This repo contains the informaion Jekins
 needs to run the tests.
+
 ## Changing the tests
 
 To change which clouds and which versions the tests run on, edit
@@ -18,6 +20,7 @@ To change which clouds and which versions the tests run on, edit
 edit `./jobs/ci-run/integration/integrationtests.yml`.
 
 To build the job descriptions run:
+
 ```
 export GH_TOKEN=<your github token>
 JUJU_REPO_PATH="<juju-repo-on-branch-to-generate-jobs-from>" make gen-wire-tests
@@ -25,7 +28,7 @@ JUJU_REPO_PATH="<juju-repo-on-branch-to-generate-jobs-from>" make gen-wire-tests
 
 ## Uploading to Jenkins
 
-To push, you need to be on the Canonical VPN and have your authentication token ready. If you don't have any, create an 
+To push, you need to be on the Canonical VPN and have your authentication token ready. If you don't have any, create an
 [API Token on jenkins](https://www.jenkins.io/doc/book/system-administration/authenticating-scripted-clients/)
 
 Then setup the environment variables:
@@ -36,10 +39,13 @@ export JENKINS_ACCESS_TOKEN=<your access token>
 ```
 
 Check that everything is working with:
+
 ```bash
 make test-push
 ```
+
 And push to https://jenkins.juju.canonical.com/ with:
+
 ```bash
 make push
 ```

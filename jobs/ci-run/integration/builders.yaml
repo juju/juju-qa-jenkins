@@ -1,21 +1,21 @@
 # utils related to integration tests
 # Prepare things for an integration test
 - builder:
-    name: 'prepare-integration-test'
+    name: "prepare-integration-test"
     builders:
-    - set-common-environment
-    # TODO - the test itself should install the az cli if needed.
-    - install-azure-cli
-    - get-s3-source-payload
-    - set-test-description
+      - set-common-environment
+      # TODO - the test itself should install the az cli if needed.
+      - install-azure-cli
+      - get-s3-source-payload
+      - set-test-description
 
 - builder:
     name: run-integration-test
     builders:
-    - get-s3-build-payload-testing:
+      - get-s3-build-payload-testing:
           SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
           platform: "linux/${{BUILD_ARCH}}"
-    - integration-test-runner:
+      - integration-test-runner:
           test_name: "{test_name}"
           task_name: "{task_name}"
           skip_tasks: "{skip_tasks}"
@@ -24,13 +24,13 @@
 - builder:
     name: run-integration-test-microk8s
     builders:
-    - install-microk8s:
-        channel: "latest/stable"
-    - select-oci-registry
-    - get-s3-build-payload-testing:
+      - install-microk8s:
+          channel: "latest/stable"
+      - select-oci-registry
+      - get-s3-build-payload-testing:
           SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
           platform: "linux/${{BUILD_ARCH}}"
-    - integration-test-runner:
+      - integration-test-runner:
           test_name: "{test_name}"
           task_name: "{task_name}"
           skip_tasks: "{skip_tasks}"
@@ -55,6 +55,5 @@
           properties-file: build.properties
       - get-juju-cloud-creds
       - host-src-command-with-setup:
-          src_command:
-            !include-raw-verbatim: "common/test-runner.sh"
+          src_command: !include-raw-verbatim: "common/test-runner.sh"
           setup_steps: "{setup_steps}"

@@ -70,10 +70,10 @@
       - workspace-cleanup
       - timestamps
     parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
     builders:
       - wait-for-cloud-init
       - install-common-tools
@@ -117,7 +117,6 @@
             s3://ci-run-streams/builds/build-${{SHORT_GIT_COMMIT}}/agent/ \
             --acl-public
 
-
 - job:
     name: publish-testing-streams-azure
     description: |-
@@ -129,10 +128,10 @@
       - workspace-cleanup
       - timestamps
     parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
     builders:
       - wait-for-cloud-init
       - install-common-tools
@@ -183,20 +182,20 @@
 - builder:
     name: retrieve-generated-streams
     builders:
-    - install-s3cmd
-    - get-s3-creds
-    - shell: |-
-        GENERATED_STREAMS_TARBALL=build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-generated-streams.tar.xz
-        s3cmd --config $S3_CFG \
-          get \
-          s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/agents/${{GENERATED_STREAMS_TARBALL}} \
-          ./
-        tar xf ${{GENERATED_STREAMS_TARBALL}}
+      - install-s3cmd
+      - get-s3-creds
+      - shell: |-
+          GENERATED_STREAMS_TARBALL=build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-generated-streams.tar.xz
+          s3cmd --config $S3_CFG \
+            get \
+            s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/agents/${{GENERATED_STREAMS_TARBALL}} \
+            ./
+          tar xf ${{GENERATED_STREAMS_TARBALL}}
 
 - builder:
     name: install-stream-patcher
     builders:
-    - shell: |-
+      - shell: |-
           #!/bin/bash
 
           # Create the stream product/index patching script on the fly
@@ -223,9 +222,9 @@
               parser.add_argument(
                   'build_sha', help='The short git SHA of the current build')
               args = parser.parse_args()
-          
+
               rewrite_agent_paths(args.stream_folder, args.build_sha)
-          
+
           def rewrite_agent_paths(stream_folder, build_sha):
               target = path.join(
                   stream_folder,
@@ -234,11 +233,11 @@
               )
               with open(target) as f:
                   stream_data = json.load(f)
-          
+
               stream_data = patch_agent_path_r(stream_data, stream_data, build_sha)
               with open(target, 'w') as f:
                   f.write(json.dumps(stream_data, indent=4))
-          
+
           def patch_agent_path_r(d, u, sha):
               for k, v in u.items():
                   if isinstance(v, collections.abc.Mapping):
@@ -249,8 +248,8 @@
                               str.lstrip(v, "agent/build-{{}}/".format(sha))
                           )
               return d
-          
-          
+
+
           if __name__ == "__main__":
               sys.exit(main())
           EOT

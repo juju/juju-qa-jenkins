@@ -1,23 +1,21 @@
 name: "Static Analysis"
 on: [push, pull_request]
 jobs:
-
   lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          path: src/github.com/juju/juju-qa-jenkins
 
-    - name: Checkout
-      uses: actions/checkout@v1
-      with:
-        path: src/github.com/juju/juju-qa-jenkins
+      - name: "Static Analysis: Shell Check"
+        run: |
+          STATIC_ANALYSIS_JOB=test_static_analysis_shell make static-analysis
+        shell: bash
 
-    - name: "Static Analysis: Shell Check"
-      run: |
-        STATIC_ANALYSIS_JOB=test_static_analysis_shell make static-analysis
-      shell: bash
-
-    - name: "Static Analysis: Yaml Check"
-      run: |
-        STATIC_ANALYSIS_JOB=test_static_analysis_yaml make static-analysis
-      shell: bash
+      - name: "Static Analysis: Yaml Check"
+        run: |
+          STATIC_ANALYSIS_JOB=test_static_analysis_yaml make static-analysis
+        shell: bash

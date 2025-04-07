@@ -50,7 +50,6 @@
               GITHUB_REPO=juju/juju
               GITHUB_BRANCH_HEAD_SHA=${{GITHUB_BRANCH_HEAD_SHA}}
 
-
 - job:
     name: "ci-build-juju"
     disabled: false

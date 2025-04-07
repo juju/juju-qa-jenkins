@@ -1,57 +1,57 @@
 # Builders and publishers used during a ci-run
 
 - builder:
-    name: 'resolve-git-sha'
+    name: "resolve-git-sha"
     builders:
-    - shell: !include-raw-verbatim: "scripts/resolve-git-sha.sh"
-    - inject:
-        properties-file: ${{WORKSPACE}}/build.properties
+      - shell: !include-raw-verbatim: "scripts/resolve-git-sha.sh"
+      - inject:
+          properties-file: ${{WORKSPACE}}/build.properties
 
 - builder:
-    name: 'package-juju-source'
+    name: "package-juju-source"
     builders:
-    - shell: !include-raw-verbatim: "scripts/package-juju-source.sh"
-    - inject:
-        properties-file: ${{WORKSPACE}}/build.properties
+      - shell: !include-raw-verbatim: "scripts/package-juju-source.sh"
+      - inject:
+          properties-file: ${{WORKSPACE}}/build.properties
 
 - builder:
-    name: 'set-test-description'
+    name: "set-test-description"
     builders:
-        - description-setter:
-            description: "${{JUJU_VERSION}}:${{SHORT_GIT_COMMIT}}"
+      - description-setter:
+          description: "${{JUJU_VERSION}}:${{SHORT_GIT_COMMIT}}"
 
 - builder:
-    name: 'set-build-description'
+    name: "set-build-description"
     builders:
-        - description-setter:
-            description: "${{JUJU_VERSION}}:${{SHORT_GIT_COMMIT}} (go {GOVERSION})"
+      - description-setter:
+          description: "${{JUJU_VERSION}}:${{SHORT_GIT_COMMIT}} (go {GOVERSION})"
 
 - publisher:
-    name: 'artifact-results'
+    name: "artifact-results"
     publishers:
-        - archive:
-            artifacts: "artifacts/**"
-            allow-empty: false
-            only-if-success: false
-            fingerprint: false
-            default-excludes: true
-            case-sensitive: true
+      - archive:
+          artifacts: "artifacts/**"
+          allow-empty: false
+          only-if-success: false
+          fingerprint: false
+          default-excludes: true
+          case-sensitive: true
 
 - publisher:
-    name: 'log-panic-check'
+    name: "log-panic-check"
     publishers:
-        - postbuildscript:
-            builders:
-              - role: SLAVE
-                build-on:
-                  - SUCCESS
-                  - UNSTABLE
-                build-steps:
-                  - shell: !include-raw-verbatim: ./scripts/panic_search.sh
+      - postbuildscript:
+          builders:
+            - role: SLAVE
+              build-on:
+                - SUCCESS
+                - UNSTABLE
+              build-steps:
+                - shell: !include-raw-verbatim: ./scripts/panic_search.sh
 
 # Basic timeout wrapper for all functional tests
 - wrapper:
-    name: 'cirun-test-stuck-timeout'
+    name: "cirun-test-stuck-timeout"
     wrappers:
       - timeout:
           timeout: 120
@@ -70,19 +70,17 @@
 - builder:
     name: host-src-command-with-setup
     builders:
-      - shell:
-          !include-raw-expand: "scripts/host-command.template.sh"
+      - shell: !include-raw-expand: "scripts/host-command.template.sh"
 
 - builder:
-    name: 'detect-commit-go-version'
+    name: "detect-commit-go-version"
     builders:
-    - shell:
-        !include-raw-verbatim: "scripts/goversion.sh"
-    - inject:
+      - shell: !include-raw-verbatim: "scripts/goversion.sh"
+      - inject:
           properties-file: ${{WORKSPACE}}/goversion
 
 - builder:
-    name: 'ensure-aws-credentials'
+    name: "ensure-aws-credentials"
     builders:
-    - get-juju-cloud-creds
-    - shell: !include-raw-verbatim: "scripts/ensure-aws-credentials.sh"
+      - get-juju-cloud-creds
+      - shell: !include-raw-verbatim: "scripts/ensure-aws-credentials.sh"

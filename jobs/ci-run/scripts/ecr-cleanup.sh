@@ -41,8 +41,8 @@ fi
 for region in ${REGIONS[@]}; do
     echo "=> checking ECR registries in $region..."
     for name in $(
-        aws ecr describe-repositories --region ${region} | 
-        jq ".repositories[] | select( ${NOW} - ${CREATED_AT_SELECTOR} > (${HOURS} * 3600)  )" | 
+        aws ecr describe-repositories --region ${region} |
+        jq ".repositories[] | select( ${NOW} - ${CREATED_AT_SELECTOR} > (${HOURS} * 3600)  )" |
         jq -r .repositoryName
     ); do
         aws ecr delete-repository --repository-name "${name}" --region ${region} --force

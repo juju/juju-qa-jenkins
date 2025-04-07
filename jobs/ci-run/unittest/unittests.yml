@@ -1,7 +1,7 @@
 - job:
-    name: 'unit-tests'
-    project-type: 'multijob'
-    description: 'Run unit tests for a Juju commit'
+    name: "unit-tests"
+    project-type: "multijob"
+    description: "Run unit tests for a Juju commit"
     condition: SUCCESSFUL
     node: noop-parent-jobs
     wrappers:
@@ -9,24 +9,24 @@
       - workspace-cleanup
       - timestamps
     parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
     builders:
       - get-s3-build-details
       - set-test-description
       - multijob:
-            name: UnitTests
-            projects:
-              - name: unit-tests-amd64
-                current-parameters: true
-              - name: unit-tests-arm64
-                current-parameters: true
-              - name: unit-tests-race-amd64
-                current-parameters: true
-              - name: unit-tests-race-arm64
-                current-parameters: true
+          name: UnitTests
+          projects:
+            - name: unit-tests-amd64
+              current-parameters: true
+            - name: unit-tests-arm64
+              current-parameters: true
+            - name: unit-tests-race-amd64
+              current-parameters: true
+            - name: unit-tests-race-arm64
+              current-parameters: true
 # These unit tests are comment out here as they are currently unable to be run
 # due to our Jenkins setup. They will eventually me added back in with our
 # final Jenkins install (tlm 21/04/2022)
@@ -40,12 +40,10 @@
     # Takes parameter: GOTEST_TYPE. 'race' for go test race, 'xunit-report' for
     # make test w/ verbose and generating an xml report and anything else for
     # straight 'make test'
-    name: 'run-unit-tests-host'
+    name: "run-unit-tests-host"
     builders:
-    - host-src-command:
-          src_command:
-              !include-raw-expand: ../scripts/snippet_run-unit-tests.template.sh
-
+      - host-src-command:
+          src_command: !include-raw-expand: ../scripts/snippet_run-unit-tests.template.sh
 
 - job:
     name: unit-tests-amd64
@@ -55,16 +53,16 @@
     wrappers:
       - default-unit-test-wrapper
     parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
-    - string:
-        default: '2400s'
-        name: TEST_TIMEOUT
-    - string:
-        name: USE_TMPFS_FOR_MGO
-        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: "2400s"
+          name: TEST_TIMEOUT
+      - string:
+          name: USE_TMPFS_FOR_MGO
+          description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     builders:
       - wait-for-cloud-init
       - install-common-tools
@@ -88,23 +86,23 @@
           allow-empty-results: true
 
 - job:
-    name: 'unit-tests-arm64'
+    name: "unit-tests-arm64"
     node: ephemeral-noble-16c-64g-arm64
     description: |-
       Build and run unit tests for arm64.
     wrappers:
       - default-unit-test-wrapper
     parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
-    - string:
-        default: '5400s'
-        name: TEST_TIMEOUT
-    - string:
-        name: USE_TMPFS_FOR_MGO
-        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: "5400s"
+          name: TEST_TIMEOUT
+      - string:
+          name: USE_TMPFS_FOR_MGO
+          description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     builders:
       - wait-for-cloud-init
       - install-common-tools
@@ -135,16 +133,16 @@
     wrappers:
       - default-unit-test-wrapper
     parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
-    - string:
-        default: '5400s'
-        name: TEST_TIMEOUT
-    - string:
-        name: USE_TMPFS_FOR_MGO
-        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: "5400s"
+          name: TEST_TIMEOUT
+      - string:
+          name: USE_TMPFS_FOR_MGO
+          description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     builders:
       - wait-for-cloud-init
       - install-common-tools
@@ -175,20 +173,20 @@
     wrappers:
       - default-unit-test-wrapper
     parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
-    - string:
-        default: '5400s'
-        name: TEST_TIMEOUT
-    - string:
-        name: USE_TMPFS_FOR_MGO
-      # TODO(achilleasa): force tmpfs for ppc64el as it's the only one that
-      # struggles with timeouts due to the use of wiretiger on slow hw. Once
-      # we are happy with this, we can set the flag to 1 for the root job.
-        default: "1"
-        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: "5400s"
+          name: TEST_TIMEOUT
+      - string:
+          name: USE_TMPFS_FOR_MGO
+          # TODO(achilleasa): force tmpfs for ppc64el as it's the only one that
+          # struggles with timeouts due to the use of wiretiger on slow hw. Once
+          # we are happy with this, we can set the flag to 1 for the root job.
+          default: "1"
+          description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     builders:
       - wait-for-cloud-init
       - install-common-tools
@@ -211,25 +209,24 @@
           results: tests.xml
           allow-empty-results: true
 
-
 - job:
-    name: 'unit-tests-race-amd64'
+    name: "unit-tests-race-amd64"
     node: ephemeral-noble-16c-64g-amd64
     description: |-
       Build and run unit race tests for amd64.
     wrappers:
       - default-unit-test-wrapper
     parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
-    - string:
-        default: '5400s'
-        name: TEST_TIMEOUT
-    - string:
-        name: USE_TMPFS_FOR_MGO
-        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: "5400s"
+          name: TEST_TIMEOUT
+      - string:
+          name: USE_TMPFS_FOR_MGO
+          description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     builders:
       - wait-for-cloud-init
       - install-common-tools
@@ -248,28 +245,28 @@
           USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 0
     publishers:
-        - junit:
-            results: tests.xml
-            allow-empty-results: true
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
 
 - job:
-    name: 'unit-tests-race-arm64'
+    name: "unit-tests-race-arm64"
     node: ephemeral-noble-16c-64g-arm64
     description: |-
       Build and run unit race tests for arm64.
     wrappers:
       - default-unit-test-wrapper
     parameters:
-    - string:
-        default: ""
-        description: "Enable sub job to be run individually."
-        name: SHORT_GIT_COMMIT
-    - string:
-        default: '5400s'
-        name: TEST_TIMEOUT
-    - string:
-        name: USE_TMPFS_FOR_MGO
-        description: "Set to 1 to use a tmpfs volume for hosting mongo data"
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
+      - string:
+          default: "5400s"
+          name: TEST_TIMEOUT
+      - string:
+          name: USE_TMPFS_FOR_MGO
+          description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     builders:
       - wait-for-cloud-init
       - install-common-tools
@@ -288,9 +285,9 @@
           USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 0
     publishers:
-        - junit:
-            results: tests.xml
-            allow-empty-results: true
+      - junit:
+          results: tests.xml
+          allow-empty-results: true
 
 - wrapper:
     name: default-unit-test-wrapper

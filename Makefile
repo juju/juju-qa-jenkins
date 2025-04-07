@@ -26,7 +26,7 @@ install-deps: ensure-venv
 	# Replace the last line to override the version.
 	find -wholename '*jenkins_jobs/modules/publishers.py' -print0 | xargs -0 sed -i '/info = registry.get_plugin_info("postbuildscript")/!b;n;n;c\    version = pkg_resources.parse_version("3.1.0")'
 
-ifdef IGNORE_STATIC_ANALYSIS 
+ifdef IGNORE_STATIC_ANALYSIS
 push:
 else
 push: static-analysis

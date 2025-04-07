@@ -6,43 +6,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Bootstrap lxd controller
-      uses: charmed-kubernetes/actions-operator@main
-      with:
-        provider: lxd
-        juju-channel: 3/stable
+      - name: Bootstrap lxd controller
+        uses: charmed-kubernetes/actions-operator@main
+        with:
+          provider: lxd
+          juju-channel: 3/stable
 
-    - name: Deploy a Jenkins master to Juju
-      shell: bash
-      run: |
-        set -euxo pipefail
-        juju add-model jenkins
-        juju deploy ch:jenkins --series=noble --config password=password --config plugins=jenkins-multijob-plugin
-        juju wait-for application jenkins --query 'status=="active"'
+      - name: Deploy a Jenkins master to Juju
+        shell: bash
+        run: |
+          set -euxo pipefail
+          juju add-model jenkins
+          juju deploy ch:jenkins --series=noble --config password=password --config plugins=jenkins-multijob-plugin
+          juju wait-for application jenkins --query 'status=="active"'
 
-    - name: Deploy juju-qa-jenkins to Jenkins
-      run: |
-        set -euxo pipefail
-        LOCAL_JENKINS_IP=$(juju status --format=json | jq -r '.applications.jenkins.units[]["public-address"]')
-        export LOCAL_JJB_CONF=$(mktemp)
+      - name: Deploy juju-qa-jenkins to Jenkins
+        run: |
+          set -euxo pipefail
+          LOCAL_JENKINS_IP=$(juju status --format=json | jq -r '.applications.jenkins.units[]["public-address"]')
+          export LOCAL_JJB_CONF=$(mktemp)
 
-        cat >$LOCAL_JJB_CONF <<EOF
-        [job_builder]
-        ignore_cache=True
-        keep_descriptions=False
-        include_path=.:scripts:~/git/
-        recursive=False
-        exclude=.*:manual:./development
-        allow_duplicates=False
+          cat >$LOCAL_JJB_CONF <<EOF
+          [job_builder]
+          ignore_cache=True
+          keep_descriptions=False
+          include_path=.:scripts:~/git/
+          recursive=False
+          exclude=.*:manual:./development
+          allow_duplicates=False
 
-        [jenkins]
-        user=admin
-        password=password
-        url=http://${LOCAL_JENKINS_IP}:8080
-        query_plugins_info=True
-        EOF
+          [jenkins]
+          user=admin
+          password=password
+          url=http://${LOCAL_JENKINS_IP}:8080
+          query_plugins_info=True
+          EOF
 
-        STATIC_ANALYSIS_JOB=test_static_analysis_shell PUSH_TARGET="jobs" make push-local
+          STATIC_ANALYSIS_JOB=test_static_analysis_shell PUSH_TARGET="jobs" make push-local
