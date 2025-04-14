@@ -1,0 +1,50 @@
+- job:
+    name: analyse-juju-tics
+    node: ephemeral-noble-16c-64g-amd64
+    concurrent: true
+    description: |-
+      Build juju binaries for specified platform
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - build-name:
+          name: build-juju-${{BUILD_LABEL}}
+    properties:
+      - build-discarder:
+          days-to-keep: 30
+          num-to-keep: 50
+          artifact-days-to-keep: 30
+          artifact-num-to-keep: 50
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to build
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{{7}}$
+          msg: Enter a valid 7 char git sha
+      - validating-string:
+          description: "Platform for which to build."
+          name: PLATFORM
+          regex: ^.*\/.*$
+          msg: Enter a valid go os/arch
+      - string:
+          default: ""
+          description: "Build tags to pass to makefile."
+          name: BUILD_TAGS
+      - string:
+          default: ""
+          description: "Label to use in naming build artefacts."
+          name: LABEL
+      - validating-string:
+          description: "Label to use when renaming the build."
+          name: BUILD_LABEL
+          regex: ^\S*$
+          msg: Enter a build label
+    builders:
+      - wait-for-cloud-init
+      - set-common-environment
+      - install-common-tools
+      - get-s3-source-payload
+      - setup-go-environment
+      - set-build-description:
+          GOVERSION: "${{GOVERSION}}"

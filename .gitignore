@@ -29,3 +29,5 @@ venv.bak/
 
 *.private.yml
 *.private.yaml
+
+_build/

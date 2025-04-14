@@ -46,6 +46,10 @@ push-local: static-analysis
 	. $(virtualenv_dir)/bin/activate; jenkins-jobs --conf "${LOCAL_JJB_CONF}" \
 		update -r "jobs/common:${PUSH_TARGET}" ${PUSH_JOB}
 
+build-xml: static-analysis
+	. $(virtualenv_dir)/bin/activate; jenkins-jobs \
+		test "jobs/common:jobs/ci-run:jobs/github" -o "${cwd}/_build" --config-xml
+
 static-analysis: install-deps
 	. $(virtualenv_dir)/bin/activate; cd tests && ./main.sh static_analysis "${STATIC_ANALYSIS_JOB}"
 

@@ -71,12 +71,12 @@
       - get-s3-source-payload
       - setup-go-environment
       - go-install:
-          modules: github.com/tebeka/go2xunit@latest
+          modules: github.com/juju/go2xunit@latest
       - description-setter:
           description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
       - run-unit-tests-host:
-          GOTEST_TYPE: "xunit-report"
+          GOTEST_TYPE: "cover"
           TEST_TIMEOUT: "${{TEST_TIMEOUT}}"
           USE_TMPFS_FOR_MGO: "${{USE_TMPFS_FOR_MGO}}"
           FUZZ_CHECK: 1
@@ -111,7 +111,7 @@
       - get-s3-source-payload
       - setup-go-environment
       - go-install:
-          modules: github.com/tebeka/go2xunit@latest
+          modules: github.com/juju/go2xunit@latest
       - description-setter:
           description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
@@ -151,7 +151,7 @@
       - get-s3-source-payload
       - setup-go-environment
       - go-install:
-          modules: github.com/tebeka/go2xunit@latest
+          modules: github.com/juju/go2xunit@latest
       - description-setter:
           description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
@@ -195,7 +195,7 @@
       - get-s3-source-payload
       - setup-go-environment
       - go-install:
-          modules: github.com/tebeka/go2xunit@latest
+          modules: github.com/juju/go2xunit@latest
       - description-setter:
           description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
@@ -235,7 +235,7 @@
       - get-s3-source-payload
       - setup-go-environment
       - go-install:
-          modules: github.com/tebeka/go2xunit@latest
+          modules: github.com/juju/go2xunit@latest
       - description-setter:
           description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.
@@ -275,7 +275,7 @@
       - get-s3-source-payload
       - setup-go-environment
       - go-install:
-          modules: github.com/tebeka/go2xunit@latest
+          modules: github.com/juju/go2xunit@latest
       - description-setter:
           description: "${{JUJU_VERSION}} ${{SHORT_GIT_COMMIT}}"
       # Need to populate with which arch we're building for.

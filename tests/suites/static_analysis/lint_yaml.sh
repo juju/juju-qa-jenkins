@@ -73,6 +73,7 @@ jobs:
     - gating-functional-tests-ppc64el
     - test-refresh-multijob
     - build-jujud-operator-test
+    - analyse-juju-tics
 EOF
 	)
 	if [ -n "${OUT}" ]; then
