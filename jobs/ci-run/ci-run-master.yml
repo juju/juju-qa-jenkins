@@ -85,6 +85,11 @@
           - text:
               credential-id: github-token-private
               variable: GITHUB_TOKEN
+      - credentials-binding:
+          - username-password-separated:
+              credential-id: go-coverage-collector
+              username: COVERAGE_SERVER_URL
+              password: COVERAGE_PRESHAREDKEY
     parameters:
       - string:
           name: GITHUB_REPO
@@ -100,6 +105,10 @@
       - inject:
           properties-content: |-
             GITHUB_TOKEN=
+      - setup-coverage-collect-url
+      - inject:
+          properties-content: |-
+            COVERAGE_PRESHAREDKEY=
       - multijob:
           name: "Packaging"
           condition: SUCCESSFUL
@@ -111,6 +120,8 @@
                 GITHUB_BRANCH_HEAD_SHA=${{GITHUB_BRANCH_HEAD_SHA}}
                 JUJU_BUILD_NUMBER=${{BUILD_NUMBER}}
                 GOVERSION=${{GOVERSION}}
+                INTEGRATION_COVERAGE_COLLECT_URL=${{INTEGRATION_COVERAGE_COLLECT_URL}}
+                UNIT_COVERAGE_COLLECT_URL=${{UNIT_COVERAGE_COLLECT_URL}}
       - get-s3-source-payload
       - inject:
           properties-content: |-
@@ -208,6 +219,13 @@
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+    publishers:
+      - trigger-parameterized-builds:
+          - project: "analyse-juju-tics"
+            condition: SUCCESS
+            current-parameters: true
+            predefined-parameters: |-
+              SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
 
 - job:
     name: package-juju-source
@@ -239,6 +257,18 @@
           name: JUJU_BUILD_NUMBER
           default: ""
           description: "Juju build number."
+      - string:
+          name: GOVERSION
+          default: ""
+          description: "Go version used for this build."
+      - string:
+          name: UNIT_COVERAGE_COLLECT_URL
+          default: ""
+          description: "URL to send go unit test covdata tarball coverage reports to."
+      - string:
+          name: INTEGRATION_COVERAGE_COLLECT_URL
+          default: ""
+          description: "URL to send go integration test covdata tarball coverage reports to."
     builders:
       - common
       - install-go

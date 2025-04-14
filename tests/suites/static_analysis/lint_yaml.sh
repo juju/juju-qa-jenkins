@@ -38,6 +38,7 @@ files:
   skip:
     - .github/workflows/static-analysis.yml
     - .github/workflows/local-deployment.yml
+    - yamlfmt.yaml
 jobs:
   ignore:
     - build-dqlite
@@ -73,6 +74,7 @@ jobs:
     - gating-functional-tests-ppc64el
     - test-refresh-multijob
     - build-jujud-operator-test
+    - analyse-juju-tics
 EOF
 	)
 	if [ -n "${OUT}" ]; then
@@ -91,6 +93,7 @@ files:
     - .github/workflows/static-analysis.yml
     - .github/workflows/local-deployment.yml
     - jobs/ci-run/integration/gen/*
+    - yamlfmt.yaml
 jobs:
   ignore:
     - build-dqlite:build-dqlite-runner
@@ -131,6 +134,7 @@ files:
   skip:
     - .github/workflows/static-analysis.yml
     - .github/workflows/local-deployment.yml
+    - yamlfmt.yaml
 jobs:
   ignore: []
 EOF

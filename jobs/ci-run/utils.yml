@@ -84,3 +84,11 @@
     builders:
       - get-juju-cloud-creds
       - shell: !include-raw-verbatim: "scripts/ensure-aws-credentials.sh"
+
+- builder:
+    name: "setup-coverage-collect-url"
+    builders:
+      - get-ec2-creds
+      - shell: !include-raw-verbatim: "scripts/setup-coverage-collect-url.sh"
+      - inject:
+          properties-file: ${{WORKSPACE}}/build.properties
