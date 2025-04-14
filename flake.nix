@@ -1,7 +1,7 @@
 {
   description = "juju qa jenkins job builder shell";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
   };
 
   outputs = { self, nixpkgs, ... } @ inputs:

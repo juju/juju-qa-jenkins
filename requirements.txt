@@ -1,1 +1,1 @@
-jenkins-job-builder==6.4.1
+jenkins-job-builder==6.4.2
