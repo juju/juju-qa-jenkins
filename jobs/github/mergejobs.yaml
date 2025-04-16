@@ -1,7 +1,7 @@
-- job:   # github-juju-check-jobs
-    name: 'github-juju-check-jobs'
-    project-type: 'multijob'
-    description: 'Run the various checks for landing from GitHub PRs'
+- job: # github-juju-check-jobs
+    name: "github-juju-check-jobs"
+    project-type: "multijob"
+    description: "Run the various checks for landing from GitHub PRs"
     concurrent: true
     node: noop-parent-jobs
     wrappers:
@@ -13,10 +13,10 @@
           fail: true
           type: absolute
     parameters:
-    - string:
-         default: ''
-         description: 'Enable sub job to be run individually.'
-         name: SHORT_GIT_COMMIT
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
     properties:
       - github:
           url: https://github.com/juju/juju/
@@ -26,19 +26,18 @@
     triggers:
       - github-pull-request:
           github-hooks: true
-          trigger-phrase: '/build'
+          trigger-phrase: "/build"
           status-context: "check-multi-juju"
           only-trigger-phrase: false
           auto-close-on-fail: false
           cancel-builds-on-update: true # Cancel existing builds if PR updated/re-run.
-          cron: 'H/5 * * * *'
+          cron: "H/5 * * * *"
           org-list:
             - juju
           allow-whitelist-orgs-as-admins: true
           black-list-labels:
             - "no-test-run"
           black-list-target-branches:
-            - feature-.*
     builders:
       - resolve-merge-commit
       - detect-merge-go-version
@@ -51,25 +50,32 @@
                 GOVERSION=${{GOVERSION}}
                 MERGE_COMMIT=${{MERGE_COMMIT}}
 
-
 - project:
     name: "github-juju-merge-jobs"
-    branch_name:
-      - "main": {}
-      - "2.9": {}
-      - "3.1": {}
-      - "3.3": {}
-      - "3.4": {}
-      - "3.5": {}
-      - "3.6": {}
+    job_suffix:
+      - "main":
+          branch_name: main
+      - "2.9":
+          branch_name: 2.9
+      - "3.1":
+          branch_name: 3.1
+      - "3.3":
+          branch_name: 3.3
+      - "3.4":
+          branch_name: 3.4
+      - "3.5":
+          branch_name: 3.5
+      - "3.6":
+          branch_name: 3.6
+      - "feature-ssh":
+          branch_name: feature/ssh
     jobs:
-      - 'github-juju-merge-jobs-{branch_name}'
+      - "github-juju-merge-jobs-{job_suffix}"
 
-
-- job-template:   # github-juju-merge-jobs
-    name: 'github-juju-merge-jobs-{branch_name}'
-    project-type: 'multijob'
-    description: 'Run the checks and merge the PR if it passes'
+- job-template: # github-juju-merge-jobs
+    name: "github-juju-merge-jobs-{job_suffix}"
+    project-type: "multijob"
+    description: "Run the checks and merge the PR if it passes"
     concurrent: false
     node: noop-parent-jobs # job does nothing
     wrappers:
@@ -81,10 +87,10 @@
           fail: true
           type: absolute
     parameters:
-    - string:
-         default: ''
-         description: 'Enable sub job to be run individually.'
-         name: SHORT_GIT_COMMIT
+      - string:
+          default: ""
+          description: "Enable sub job to be run individually."
+          name: SHORT_GIT_COMMIT
     properties:
       - github:
           url: https://github.com/juju/juju/
@@ -94,16 +100,16 @@
     triggers:
       - github-pull-request:
           github-hooks: true
-          trigger-phrase: '/merge'
-          status-context: "merge-multi-juju-{branch_name}"
+          trigger-phrase: "/merge"
+          status-context: "merge-multi-juju-{job_suffix}"
           only-trigger-phrase: true
           auto-close-on-fail: false
-          cron: 'H/5 * * * *'
+          cron: "H/5 * * * *"
           org-list:
             - juju
           allow-whitelist-orgs-as-admins: true
           white-list-target-branches:
-            - '{branch_name}'
+            - "{branch_name}"
     builders:
       - shell: |-
           #!/bin/bash
@@ -138,18 +144,16 @@
           results: tests.xml
           allow-empty-results: true
 
-
 - publisher:
-    name: 'github-artifacts'
+    name: "github-artifacts"
     publishers:
-        - archive:
-            artifacts: "artifacts/output.tar.gz"
-            allow-empty: true
-            only-if-success: false
-            fingerprint: false
-            default-excludes: true
-            case-sensitive: true
-
+      - archive:
+          artifacts: "artifacts/output.tar.gz"
+          allow-empty: true
+          only-if-success: false
+          fingerprint: false
+          default-excludes: true
+          case-sensitive: true
 
 - job:
     name: github-make-check-juju
@@ -158,26 +162,26 @@
     concurrent: true
     node: ephemeral-github-16c-64g-amd64
     parameters:
-    - string:
-        default: ''
-        description: 'Pseudo merge commit for this PR check run'
-        name: MERGE_COMMIT
-    - string:
-        default: ''
-        description: 'Go version used for build.'
-        name: GOVERSION
+      - string:
+          default: ""
+          description: "Pseudo merge commit for this PR check run"
+          name: MERGE_COMMIT
+      - string:
+          default: ""
+          description: "Go version used for build."
+          name: GOVERSION
     properties:
       - authorization:
-         anonymous:
-             - job-read
+          anonymous:
+            - job-read
     wrappers:
       - ansicolor
       - workspace-cleanup
       - timestamps
       - timeout:
-           timeout: 120
-           fail: true
-           type: absolute
+          timeout: 120
+          fail: true
+          type: absolute
     builders:
       - set-check-description
       - install-go
@@ -199,12 +203,9 @@
       - run-build-check-raw:
           build_env: ""
           setup_steps: ""
-          src_command:
-              !include-raw-verbatim: "./scripts/snippet_build_check-juju-juju.sh"
-          checkout_command:
-              !include-raw-verbatim: "./scripts/checkout.sh"
-          test_command:
-              !include-raw-verbatim: "./scripts/snippet_clean-test-exit.sh"
+          src_command: !include-raw-verbatim: "./scripts/snippet_build_check-juju-juju.sh"
+          checkout_command: !include-raw-verbatim: "./scripts/checkout.sh"
+          test_command: !include-raw-verbatim: "./scripts/snippet_clean-test-exit.sh"
     publishers:
       - junit:
           results: tests.xml
