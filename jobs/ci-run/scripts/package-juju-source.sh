@@ -31,9 +31,6 @@ rm -rf ${full_path}
 git clone --depth 1 "file://${JUJU_SOURCE_CHECKOUT}" "${full_path}"
 rm -fr "${JUJU_SOURCE_CHECKOUT}"
 
-# TODO - remove vendor mode for go mod
-# It currently is needed for s390x builds since the s390x slave
-# is on a restricted network.
 echo "Resolving dependencies"
 export JUJU_MAKE_DEP=true
 export JUJU_GOMOD_MODE=vendor

@@ -17,13 +17,13 @@
       - get-s3-build-details
       - get-s3-agent-payload:
           dest: ${{WORKSPACE}}
-          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
+          platforms: linux/amd64 linux/arm64
       - shell: |-
           #!/bin/bash
           set -e
           mkdir -p ${{WORKSPACE}}/agent_json
       - generate-agent-json:
-          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
+          platforms: linux/amd64 linux/arm64
           product_name: ubuntu
           output_dir: "${{WORKSPACE}}/agent_json"
       - install-simplestreams
@@ -88,7 +88,7 @@
           mkdir -p ${{WORKSPACE}}/agent/build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}/
       - get-s3-agent-payload:
           dest: ${{WORKSPACE}}/agent/build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}
-          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
+          platforms: linux/amd64 linux/arm64
       - retrieve-generated-streams
       - install-stream-patcher
       - shell: |-
@@ -146,7 +146,7 @@
           mkdir -p ${{WORKSPACE}}/agent/build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}/
       - get-s3-agent-payload:
           dest: ${{WORKSPACE}}/agent/build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}
-          platforms: linux/amd64 linux/arm64 linux/s390x linux/ppc64el
+          platforms: linux/amd64 linux/arm64
       - retrieve-generated-streams
       - install-stream-patcher
       - get-azure-creds
