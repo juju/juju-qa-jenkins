@@ -137,18 +137,14 @@
                 BUILD_LABEL=linux-arm64
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
       - multijob:
-          name: "Building Juju OCI Images"
+          name: "Streams Generation and OCI Images"
           condition: SUCCESSFUL
+          execution-type: PARALLEL
           projects:
             - name: build-jujud-operator
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-      - multijob:
-          name: "Simple Streams"
-          condition: SUCCESSFUL
-          execution-type: SEQUENTIALLY
-          projects:
             - name: generate-agent-testing-streams
               current-parameters: true
               predefined-parameters: |-
@@ -156,7 +152,7 @@
       - multijob:
           name: "Simple Streams Publish"
           condition: SUCCESSFUL
-          execution-type: SEQUENTIALLY
+          execution-type: PARALLEL
           projects:
             - name: publish-testing-streams-aws
               current-parameters: true
