@@ -4,7 +4,6 @@
 # From the official Docker docs https://docs.docker.com/engine/install/ubuntu/
 set -eux
 
-sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   ca-certificates \
   curl \

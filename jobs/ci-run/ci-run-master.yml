@@ -240,6 +240,7 @@
           default: ""
           description: "Juju build number."
     builders:
+      - common
       - install-go
       - inject:
           properties-content: |-

@@ -89,8 +89,8 @@
           fail: true
           type: absolute
     builders:
+      - common
       - select-oci-registry
-      - wait-for-cloud-init
       - prepare-integration-test
       - conditional-step:
           # Do not run on regexp version match.
@@ -165,8 +165,8 @@
           fail: true
           type: absolute
     builders:
+      - common
       - select-oci-registry
-      - wait-for-cloud-init
       - prepare-integration-test
       - conditional-step:
           # Do not run on regexp version match.

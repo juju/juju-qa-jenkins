@@ -91,8 +91,8 @@
           fail: true
           type: absolute
     builders:
+      - common
       - select-oci-registry
-      - wait-for-cloud-init
       - prepare-integration-test
       - run-integration-test:
           test_name: "firewall"
@@ -160,8 +160,8 @@
           fail: true
           type: absolute
     builders:
+      - common
       - select-oci-registry
-      - wait-for-cloud-init
       - prepare-integration-test
       - run-integration-test:
           test_name: "firewall"
@@ -229,8 +229,8 @@
           fail: true
           type: absolute
     builders:
+      - common
       - select-oci-registry
-      - wait-for-cloud-init
       - prepare-integration-test
       - conditional-step:
           # Only run on regexp version match.

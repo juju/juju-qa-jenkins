@@ -615,8 +615,8 @@ const Template = `
           fail: true
           type: absolute
     builders:
+      - common
       - select-oci-registry
-      - wait-for-cloud-init
       - prepare-integration-test
 {{- $minRegexp := index $.MinVersions $task_name -}}
 {{- if eq $minRegexp "" }}

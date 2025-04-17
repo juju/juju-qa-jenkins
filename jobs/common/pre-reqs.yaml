@@ -1,11 +1,17 @@
+# common is the initialisation of a builder
+- builder:
+    name: common
+    builders:
+      - wait-for-cloud-init
+      - apt-update
+
 # install-docker will install and setup docker on a ubuntu machine.
 # It will also enable cross compilation support and add the current user to the
 # Docker group.
 - builder:
     name: install-docker
     builders:
-      - shell:
-          !include-raw-verbatim: scripts/setup_steps-install-docker.sh
+      - shell: !include-raw-verbatim: scripts/setup_steps-install-docker.sh
 
 # docker-login will run the login steps for connecting this host's docker daemon
 # to the Juju docker hub account.
@@ -57,6 +63,15 @@
           set -eux
           go install {modules}
 
+- builder:
+    name: apt-update
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -eux
+          echo "Updating packages"
+          sudo DEBIAN_FRONTEND=noninteractive apt-get update
+
 # install-common-tools installs the common set of tools needed between 99% of
 # jobs in this repo. This builder assumes the install target is Ubuntu.
 - builder:
@@ -66,8 +81,6 @@
           #!/bin/bash
           set -eux
 
-          echo "Updating packages"
-          sudo DEBIAN_FRONTEND=noninteractive apt-get update
 
           echo "Installing common tools"
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -76,42 +89,41 @@
 - builder:
     name: install-go
     builders:
-    - shell:
-        !include-raw-verbatim: "scripts/install-go.sh"
+      - shell: !include-raw-verbatim: "scripts/install-go.sh"
 
 - builder:
     name: install-microk8s
     builders:
-    - shell: |-
-        #!/bin/bash
-        set -ex
+      - shell: |-
+          #!/bin/bash
+          set -ex
 
-        # Install microk8s and kubectl
-        sudo snap install microk8s --classic --channel={channel}
-        sudo snap install kubectl --classic --channel={channel}
-        echo "waiting for microk8s storage to become available"
+          # Install microk8s and kubectl
+          sudo snap install microk8s --classic --channel={channel}
+          sudo snap install kubectl --classic --channel={channel}
+          echo "waiting for microk8s storage to become available"
 
-        NEXT_WAIT_TIME=0
-        until [ $NEXT_WAIT_TIME -eq 30 ] || sudo microk8s enable dns && microk8s status --yaml | grep -q 'dns: enabled'; do
-            sleep $(( NEXT_WAIT_TIME++ ))
-        done
-        if [ $NEXT_WAIT_TIME == 30 ]; then
-            echo "microk8s dns is still not enabled"
-            exit 1
-        fi
+          NEXT_WAIT_TIME=0
+          until [ $NEXT_WAIT_TIME -eq 30 ] || sudo microk8s enable dns && microk8s status --yaml | grep -q 'dns: enabled'; do
+              sleep $(( NEXT_WAIT_TIME++ ))
+          done
+          if [ $NEXT_WAIT_TIME == 30 ]; then
+              echo "microk8s dns is still not enabled"
+              exit 1
+          fi
 
-        NEXT_WAIT_TIME=0
-        # Required addon hostpath-storage is called storage for older versions of microk8s
-        until [ $NEXT_WAIT_TIME -eq 30 ] || sudo microk8s enable hostpath-storage || sudo microk8s enable storage && microk8s status --yaml | grep -q 'storage: enabled'; do
-            sleep $(( NEXT_WAIT_TIME++ ))
-        done
-        if [ $NEXT_WAIT_TIME == 30 ]; then
-            echo "microk8s storage is still not enabled"
-            exit 1
-        fi
+          NEXT_WAIT_TIME=0
+          # Required addon hostpath-storage is called storage for older versions of microk8s
+          until [ $NEXT_WAIT_TIME -eq 30 ] || sudo microk8s enable hostpath-storage || sudo microk8s enable storage && microk8s status --yaml | grep -q 'storage: enabled'; do
+              sleep $(( NEXT_WAIT_TIME++ ))
+          done
+          if [ $NEXT_WAIT_TIME == 30 ]; then
+              echo "microk8s storage is still not enabled"
+              exit 1
+          fi
 
-        sudo getent group microk8s || sudo addgroup microk8s
-        sudo usermod -a -G microk8s $USER
+          sudo getent group microk8s || sudo addgroup microk8s
+          sudo usermod -a -G microk8s $USER
 
 # setup-go-environment is responsible for setting up the basic GO environment
 # needed to build and run go applications related to juju.
@@ -123,7 +135,7 @@
       - install-go
       - inject:
           properties-content: |-
-            GOPATH=${{WORKSPACE}}/go-path
+            GOPATH=${{WORKSPACE}}/.go
       - shell: |-
           #!/bin/bash
           set -ex
@@ -183,37 +195,34 @@
 - builder:
     name: install-s3cmd
     builders:
-    - shell: |-
-        #!/bin/bash
-        set -xeu
+      - shell: |-
+          #!/bin/bash
+          set -xeu
 
-        if [ -z "$(command -v s3cmd)" ]; then
-          sudo DEBIAN_FRONTEND=noninteractive apt update;
-          sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
-          sudo pip3 install s3cmd;
-        fi
+          if [ -z "$(command -v s3cmd)" ]; then
+            sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
+            sudo pip3 install s3cmd;
+          fi
 
-        echo Using s3cmd "$(command -v s3cmd)"
+          echo Using s3cmd "$(command -v s3cmd)"
 
 - builder:
     name: install-azure-cli
     builders:
-    - shell: |-
-        #!/bin/bash
-        # Steps come from https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
-        set -eux
+      - shell: |-
+          #!/bin/bash
+          # Steps come from https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
+          set -eux
 
-        sudo DEBIAN_FRONTEND=noninteractive apt-get update
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates curl apt-transport-https lsb-release gnupg
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates curl apt-transport-https lsb-release gnupg
 
-        curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
+          curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
 
-        AZ_REPO=$(lsb_release -cs)
-        echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
+          AZ_REPO=$(lsb_release -cs)
+          echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
 
-        sudo DEBIAN_FRONTEND=noninteractive apt-get update
-
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y azure-cli
+          sudo DEBIAN_FRONTEND=noninteractive apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y azure-cli
 
 - builder:
     name: install-simplestreams
@@ -222,80 +231,75 @@
           #!/bin/bash
           set -eux
 
-          sudo DEBIAN_FRONTEND=noninteractive apt update;
           sudo DEBIAN_FRONTEND=noninteractive apt install -y simplestreams
 
 - builder:
     name: install-aws-libs
     builders:
-    - shell: |-
-        #!/bin/bash
-        set -xeu
+      - shell: |-
+          #!/bin/bash
+          set -xeu
 
-        sudo DEBIAN_FRONTEND=noninteractive apt update;
-        sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
-        sudo pip3 install apache-libcloud;
+          sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
+          sudo pip3 install apache-libcloud;
 
 - builder:
     name: install-gce-libs
     builders:
-    - shell: |-
-        #!/bin/bash
-        set -xeu
+      - shell: |-
+          #!/bin/bash
+          set -xeu
 
-        sudo DEBIAN_FRONTEND=noninteractive apt update;
-        sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
-        sudo pip3 install apache-libcloud;
+          sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
+          sudo pip3 install apache-libcloud;
 
 - builder:
     name: get-aws-cleanup-scripts
     builders:
-    - checkout-qa-repo
-    - install-aws-libs
-    - shell: |-
-        #!/bin/bash
-        set -eux
+      - checkout-qa-repo
+      - install-aws-libs
+      - shell: |-
+          #!/bin/bash
+          set -eux
 
-        cd scripts
-        git checkout origin/main -- jobs/z-jobs/scripts/aws.py
-        cd ${{WORKSPACE}}
-    - inject:
-        properties-content: |-
+          cd scripts
+          git checkout origin/main -- jobs/z-jobs/scripts/aws.py
+          cd ${{WORKSPACE}}
+      - inject:
+          properties-content: |-
             SCRIPTS_DIR=${{WORKSPACE}}/scripts/jobs/z-jobs/scripts/
-
 
 - builder:
     name: get-gce-cleanup-scripts
     builders:
-    - checkout-qa-repo
-    - install-gce-libs
-    - shell: |-
-        #!/bin/bash
-        set -eux
+      - checkout-qa-repo
+      - install-gce-libs
+      - shell: |-
+          #!/bin/bash
+          set -eux
 
-        sudo snap install google-cloud-cli --classic || true
+          sudo snap install google-cloud-cli --classic || true
 
-        cd scripts
-        git checkout origin/main -- jobs/z-jobs/scripts/gce.py
-        cd ${{WORKSPACE}}
-    - inject:
-        properties-content: |-
+          cd scripts
+          git checkout origin/main -- jobs/z-jobs/scripts/gce.py
+          cd ${{WORKSPACE}}
+      - inject:
+          properties-content: |-
             SCRIPTS_DIR=${{WORKSPACE}}/scripts/jobs/z-jobs/scripts/
 
 - builder:
     name: checkout-qa-repo
     builders:
-    - shell: |-
-        #!/bin/bash
-        set -eux
+      - shell: |-
+          #!/bin/bash
+          set -eux
 
-        cd ${{WORKSPACE}}
-        if [ ! -d "${{WORKSPACE}}/scripts" ]; then
-            git clone git@github.com:juju/juju-qa-jenkins.git --no-checkout --depth 1 scripts
-        fi
+          cd ${{WORKSPACE}}
+          if [ ! -d "${{WORKSPACE}}/scripts" ]; then
+              git clone git@github.com:juju/juju-qa-jenkins.git --no-checkout --depth 1 scripts
+          fi
 
 - builder:
     name: install-mongo4.4
     builders:
-    - shell:
-        !include-raw-verbatim: "scripts/install-mongo4.4.sh"
+      - shell: !include-raw-verbatim: "scripts/install-mongo4.4.sh"

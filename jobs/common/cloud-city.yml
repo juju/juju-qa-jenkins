@@ -1,93 +1,130 @@
 - builder:
     # grab cloud-city so we can source the scripts
-    name: 'get-cloud-city-repo'
+    name: "get-cloud-city-repo"
     builders:
-    - shell: |-
-        #!/bin/bash
-        set -eux
+      - shell: |-
+          #!/bin/bash
+          set -eux
 
-        cd ${{WORKSPACE}}
-        if [[ ! -d "${{WORKSPACE}}/cloud-city" ]]; then
-            git clone --no-checkout --depth 1 git+ssh://juju-qa-bot@git.launchpad.net/~juju-qa/+git/cloud-city
-        fi
+          cd ${{WORKSPACE}}
+          if [[ ! -d "${{WORKSPACE}}/cloud-city" ]]; then
+              git clone --no-checkout --depth 1 git+ssh://juju-qa-bot@git.launchpad.net/~juju-qa/+git/cloud-city
+          fi
 
-        if [[ -z "{files}" ]]; then
-          echo "must specify files to fetch from cloud-city"
-          exit 1
-        fi  
+          if [[ -z "{files}" ]]; then
+            echo "must specify files to fetch from cloud-city"
+            exit 1
+          fi
 
-        cd cloud-city
-        git checkout origin/master -- {files}
+          cd cloud-city
+          git checkout origin/master -- {files}
 
-    - inject:
-        properties-content: |-
+      - inject:
+          properties-content: |-
             CLOUD_CITY=${{WORKSPACE}}/cloud-city
 
 - builder:
-    name: 'get-s3-creds'
+    name: "get-s3-creds"
     builders:
-    - get-cloud-city-repo:
-        files: juju-qa.s3cfg
-    - inject:
-        properties-content: |-
+      - get-cloud-city-repo:
+          files: juju-qa.s3cfg
+      - inject:
+          properties-content: |-
             S3_CFG=$CLOUD_CITY/juju-qa.s3cfg
 
 - builder:
-    name: 'get-azure-creds'
+    name: "get-azure-creds"
     builders:
-    - get-cloud-city-repo:
-        files: azuretoolsrc
-    - inject:
-        properties-file: $CLOUD_CITY/azuretoolsrc
+      - get-cloud-city-repo:
+          files: azuretoolsrc
+      - inject:
+          properties-file: $CLOUD_CITY/azuretoolsrc
 
 - builder:
-    name: 'get-docker-creds'
+    name: "get-docker-creds"
     builders:
-    - get-cloud-city-repo:
-        files: dockerrc
-    - inject:
-        properties-file: $CLOUD_CITY/dockerrc
+      - get-cloud-city-repo:
+          files: dockerrc
+      - inject:
+          properties-file: $CLOUD_CITY/dockerrc
 
 - builder:
-    name: 'get-ec2-creds'
+    name: "get-ec2-creds"
     builders:
-    - get-cloud-city-repo:
-        files: ec2rc
-    - inject:
-        properties-file: $CLOUD_CITY/ec2rc
+      - get-cloud-city-repo:
+          files: ec2rc
+      - inject:
+          properties-file: $CLOUD_CITY/ec2rc
 
 - builder:
-    name: 'get-gce-creds'
+    name: "get-gce-creds"
     builders:
-    - get-cloud-city-repo:
-        files: gcerc juju-qa-gce-serviceaccount.json
-    - inject:
-        properties-file: $CLOUD_CITY/gcerc
-        properties-content:
-            GCE_CREDENTIALS_FILE=$CLOUD_CITY/juju-qa-gce-serviceaccount.json
+      - get-cloud-city-repo:
+          files: gcerc juju-qa-gce-serviceaccount.json
+      - inject:
+          properties-file: $CLOUD_CITY/gcerc
+          properties-content: GCE_CREDENTIALS_FILE=$CLOUD_CITY/juju-qa-gce-serviceaccount.json
 
 - builder:
-    name: 'get-vsphere-creds'
+    name: "get-vsphere-creds"
     builders:
-    - get-cloud-city-repo:
-        files: vsphere-govc-rc
-    - inject:
-        properties-file: $CLOUD_CITY/vsphere-govc-rc
+      - get-cloud-city-repo:
+          files: vsphere-govc-rc
+      - inject:
+          properties-file: $CLOUD_CITY/vsphere-govc-rc
 
 - builder:
-    name: 'get-github-token'
+    name: "get-github-token"
     builders:
-    - get-cloud-city-repo:
-        files: github-token
-    - inject:
-        properties-content:
-            GITHUB_TOKEN_FILE=${{CLOUD_CITY}}/github-token
+      - get-cloud-city-repo:
+          files: github-token
+      - inject:
+          properties-content: GITHUB_TOKEN_FILE=${{CLOUD_CITY}}/github-token
 
 - builder:
-    name: 'get-juju-cloud-creds'
+    name: "get-juju-cloud-creds"
     builders:
-    - get-cloud-city-repo:
-        files: clouds.yaml credentials.yaml
-    - inject:
-        properties-content: |-
+      - get-cloud-city-repo:
+          files: clouds.yaml credentials.yaml
+      - inject:
+          properties-content: |-
             JUJU_DATA=$CLOUD_CITY
+
+- builder:
+    name: "lockdown-cloud-city"
+    builders:
+      - shell: |-
+          echo "Locking down environment"
+          rm -rf $HOME/.ssh/id*
+          rm -rf $WORKSPACE/cloud-city
+      - inject:
+          properties-content: |-
+            AWS_ACCESS_KEY=
+            AWS_ACCESS_KEY_ID=
+            AWS_SECRET_ACCESS_KEY=
+            AWS_SECRET_KEY=
+            AZURE_CLIENT_ID=
+            AZURE_MANAGEMENT_SUBSCRIPTIONID=
+            AZURE_SECRET=
+            AZURE_STORAGE_ACCESS_KEY=
+            AZURE_STORAGE_ACCOUNT=
+            AZURE_SUBSCRIPTION_ID=
+            AZURE_TENANT=
+            DOCKERHUB_P=
+            DOCKERHUB_U=
+            EC2_ACCESS_KEY=
+            EC2_SECRET_KEY=
+            EC2_URL=
+            GCE_CREDENTIALS_FILE=
+            GCE_PEM_PATH=
+            GCE_PROJECT_ID=
+            GCE_SA_EMAIL=
+            GITHUB_TOKEN_FILE=
+            JUJU_DATA=
+            OS_AUTH_URL=
+            OS_PASSWORD=
+            OS_REGION_NAME=
+            OS_TENANT_ID=
+            OS_TENANT_NAME=
+            OS_USERNAME=
+            _RACKSPACE_API_KEY=

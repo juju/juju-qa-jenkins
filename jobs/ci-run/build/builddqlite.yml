@@ -56,7 +56,7 @@
           regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
     builders:
-      - wait-for-cloud-init
+      - common
       - set-common-environment
       - install-common-tools
       - detect-commit-go-version
@@ -84,7 +84,7 @@
           regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
     builders:
-      - wait-for-cloud-init
+      - common
       - set-common-environment
       - install-common-tools
       - detect-commit-go-version
@@ -118,7 +118,7 @@
           regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
     builders:
-      - wait-for-cloud-init
+      - common
       - set-common-environment
       - install-common-tools
       - install-docker
@@ -148,7 +148,7 @@
           regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
     builders:
-      - wait-for-cloud-init
+      - common
       - set-common-environment
       - install-common-tools
       - install-docker

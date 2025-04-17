@@ -83,8 +83,8 @@
           fail: true
           type: absolute
     builders:
+      - common
       - select-oci-registry
-      - wait-for-cloud-init
       - prepare-integration-test
       - run-integration-test-microk8s:
           test_name: "deploy_caas"

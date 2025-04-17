@@ -14,6 +14,7 @@
           description: "Enable sub job to be run individually."
           name: SHORT_GIT_COMMIT
     builders:
+      - common
       - get-s3-build-details
       - get-s3-agent-payload:
           dest: ${{WORKSPACE}}
@@ -75,7 +76,7 @@
           description: "Enable sub job to be run individually."
           name: SHORT_GIT_COMMIT
     builders:
-      - wait-for-cloud-init
+      - common
       - install-common-tools
       - install-s3cmd
       - get-s3-creds
@@ -133,7 +134,7 @@
           description: "Enable sub job to be run individually."
           name: SHORT_GIT_COMMIT
     builders:
-      - wait-for-cloud-init
+      - common
       - install-common-tools
       - install-azure-cli
       - get-s3-build-details

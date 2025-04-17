@@ -59,8 +59,8 @@
     concurrent: true
     parameters:
       - string:
-          default: ''
-          description: 'Pseudo merge commit for this PR check run'
+          default: ""
+          description: "Pseudo merge commit for this PR check run"
           name: MERGE_COMMIT
       - string:
           default: ""
@@ -83,6 +83,7 @@
           fail: true
           type: absolute
     builders:
+      - common
       - set-check-description
       - install-go
       - install-mongo4.4

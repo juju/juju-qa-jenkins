@@ -183,6 +183,7 @@
           fail: true
           type: absolute
     builders:
+      - common
       - set-check-description
       - install-go
       - shell: |-

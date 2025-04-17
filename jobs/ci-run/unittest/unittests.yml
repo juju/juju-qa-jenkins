@@ -64,7 +64,7 @@
           name: USE_TMPFS_FOR_MGO
           description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     builders:
-      - wait-for-cloud-init
+      - common
       - install-common-tools
       - apt-install:
           packages: gcc squashfuse
@@ -104,7 +104,7 @@
           name: USE_TMPFS_FOR_MGO
           description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     builders:
-      - wait-for-cloud-init
+      - common
       - install-common-tools
       - apt-install:
           packages: gcc squashfuse
@@ -228,7 +228,7 @@
           name: USE_TMPFS_FOR_MGO
           description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     builders:
-      - wait-for-cloud-init
+      - common
       - install-common-tools
       - apt-install:
           packages: gcc squashfuse
@@ -268,7 +268,7 @@
           name: USE_TMPFS_FOR_MGO
           description: "Set to 1 to use a tmpfs volume for hosting mongo data"
     builders:
-      - wait-for-cloud-init
+      - common
       - install-common-tools
       - apt-install:
           packages: gcc squashfuse

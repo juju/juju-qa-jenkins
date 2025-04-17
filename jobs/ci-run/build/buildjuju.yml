@@ -43,7 +43,7 @@
           regex: ^\S*$
           msg: Enter a build label
     builders:
-      - wait-for-cloud-init
+      - common
       - set-common-environment
       - install-common-tools
       - get-s3-source-payload
@@ -156,7 +156,7 @@
           description: "Space seperated list of Go Platforms to build the OCI images for"
           name: BUILD_PLATFORMS
     builders:
-      - wait-for-cloud-init
+      - common
       - set-common-environment
       - install-common-tools
       - get-s3-source-payload
