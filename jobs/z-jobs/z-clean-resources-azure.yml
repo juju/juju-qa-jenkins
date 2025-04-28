@@ -1,61 +1,61 @@
 - job:
     name: 'z-clean-resources-azure'
     builders:
-    - wait-for-cloud-init
-    - install-azure-cli
-    - get-azure-creds
-    - get-juju-cloud-creds
-    - shell: |-
-        #!/bin/bash
-        set -eux
+      - wait-for-cloud-init
+      - install-azure-cli
+      - get-azure-creds
+      - get-juju-cloud-creds
+      - shell: |-
+          #!/bin/bash
+          set -eux
 
-        if [ ! "$(which jq >/dev/null 2>&1)" ]; then
-          sudo snap install jq || true
-        fi
-        if [ ! "$(which yq >/dev/null 2>&1)" ]; then
-          sudo snap install yq || true
-        fi
-
-        az login --service-principal \
-          -u "$(cat "$CLOUD_CITY"/credentials.yaml | yq ".credentials.azure.credentials.application-id")" \
-          -p "$(cat "$CLOUD_CITY"/credentials.yaml | yq ".credentials.azure.credentials.application-password")" \
-          --tenant "$AZURE_TENANT"
-
-        HOURS=3
-        az group list --subscription "$AZURE_SUBSCRIPTION_ID" | jq -r '.[] | select(.id | contains("juju-")) | .name' | while read group ; do
-          oldest=$(az resource list --subscription "$AZURE_SUBSCRIPTION_ID" --resource-group "$group" | jq -r 'map(select(.createdTime != null)) | map(.createdTime | split(".") | (.[0] + "Z") | fromdate) | sort | .[0]')
-          if [[ "$oldest" = "null" ]]; then
-            echo "skipping $group"
-            continue
+          if [ ! "$(which jq >/dev/null 2>&1)" ]; then
+            sudo snap install jq || true
           fi
-          if [ $((($(date -u +%s)-$oldest)/3600)) -gt $HOURS ]; then
-            echo "deleting resource group $group"
-            az group delete --subscription "$AZURE_SUBSCRIPTION_ID" --resource-group "$group" -f "Microsoft.Compute/virtualMachineScaleSets" -f "Microsoft.Compute/virtualMachines" -y
+          if [ ! "$(which yq >/dev/null 2>&1)" ]; then
+            sudo snap install yq || true
           fi
-        done
+
+          az login --service-principal \
+            -u "$(cat "$CLOUD_CITY"/credentials.yaml | yq ".credentials.azure.credentials.application-id")" \
+            -p "$(cat "$CLOUD_CITY"/credentials.yaml | yq ".credentials.azure.credentials.application-password")" \
+            --tenant "$AZURE_TENANT"
+
+          HOURS=3
+          az group list --subscription "$AZURE_SUBSCRIPTION_ID" | jq -r '.[] | select(.id | contains("juju-")) | .name' | while read group ; do
+            oldest=$(az resource list --subscription "$AZURE_SUBSCRIPTION_ID" --resource-group "$group" | jq -r 'map(select(.createdTime != null)) | map(.createdTime | split(".") | (.[0] + "Z") | fromdate) | sort | .[0]')
+            if [[ "$oldest" = "null" ]]; then
+              echo "skipping $group"
+              continue
+            fi
+            if [ $((($(date -u +%s)-$oldest)/3600)) -gt $HOURS ]; then
+              echo "deleting resource group $group"
+              az group delete --subscription "$AZURE_SUBSCRIPTION_ID" --resource-group "$group" -f "Microsoft.Compute/virtualMachineScaleSets" -f "Microsoft.Compute/virtualMachines" -y
+            fi
+          done
     description: |-
       Delete old azure resource groups.
     node: ephemeral-noble-small-amd64
     publishers:
-    - email-ext:
-        recipients: juju-qa-aws@canonical.com
-        content-type: html
-        attach-build-log: false
-        fixed-unhealthy: true
-        first-failure: false
-        second-failure: true
-        body: |
-          <h1>Infrastructure failure: Azure</h1>
-          The following job has repeatedly failed.
-          <br />
-          Please login to jenkins job <pre>`z-clean-resources-azure`</pre> to find out why
-          it is failing.
-          <br />
-          $DEFAULT_CONTENT
+      - email-ext:
+          recipients: juju-qa-aws@canonical.com
+          content-type: html
+          attach-build-log: false
+          fixed-unhealthy: true
+          first-failure: false
+          second-failure: true
+          body: |
+            <h1>Infrastructure failure: Azure</h1>
+            The following job has repeatedly failed.
+            <br />
+            Please login to jenkins job <pre>`z-clean-resources-azure`</pre> to find out why
+            it is failing.
+            <br />
+            $DEFAULT_CONTENT
     triggers:
-    - timed: H * * * *
+      - timed: H * * * *
     wrappers:
-    - timeout:
-        fail: true
-        timeout: 30
-        type: absolute
+      - timeout:
+          fail: true
+          timeout: 30
+          type: absolute

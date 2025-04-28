@@ -20,48 +20,43 @@
     #        echo "done"
     name: 'run-build-check-lxd'
     builders:
-    - shell:
-        !include-raw-verbatim: "scripts/run-snippet-lxd.sh"
+      - shell: !include-raw-verbatim: "scripts/run-snippet-lxd.sh"
 
 
 - builder:
     # Compatible with run-build-check-lxd.
     name: 'run-build-check-raw'
     builders:
-    - shell:
-        !include-raw-expand: "scripts/run-snippet-compat.template.sh"
+      - shell: !include-raw-expand: "scripts/run-snippet-compat.template.sh"
 
 
 - builder:
     name: 'detect-merge-go-version'
     builders:
-    - shell:
-        !include-raw-verbatim: "scripts/goversion.sh"
-    - inject:
-        properties-file: ${{WORKSPACE}}/goversion
+      - shell: !include-raw-verbatim: "scripts/goversion.sh"
+      - inject:
+          properties-file: ${{WORKSPACE}}/goversion
 
 - builder:
     name: github-merge
     builders:
-    - shell:
-        !include-raw-expand: "scripts/github-merge.template.sh"
+      - shell: !include-raw-expand: "scripts/github-merge.template.sh"
 
 - builder:
     name: 'resolve-merge-commit'
     builders:
-    - shell:
-        !include-raw-verbatim: "scripts/merge-commit.sh"
-    - inject:
-        properties-file: ${{WORKSPACE}}/merge-commit
+      - shell: !include-raw-verbatim: "scripts/merge-commit.sh"
+      - inject:
+          properties-file: ${{WORKSPACE}}/merge-commit
 
 - builder:
     name: 'set-check-description'
     builders:
-        - description-setter:
-            description: "PR=${{ghprbPullLink}} GOVERSION=${{GOVERSION}} MERGE_COMMIT=${{MERGE_COMMIT}}"
+      - description-setter:
+          description: "PR=${{ghprbPullLink}} GOVERSION=${{GOVERSION}} MERGE_COMMIT=${{MERGE_COMMIT}}"
 
 - builder:
     name: 'should-skip-juju-make-check'
     builders:
-        - system-groovy:
-            command: !include-raw-verbatim: "scripts/should-skip-juju-make-check.groovy"
+      - system-groovy:
+          command: !include-raw-verbatim: "scripts/should-skip-juju-make-check.groovy"
