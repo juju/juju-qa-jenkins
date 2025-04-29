@@ -1,0 +1,100 @@
+- job:
+    name: analyse-juju-tics
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Run the TIOBE TICSQServer over a CI run result.
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - credentials-binding:
+          - text:
+              credential-id: TICSAUTHTOKEN
+              variable: TICSAUTHTOKEN
+    properties:
+      - build-discarder:
+          days-to-keep: 30
+          num-to-keep: 50
+          artifact-days-to-keep: 30
+          artifact-num-to-keep: 50
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to build
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{{7}}$
+          msg: Enter a valid 7 char git sha
+    builders:
+      - common
+      - set-common-environment
+      - install-common-tools
+      - get-s3-build-details
+      - setup-go-environment
+      - set-build-description:
+          GOVERSION: "$GOVERSION"
+      - lockdown-cloud-city
+      - shell: |-
+          #!/bin/bash
+          set -eux
+          echo "checking out $GIT_COMMIT..."
+          git clone -n https://github.com/juju/juju "$WORKSPACE/juju"
+          git -C "$WORKSPACE/juju" checkout "$GIT_COMMIT"
+      - shell: |-
+          #!/bin/bash
+          set -eux
+          echo "vendoring go deps..."
+          (cd "$WORKSPACE/juju" && go mod vendor)
+      - shell: |-
+          #!/bin/bash
+          set -eux
+          echo "installing tools..."
+          go install github.com/juju/gocover-cobertura@latest
+          go install honnef.co/go/tools/cmd/staticcheck@v0.6.1
+      - shell: |-
+          #!/bin/bash
+          set -eux
+          PATH=$GOPATH/bin:$PATH
+
+          echo "downloading unit coverage..."
+          work=$(mktemp -d)
+          wget -O "$work/unit-coverage.tar.gz" "$UNIT_COVERAGE_COLLECT_URL"
+          unit_coverage_dir=$work/unit
+          mkdir "$unit_coverage_dir"
+          tar -xvf "$work/unit-coverage.tar.gz" -C "$unit_coverage_dir"
+
+          echo "downloading integration coverage..."
+          wget -O "$work/integration-coverage.tar.gz" "$INTEGRATION_COVERAGE_COLLECT_URL"
+          integration_coverage_dir=$work/integration
+          mkdir "$integration_coverage_dir"
+          tar -xvf "$work/integration-coverage.tar.gz" -C "$integration_coverage_dir"
+
+          echo "converting coverage data to go txtfmt..."
+          go tool covdata textfmt -i="$unit_coverage_dir" -o="$work/unit.txt"
+          go tool covdata textfmt -i="$integration_coverage_dir" -o="$work/integration.txt"
+
+          echo "coverting coverage data to cobertura..."
+          mkdir "$WORKSPACE/juju/.coverage"
+          (cd "$WORKSPACE/juju" && cat "$work/unit.txt" | gocover-cobertura > "$WORKSPACE/juju/.coverage/cobertura.xml")
+          mkdir "$WORKSPACE/juju/.integrationcoverage"
+          (cd "$WORKSPACE/juju" && cat "$work/integration.txt" | gocover-cobertura > "$WORKSPACE/juju/.integrationcoverage/cobertura.xml")
+      - shell: |-
+          #!/bin/bash
+          set -eux
+          PATH=$GOPATH/bin:$PATH
+
+          if git merge-base --is-ancestor HEAD 3.6; then
+            echo "commit $GIT_COMMIT is in the 3.6 branch"
+          else
+            echo "commit $GIT_COMMIT is not in the 3.6 branch... skipping run"
+            exit 1
+          fi
+
+          echo "installing TICS..."
+          wget -O install-tics.sh 'https://canonical.tiobe.com/tiobeweb/TICS/api/public/v1/fapi/installtics/Script?cfg=default&platform=linux&url=https://canonical.tiobe.com/tiobeweb/TICS/'
+          chmod +x install-tics.sh
+          ./install-tics.sh
+
+          echo "setup completed! running the TICSQServer... this can take a while..."
+          mkdir /tmp/tics
+          source $HOME/.profile
+          TICSQServer -project juju -tmpdir /tmp/tics -branchdir "$WORKSPACE/juju" -nosanity -language GO

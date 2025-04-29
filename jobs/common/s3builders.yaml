@@ -25,7 +25,11 @@
           JUJU_BUILD_NUMBER=${{JUJU_BUILD_NUMBER}}
           JUJU_GOMOD_MODE=${{JUJU_GOMOD_MODE}}
           GOVERSION=${{GOVERSION}}
+          INTEGRATION_COVERAGE_COLLECT_URL=${{INTEGRATION_COVERAGE_COLLECT_URL}}
+          UNIT_COVERAGE_COLLECT_URL=${{UNIT_COVERAGE_COLLECT_URL}}
           EOF
+
+          cat buildvars
 
           FILES_OF_INTEREST="${{WORKSPACE}}/${{JUJU_SRC_TARBALL}} buildvars"
           s3cmd --config $S3_CFG \
@@ -135,8 +139,6 @@
 - builder:
     name: get-s3-source-payload
     builders:
-      - install-s3cmd
-      - get-s3-creds
       - get-s3-build-details
       - shell: |-
           #!/bin/bash

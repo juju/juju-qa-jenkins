@@ -25,7 +25,7 @@ export BUILD_ENV_FILE=$(mktemp)
 
     SERVER_NAME=$(hostname)
 
-    # The path and size of the tmpfs volume that we will attempt to mount inside the 
+    # The path and size of the tmpfs volume that we will attempt to mount inside the
     # container. Once the jujud tests that compile the agent have been expunged from
     # all branches, we can lower this value to about 600M.
     USE_TMPFS_FOR_BUILDS="0"
@@ -125,7 +125,7 @@ SAVE_ENV="$(export -p)"
 sudo su - "$USER" -c "$(echo "$SAVE_ENV" && cat <<'EOS'
 (
     source "${{BUILD_ENV_FILE}}"
-    
+
     echo "Running source command..."
     env
 
@@ -140,7 +140,7 @@ sudo su - "$USER" -c "$(echo "$SAVE_ENV" && cat <<'EOS'
     if [ -f "${{WORKSPACE}}/go-unittest.out" ]; then
         # This will be used to generate reports for jenkins assuming there is
         # a file "go-unittest.out" in the WORKSPACE.
-        go install -v github.com/tebeka/go2xunit@latest
+        go install -v github.com/juju/go2xunit@latest
         "${{GOPATH}}/bin/go2xunit" -fail -input "${{WORKSPACE}}/go-unittest.out" -output "${{WORKSPACE}}/tests.xml"
     fi
 

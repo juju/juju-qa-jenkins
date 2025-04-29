@@ -9,7 +9,7 @@ echo TEST_TIMEOUT=$TEST_TIMEOUT
 cd ${{JUJU_SRC_PATH}}
 # when running inside a privileged container, snapd fails because udevd isn't
 # running, but on the second occurance it is.
-# see: https://github.com/lxc/lxd/issues/4308  
+# see: https://github.com/lxc/lxd/issues/4308
 make install-mongo-dependencies
 make setup-lxd || true
 
@@ -30,6 +30,14 @@ if [[ "{GOTEST_TYPE}" == "race" ]]; then
 elif [[ "{GOTEST_TYPE}" == "xunit-report" ]]; then
     JUJU_GOMOD_MODE=vendor make test VERBOSE_CHECK=1 FUZZ_CHECK={FUZZ_CHECK} TEST_TIMEOUT=${{TEST_TIMEOUT}} | tee ${{WORKSPACE}}/go-unittest.out
     exit_code=$?
+elif [[ "{GOTEST_TYPE}" == "cover" ]]; then
+    export GOCOVERDIR=`mktemp -d`
+    JUJU_GOMOD_MODE=vendor make cover-test VERBOSE_CHECK=1 FUZZ_CHECK={FUZZ_CHECK} TEST_TIMEOUT=${{TEST_TIMEOUT}} GOCOVERDIR=${{GOCOVERDIR}} | tee ${{WORKSPACE}}/go-unittest.out
+    exit_code=$?
+    if [[ -n "${{UNIT_COVERAGE_COLLECT_URL:-}}" ]]; then
+        tar -czf "${{WORKSPACE}}/cover.tar.gz" -C "${{GOCOVERDIR}}" $(ls ${{GOCOVERDIR}})
+        curl --upload-file "${{WORKSPACE}}/cover.tar.gz" "${{UNIT_COVERAGE_COLLECT_URL:-}}"
+    fi
 fi
 set +o pipefail
 
