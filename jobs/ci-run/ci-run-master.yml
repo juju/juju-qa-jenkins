@@ -133,19 +133,15 @@
           condition: SUCCESSFUL
           execution-type: PARALLEL
           projects:
-            - name: build-juju
-              alias: build-juju-linux-amd64
+            - name: build-juju-linux-amd64
               current-parameters: true
               predefined-parameters: |-
                 PLATFORM=linux/amd64
-                BUILD_LABEL=linux-amd64
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-            - name: build-juju
-              alias: build-juju-linux-arm64
+            - name: build-juju-linux-arm64
               current-parameters: true
               predefined-parameters: |-
                 PLATFORM=linux/arm64
-                BUILD_LABEL=linux-arm64
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
       - multijob:
           name: "Streams Generation and OCI Images"

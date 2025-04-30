@@ -75,6 +75,7 @@ jobs:
     - test-refresh-multijob
     - build-jujud-operator-test
     - analyse-juju-tics
+    - build-juju-jobs
 EOF
 	)
 	if [ -n "${OUT}" ]; then

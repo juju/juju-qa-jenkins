@@ -1,8 +1,18 @@
 ## Jobs for building juju on ephemeral machines.
 
-- job:
-    name: build-juju
-    node: ephemeral-noble-16c-64g-amd64
+- project:
+    name: "build-juju-jobs"
+    arch:
+      - "amd64":
+          os: linux
+      - "arm64":
+          os: linux
+    jobs:
+      - "build-juju-{os}-{arch}"
+
+- job-template:
+    name: build-juju-{os}-{arch}
+    node: ephemeral-noble-16c-64g-{arch}
     concurrent: true
     description: |-
       Build juju binaries for specified platform
@@ -10,8 +20,6 @@
       - ansicolor
       - workspace-cleanup
       - timestamps
-      - build-name:
-          name: build-juju-${{BUILD_LABEL}}
     properties:
       - build-discarder:
           days-to-keep: 30
@@ -25,6 +33,7 @@
           regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
       - validating-string:
+          default: "{os}/{arch}"
           description: "Platform for which to build."
           name: PLATFORM
           regex: ^.*\/.*$
@@ -37,11 +46,6 @@
           default: ""
           description: "Label to use in naming build artefacts."
           name: LABEL
-      - validating-string:
-          description: "Label to use when renaming the build."
-          name: BUILD_LABEL
-          regex: ^\S*$
-          msg: Enter a build label
     builders:
       - common
       - set-common-environment
