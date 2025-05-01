@@ -1,45 +1,42 @@
-    # Snippet used for the build/check for juju/juju
+# Snippet used for the build/check for juju/juju
 
-    # Fail if anything unexpected happens
-    set -e
+# Fail if anything unexpected happens
+set -e
 
-    # work around make lxd-setup creating a ~/.config owned by root
-    mkdir -p ${HOME}/.config
-    export HOME=${HOME}
-    cd ${GOPATH}/src/github.com/juju/juju
+# work around make lxd-setup creating a ~/.config owned by root
+mkdir -p ${HOME}/.config
+export HOME=${HOME}
+cd ${GOPATH}/src/github.com/juju/juju
 
-    echo `date --rfc-3339=seconds` "installing dependencies"
-    # when running inside a privileged container, snapd fails because udevd isn't
-    # running, but on the second occurance it is.
-    # see: https://github.com/lxc/lxd/issues/4308
-    make install-dependencies || make install-dependencies
-    make setup-lxd || true
+echo `date --rfc-3339=seconds` "installing dependencies"
+# when running inside a privileged container, snapd fails because udevd isn't
+# running, but on the second occurance it is.
+# see: https://github.com/lxc/lxd/issues/4308
+make install-dependencies || make install-dependencies
+make setup-lxd || true
 
-    if [ -d "./scripts/dqlite" ]; then
-        echo `date --rfc-3339=seconds` "installing musl"
-        sudo make MUSL_CROSS_COMPILE=0 musl-install dqlite-install || { echo "Failed to install musl"; exit 1; }
-    fi
+if [ -d "./scripts/dqlite" ]; then
+    echo `date --rfc-3339=seconds` "installing musl"
+    sudo make MUSL_CROSS_COMPILE=0 musl-install dqlite-install || { echo "Failed to install musl"; exit 1; }
+fi
 
-    if [ -f go.mod ]; then
-        go mod download
-    fi
+if [ -f go.mod ]; then
+    go mod download
+fi
 
-    echo `date --rfc-3339=seconds` "building for release"
-    make release-build
-    # 2.4 patch removal fails so separate install to get the binary to test it.
-    make install
+echo `date --rfc-3339=seconds` "checking build..."
+make install
 
-    # Ensure the docs generation hasn't broken
-    # gopath bin is guaranteed to be in $PATH
-    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3
-    export PATH=$GOPATH/bin:$PATH
-    echo "Using $(which juju) for docs check."
-    ./scripts/generate-docs.py man -o /tmp/juju.1 || echo "ERROR: Docs generation failed."
-
-    set +e  # Will fail in reports gen if any errors occur
-    set -o pipefail  # Need to error for make, not tees' success.
-    make check COVERAGE_CHECK=1 VERBOSE_CHECK=1 | tee ${WORKSPACE}/go-unittest.out
+echo `date --rfc-3339=seconds` "running unit tests..."
+set +e  # Will fail in reports gen if any errors occur
+set -o pipefail  # Need to error for make, not tees' success.
+if [ "$(make -q race-test > /dev/null 2>&1 || echo $?)" -eq 2 ]; then
+    # if we don't have a race-test target, use go test.
+    go test -v -race ./... | tee ${WORKSPACE}/go-unittest.out
     check_exit=$?
-    set +o pipefail
-    echo `date --rfc-3339=seconds` "ran make check"
-
+else
+    make race-test VERBOSE_CHECK=1 | tee ${WORKSPACE}/go-unittest.out
+    check_exit=$?
+fi
+set +o pipefail
+echo `date --rfc-3339=seconds` "ran make race-test"
