@@ -69,6 +69,8 @@
           branch_name: 3.6
       - "feature-ssh":
           branch_name: feature/ssh
+      - "feature-machines":
+          branch_name: feature/machines
     jobs:
       - "github-juju-merge-jobs-{job_suffix}"
 
