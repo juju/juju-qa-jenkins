@@ -140,7 +140,7 @@
 - job:
     name: build-jujud-operator
     node: ephemeral-noble-16c-64g-amd64
-    description: Build juju docker image for caas operator on all platforms.
+    description: Build juju container image for caas operator on all platforms.
     wrappers:
       - ansicolor
       - workspace-cleanup
@@ -172,13 +172,12 @@
           set -eu
 
           touch build.properties
-          echo "DOCKER_USERNAME=public.ecr.aws/jujuqabot/build-${{SHORT_GIT_COMMIT}}" >> build.properties
+          echo "OCI_REGISTRY_USERNAME=public.ecr.aws/jujuqabot/build-${{SHORT_GIT_COMMIT}}" >> build.properties
 
           cat build.properties
       - inject:
           properties-file: build.properties
       - install-docker
-      - docker-login
       - ensure-aws-credentials
       - docker-ecr-login
       - get-s3-build-payload-packaging:

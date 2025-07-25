@@ -41,14 +41,6 @@
           properties-file: $CLOUD_CITY/azuretoolsrc
 
 - builder:
-    name: "get-docker-creds"
-    builders:
-      - get-cloud-city-repo:
-          files: dockerrc
-      - inject:
-          properties-file: $CLOUD_CITY/dockerrc
-
-- builder:
     name: "get-ec2-creds"
     builders:
       - get-cloud-city-repo:
