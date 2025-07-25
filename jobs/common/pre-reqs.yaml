@@ -13,21 +13,6 @@
     builders:
       - shell: !include-raw-verbatim: scripts/setup_steps-install-docker.sh
 
-# docker-login will run the login steps for connecting this host's docker daemon
-# to the Juju docker hub account.
-- builder:
-    name: docker-login
-    builders:
-      - get-docker-creds
-      - host-src-command:
-          src_command: |-
-            #!/bin/bash
-            set -eu
-            set +x
-
-            echo "Logging into Dockerhub with username ${{DOCKERHUB_U}}"
-            echo "$DOCKERHUB_P" | docker login -u "$DOCKERHUB_U" --password-stdin
-
 # docker-ecr-login will run the login steps for connecting this host's docker
 # to the Juju ecr public account.
 - builder:
