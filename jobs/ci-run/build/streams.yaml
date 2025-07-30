@@ -91,20 +91,9 @@
           dest: ${{WORKSPACE}}/agent/build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}
           platforms: linux/amd64 linux/arm64
       - retrieve-generated-streams
-      - install-stream-patcher
       - shell: |-
           #!/bin/bash
           set -e
-
-          # Patch the index/product files so that all paths are namespaced by
-          # the build ID. Basically, we create the following folder structure:
-          # $root/
-          #  - builds/build-SHA
-          #    - streams/v1
-          #    - agents/*.tgz
-          ${{WORKSPACE}}/stream-patcher.py \
-            ${{WORKSPACE}}/streams \
-            ${{SHORT_GIT_COMMIT}}
 
           s3cmd sync --config $S3_CFG \
             ${{WORKSPACE}}/streams \
@@ -149,22 +138,10 @@
           dest: ${{WORKSPACE}}/agent/build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}
           platforms: linux/amd64 linux/arm64
       - retrieve-generated-streams
-      - install-stream-patcher
       - get-azure-creds
       - shell: |-
           #!/bin/bash
           set -eu
-
-          # Patch the index/product files so that all paths are namespaced by
-          # the build ID. Basically, we create the following folder structure:
-          # $root/
-          #  - builds/build-SHA
-          #    - streams/v1
-          #    - agents/*.tgz
-          ${{WORKSPACE}}/stream-patcher.py \
-            ${{WORKSPACE}}/streams \
-            ${{SHORT_GIT_COMMIT}}
-
           set +x
           az storage blob upload-batch \
             --account-key=${{AZURE_STORAGE_ACCESS_KEY}} \
@@ -192,67 +169,3 @@
             s3://juju-qa-data/ci-run/build-${{SHORT_GIT_COMMIT}}/agents/${{GENERATED_STREAMS_TARBALL}} \
             ./
           tar xf ${{GENERATED_STREAMS_TARBALL}}
-
-- builder:
-    name: install-stream-patcher
-    builders:
-      - shell: |-
-          #!/bin/bash
-
-          # Create the stream product/index patching script on the fly
-
-          index_type="agents"
-          if [[ "${{JUJU_VERSION}}" == 2.8* ]]; then
-            index_type="tools"
-          fi
-
-          cat  <<EOT > ${{WORKSPACE}}/stream-patcher.py
-          #!/usr/bin/env python3
-
-          from argparse import ArgumentParser
-          from os import path
-          import collections.abc
-          import json
-          import sys
-
-
-          def main():
-              parser = ArgumentParser()
-              parser.add_argument(
-                  'stream_folder', help='The folder where the stream contents have been unpacked')
-              parser.add_argument(
-                  'build_sha', help='The short git SHA of the current build')
-              args = parser.parse_args()
-
-              rewrite_agent_paths(args.stream_folder, args.build_sha)
-
-          def rewrite_agent_paths(stream_folder, build_sha):
-              target = path.join(
-                  stream_folder,
-                  "v1",
-                  "com.ubuntu.juju-build-{{}}-${{index_type}}.json".format(build_sha)
-              )
-              with open(target) as f:
-                  stream_data = json.load(f)
-
-              stream_data = patch_agent_path_r(stream_data, stream_data, build_sha)
-              with open(target, 'w') as f:
-                  f.write(json.dumps(stream_data, indent=4))
-
-          def patch_agent_path_r(d, u, sha):
-              for k, v in u.items():
-                  if isinstance(v, collections.abc.Mapping):
-                      d[k] = patch_agent_path_r(d.get(k, {{}}), v, sha)
-                  elif isinstance(v, str):
-                      if "agent/build-" in v:
-                          d[k] = "agent/{{}}".format(
-                              str.lstrip(v, "agent/build-{{}}/".format(sha))
-                          )
-              return d
-
-
-          if __name__ == "__main__":
-              sys.exit(main())
-          EOT
-
-          chmod +x ${{WORKSPACE}}/stream-patcher.py

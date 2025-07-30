@@ -4,7 +4,6 @@ set -e
 
 output_file_name="{output_dir}/build-${{JUJU_VERSION}}-${{SHORT_GIT_COMMIT}}-agent.json"
 
-content_id_part=build-${{SHORT_GIT_COMMIT}}
 version=${{JUJU_VERSION}}
 version_name=$(date +"%Y%m%d")
 
@@ -25,7 +24,6 @@ for platform in ${{platform_loop[@]}}; do
     os=$(echo "${{platform}}" | cut -f 1 -d '/')
 
     agent_loop=({product_name})
-    index_type="agents"
 
     agent_file_name="juju-${{JUJU_VERSION}}-${{os}}-${{arch}}.tgz"
     agent_file_md5_sum=$(md5sum ${{agent_file_name}} | awk '{{print $1}}')
@@ -40,7 +38,7 @@ for platform in ${{platform_loop[@]}}; do
       element=$(cat << EOF
 [{{
     "arch": "${{arch}}",
-    "content_id": "com.ubuntu.juju:${{content_id_part}}:${{index_type}}",
+    "content_id": "com.ubuntu.juju:testing:agents",
     "format": "products:1.0",
     "ftype": "tar.gz",
     "item_name": "${{item_name}}",
