@@ -33,6 +33,10 @@
               current-parameters: true
               predefined-parameters: |-
                 GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+            - name: build-dqlite-riscv64
+              current-parameters: true
+              predefined-parameters: |-
+                GIT_COMMIT=${{SHORT_GIT_COMMIT}}
             - name: build-dqlite-s390x
               current-parameters: true
               predefined-parameters: |-
@@ -129,6 +133,36 @@
           arch: "ppc64el"
       - upload-s3-dqlite:
           arch: "ppc64el"
+
+- job:
+    name: build-dqlite-riscv64
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Build dqlite libraries for specified platform
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - cirun-test-stuck-timeout
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to build
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{{7}}$
+          msg: Enter a valid 7 char git sha
+    builders:
+      - common
+      - set-common-environment
+      - install-common-tools
+      - install-docker
+      - detect-commit-go-version
+      - setup-go-environment
+      - get-s3-source-payload
+      - make-cross-dqlite:
+          arch: "riscv64"
+      - upload-s3-dqlite:
+          arch: "riscv64"
 
 - job:
     name: build-dqlite-s390x
