@@ -35,7 +35,7 @@ if [ "$(make -q race-test > /dev/null 2>&1 || echo $?)" -eq 2 ]; then
     go test -v -race ./... | tee ${WORKSPACE}/go-unittest.out
     check_exit=$?
 else
-    make race-test VERBOSE_CHECK=1 | tee ${WORKSPACE}/go-unittest.out
+    make race-test VERBOSE_CHECK=1 JUJU_DEBUG=1 | tee ${WORKSPACE}/go-unittest.out
     check_exit=$?
 fi
 set +o pipefail
