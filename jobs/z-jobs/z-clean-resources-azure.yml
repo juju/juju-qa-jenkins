@@ -22,15 +22,17 @@
             --tenant "$AZURE_TENANT"
 
           HOURS=3
-          az group list --subscription "$AZURE_SUBSCRIPTION_ID" | jq -r '.[] | select(.id | contains("juju-")) | .name' | while read group ; do
-            oldest=$(az resource list --subscription "$AZURE_SUBSCRIPTION_ID" --resource-group "$group" | jq -r 'map(select(.createdTime != null)) | map(.createdTime | split(".") | (.[0] + "Z") | fromdate) | sort | .[0]')
+          subscription_id=$(cat "$CLOUD_CITY"/credentials.yaml | yq ".credentials.azure.credentials.subscription-id")
+          echo "cleaning subscription $subscription_id"
+          az group list --subscription "$subscription_id" | jq -r '.[] | select(.id | contains("juju-")) | .name' | while read group ; do
+            oldest=$(az resource list --subscription "$subscription_id" --resource-group "$group" | jq -r 'map(select(.createdTime != null)) | map(.createdTime | split(".") | (.[0] + "Z") | fromdate) | sort | .[0]')
             if [[ "$oldest" = "null" ]]; then
               echo "skipping $group"
               continue
             fi
             if [ $((($(date -u +%s)-$oldest)/3600)) -gt $HOURS ]; then
               echo "deleting resource group $group"
-              az group delete --subscription "$AZURE_SUBSCRIPTION_ID" --resource-group "$group" -f "Microsoft.Compute/virtualMachineScaleSets" -f "Microsoft.Compute/virtualMachines" -y
+              az group delete --subscription "$subscription_id" --resource-group "$group" -f "Microsoft.Compute/virtualMachineScaleSets" -f "Microsoft.Compute/virtualMachines" -y
             fi
           done
     description: |-
