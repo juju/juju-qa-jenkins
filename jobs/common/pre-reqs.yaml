@@ -226,7 +226,7 @@
           set -xeu
 
           sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
-          sudo pip3 install apache-libcloud;
+          sudo pip3 install apache-libcloud --break-system-packages;
 
 - builder:
     name: install-gce-libs
@@ -236,7 +236,7 @@
           set -xeu
 
           sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip;
-          sudo pip3 install apache-libcloud;
+          sudo pip3 install apache-libcloud --break-system-packages;
 
 - builder:
     name: get-aws-cleanup-scripts
