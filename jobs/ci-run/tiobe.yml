@@ -82,10 +82,14 @@
           set -eux
           PATH=$GOPATH/bin:$PATH
 
-          if git merge-base --is-ancestor HEAD 3.6; then
+          if git -C "$WORKSPACE/juju" merge-base --is-ancestor HEAD origin/3.6; then
             echo "commit $GIT_COMMIT is in the 3.6 branch"
+            TICS_PROJECT=juju_3.6
+          elif git -C "$WORKSPACE/juju" merge-base --is-ancestor HEAD origin/main; then
+            echo "commit $GIT_COMMIT is in the main branch"
+            TICS_PROJECT=juju
           else
-            echo "commit $GIT_COMMIT is not in the 3.6 branch... skipping run"
+            echo "commit $GIT_COMMIT is not in the 3.6 or main branch... skipping run"
             exit 1
           fi
 
