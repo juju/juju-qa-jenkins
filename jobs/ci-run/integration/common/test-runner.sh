@@ -60,7 +60,7 @@ while [ $attempts -lt 3 ]; do
     if ! which petname >/dev/null 2>&1; then
         sudo snap install petname || true
     fi
-    if [ ! "$(which microceph >/dev/null 2>&1)" ]; then
+    if ! which microceph >/dev/null 2>&1; then
         sudo snap install microceph || true
     fi
     attempts=$((attempts + 1))
