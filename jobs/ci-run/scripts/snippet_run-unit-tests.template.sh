@@ -10,11 +10,7 @@ cd ${{JUJU_SRC_PATH}}
 # when running inside a privileged container, snapd fails because udevd isn't
 # running, but on the second occurance it is.
 # see: https://github.com/lxc/lxd/issues/4308
-# also need check the Juju version, if < 4.0 then install mongo dependencies.
-JUJU_VERSION=$(juju version | cut -d. -f1)
-if [[ $JUJU_VERSION -lt 4 ]]; then
-  make install-mongo-dependencies
-fi
+make install-mongo-dependencies || true
 make setup-lxd || true
 
 # Disable JS support as juju-mongodb doesn't support it.
