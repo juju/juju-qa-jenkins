@@ -66,6 +66,10 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: "test-cloud_gce-multijob"
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: "test-cmr-multijob"
               current-parameters: true
               predefined-parameters: |-
@@ -130,10 +134,6 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
-            - name: "test-metrics-multijob"
-              current-parameters: true
-              predefined-parameters: |-
-                BUILD_ARCH=amd64
             - name: "test-model-multijob"
               current-parameters: true
               predefined-parameters: |-
@@ -178,7 +178,15 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: "test-spaces_gce-multijob"
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: "test-storage-multijob"
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: "test-storage_k8s-multijob"
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64

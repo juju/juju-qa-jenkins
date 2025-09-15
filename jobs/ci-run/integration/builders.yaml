@@ -25,7 +25,7 @@
     name: run-integration-test-microk8s
     builders:
       - install-microk8s:
-          channel: "latest/stable"
+          channel: "1.33/stable"
       - select-oci-registry
       - get-s3-build-payload-testing:
           SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
