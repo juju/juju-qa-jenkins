@@ -63,6 +63,9 @@ while [ $attempts -lt 3 ]; do
     if ! which microceph >/dev/null 2>&1; then
         sudo snap install microceph || true
     fi
+    if ! which gcloud >/dev/null 2>&1; then
+        sudo snap install google-cloud-cli --classic || true
+    fi
     attempts=$((attempts + 1))
 done
 
