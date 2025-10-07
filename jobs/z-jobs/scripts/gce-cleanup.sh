@@ -12,6 +12,7 @@ gcloud compute firewall-rules list
 
 # TODO - we no longer store state between jobs invocations.
 # We need a new way to delete stale filewall rules.
+touch ~/gcerules
 
 # On every job run, remove any rules that still exist from last run
 # generate gce rules with
