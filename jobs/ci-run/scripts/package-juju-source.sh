@@ -11,9 +11,24 @@ if [ -z "$GOVERSION" ]; then
     exit 1
 fi
 
+
 export PATH="/snap/bin:$PATH"
 GO_MAJOR_MINOR=$(echo ${GOVERSION} | cut -d '.' -f1,2)
-sudo snap refresh go --channel="${GO_MAJOR_MINOR}/stable" || sudo snap install go --channel="${GO_MAJOR_MINOR}/stable" --classic
+if sudo snap refresh go --channel="${GO_MAJOR_MINOR}/stable" || sudo snap install go --channel="${GO_MAJOR_MINOR}/stable" --classic; then
+   echo "Successfully installed Go ${GO_MAJOR_MINOR}"
+else
+   # If specific version installation fails, install latest available
+   echo "Failed to install Go ${GO_MAJOR_MINOR}, installing latest available version"
+   if sudo snap refresh go --channel=latest/stable || sudo snap install go --channel=latest/stable --classic; then
+       echo "Successfully installed latest Go version: $(go version)"
+       # Export GOTOOLCHAIN to use the expected version
+       # Note: this is a hack which avoid breaking the CI if for some reason snap go is behind the required version for
+       # Juju. It is not something that should happens regularly, and whenever the snap go is available, this hack won't
+       # be used.
+       export GOTOOLCHAIN="go${GOVERSION}.0+auto"
+       echo "Exported GOTOOLCHAIN=${GOTOOLCHAIN}"
+   fi
+fi
 
 # TODO - fix this workaround
 # As we clone the full history (can't shallow clone otherwise queued jobs miss
