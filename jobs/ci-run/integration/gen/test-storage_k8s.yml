@@ -28,6 +28,46 @@
     - multijob:
         name: 'IntegrationTests-storage_k8s'
         projects:
+        - name: 'test-storage_k8s-test-add-unit-attach-storage-aws'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-add-unit-attach-storage-azure'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-add-unit-attach-storage-google'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-add-unit-attach-storage-lxd'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-add-unit-attach-storage-microk8s'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-add-unit-attach-storage-scaling-race-condition-aws'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-add-unit-attach-storage-scaling-race-condition-azure'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-add-unit-attach-storage-scaling-race-condition-google'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-add-unit-attach-storage-scaling-race-condition-lxd'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-add-unit-attach-storage-scaling-race-condition-microk8s'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-add-unit-duplicate-pvc-exists-aws'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-add-unit-duplicate-pvc-exists-azure'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-add-unit-duplicate-pvc-exists-google'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-add-unit-duplicate-pvc-exists-lxd'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-add-unit-duplicate-pvc-exists-microk8s'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-deploy-attach-storage-aws'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-deploy-attach-storage-azure'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-deploy-attach-storage-google'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-deploy-attach-storage-lxd'
+          current-parameters: true
+        - name: 'test-storage_k8s-test-deploy-attach-storage-microk8s'
+          current-parameters: true
         - name: 'test-storage_k8s-test-force-import-filesystem-aws'
           current-parameters: true
         - name: 'test-storage_k8s-test-force-import-filesystem-azure'
@@ -48,6 +88,1354 @@
           current-parameters: true
         - name: 'test-storage_k8s-test-import-filesystem-microk8s'
           current-parameters: true
+
+- job:
+    name: test-storage_k8s-test-add-unit-attach-storage-aws
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_attach_storage in storage_k8s suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'ec2'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_attach_storage'
+            skip_tasks: 'test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-add-unit-attach-storage-azure
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_attach_storage in storage_k8s suite on azure
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'azure'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'azure'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'eastus'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_attach_storage'
+            skip_tasks: 'test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-add-unit-attach-storage-google
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_attach_storage in storage_k8s suite on google
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'google'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'gce'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_attach_storage'
+            skip_tasks: 'test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-add-unit-attach-storage-lxd
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_attach_storage in storage_k8s suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'localhost'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_attach_storage'
+            skip_tasks: 'test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-add-unit-attach-storage-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_attach_storage in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test-microk8s:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_attach_storage'
+            skip_tasks: 'test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-add-unit-attach-storage-scaling-race-condition-aws
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_attach_storage_scaling_race_condition in storage_k8s suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'ec2'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_attach_storage_scaling_race_condition'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-add-unit-attach-storage-scaling-race-condition-azure
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_attach_storage_scaling_race_condition in storage_k8s suite on azure
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'azure'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'azure'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'eastus'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_attach_storage_scaling_race_condition'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-add-unit-attach-storage-scaling-race-condition-google
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_attach_storage_scaling_race_condition in storage_k8s suite on google
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'google'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'gce'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_attach_storage_scaling_race_condition'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-add-unit-attach-storage-scaling-race-condition-lxd
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_attach_storage_scaling_race_condition in storage_k8s suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'localhost'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_attach_storage_scaling_race_condition'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-add-unit-attach-storage-scaling-race-condition-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_attach_storage_scaling_race_condition in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test-microk8s:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_attach_storage_scaling_race_condition'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-add-unit-duplicate-pvc-exists-aws
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_duplicate_pvc_exists in storage_k8s suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'ec2'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_duplicate_pvc_exists'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-add-unit-duplicate-pvc-exists-azure
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_duplicate_pvc_exists in storage_k8s suite on azure
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'azure'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'azure'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'eastus'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_duplicate_pvc_exists'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-add-unit-duplicate-pvc-exists-google
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_duplicate_pvc_exists in storage_k8s suite on google
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'google'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'gce'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_duplicate_pvc_exists'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-add-unit-duplicate-pvc-exists-lxd
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_duplicate_pvc_exists in storage_k8s suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'localhost'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_duplicate_pvc_exists'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-add-unit-duplicate-pvc-exists-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_add_unit_duplicate_pvc_exists in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test-microk8s:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_duplicate_pvc_exists'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-deploy-attach-storage-aws
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_deploy_attach_storage in storage_k8s suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'ec2'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_deploy_attach_storage'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-deploy-attach-storage-azure
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_deploy_attach_storage in storage_k8s suite on azure
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'azure'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'azure'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'eastus'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_deploy_attach_storage'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-deploy-attach-storage-google
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_deploy_attach_storage in storage_k8s suite on google
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'google'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'gce'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_deploy_attach_storage'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-deploy-attach-storage-lxd
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_deploy_attach_storage in storage_k8s suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'localhost'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_deploy_attach_storage'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-deploy-attach-storage-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_deploy_attach_storage in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test-microk8s:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_deploy_attach_storage'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_force_import_filesystem,test_import_filesystem'
+    publishers:
+      - integration-artifacts
 
 - job:
     name: test-storage_k8s-test-force-import-filesystem-aws
@@ -114,7 +1502,7 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_force_import_filesystem'
-            skip_tasks: 'test_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_import_filesystem'
     publishers:
       - integration-artifacts
 
@@ -183,7 +1571,7 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_force_import_filesystem'
-            skip_tasks: 'test_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_import_filesystem'
     publishers:
       - integration-artifacts
 
@@ -252,7 +1640,7 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_force_import_filesystem'
-            skip_tasks: 'test_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_import_filesystem'
     publishers:
       - integration-artifacts
 
@@ -317,7 +1705,7 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_force_import_filesystem'
-            skip_tasks: 'test_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_import_filesystem'
     publishers:
       - integration-artifacts
 
@@ -382,7 +1770,7 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_force_import_filesystem'
-            skip_tasks: 'test_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_import_filesystem'
     publishers:
       - integration-artifacts
 
@@ -451,7 +1839,7 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_import_filesystem'
-            skip_tasks: 'test_force_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem'
     publishers:
       - integration-artifacts
 
@@ -520,7 +1908,7 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_import_filesystem'
-            skip_tasks: 'test_force_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem'
     publishers:
       - integration-artifacts
 
@@ -589,7 +1977,7 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_import_filesystem'
-            skip_tasks: 'test_force_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem'
     publishers:
       - integration-artifacts
 
@@ -654,7 +2042,7 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_import_filesystem'
-            skip_tasks: 'test_force_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem'
     publishers:
       - integration-artifacts
 
@@ -719,6 +2107,6 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_import_filesystem'
-            skip_tasks: 'test_force_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem'
     publishers:
       - integration-artifacts
