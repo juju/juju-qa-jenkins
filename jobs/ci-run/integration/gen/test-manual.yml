@@ -98,11 +98,22 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'manual'
-            setup_steps: ''
-            task_name: 'test_deploy_manual'
-            skip_tasks: 'test_spaces_manual'
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                test_name: 'manual'
+                setup_steps: ''
+                task_name: 'test_deploy_manual'
+                skip_tasks: 'test_spaces_manual'
     publishers:
       - integration-artifacts
 
@@ -163,11 +174,22 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'manual'
-            setup_steps: ''
-            task_name: 'test_deploy_manual'
-            skip_tasks: 'test_spaces_manual'
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                test_name: 'manual'
+                setup_steps: ''
+                task_name: 'test_deploy_manual'
+                skip_tasks: 'test_spaces_manual'
     publishers:
       - integration-artifacts
 
@@ -232,11 +254,22 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'manual'
-            setup_steps: ''
-            task_name: 'test_spaces_manual'
-            skip_tasks: 'test_deploy_manual'
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                test_name: 'manual'
+                setup_steps: ''
+                task_name: 'test_spaces_manual'
+                skip_tasks: 'test_deploy_manual'
     publishers:
       - integration-artifacts
 
@@ -297,10 +330,21 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'manual'
-            setup_steps: ''
-            task_name: 'test_spaces_manual'
-            skip_tasks: 'test_deploy_manual'
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                test_name: 'manual'
+                setup_steps: ''
+                task_name: 'test_spaces_manual'
+                skip_tasks: 'test_deploy_manual'
     publishers:
       - integration-artifacts
