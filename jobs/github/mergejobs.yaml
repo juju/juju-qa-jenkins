@@ -67,6 +67,8 @@
           branch_name: 3.5
       - "3.6":
           branch_name: 3.6
+      - "4.0":
+          branch_name: 4.0
       - "feature-ssh":
           branch_name: feature/ssh
     jobs:
