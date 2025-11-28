@@ -254,11 +254,20 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'cloud_gce'
-            setup_steps: ''
-            task_name: 'test_pro_images'
-            skip_tasks: 'test_create_storage_pool,test_deploy_gpu_instance,test_serviceaccount_credential'
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'cloud_gce'
+                  setup_steps: ''
+                  task_name: 'test_pro_images'
+                  skip_tasks: 'test_create_storage_pool,test_deploy_gpu_instance,test_serviceaccount_credential'
     publishers:
       - integration-artifacts
 
@@ -323,10 +332,19 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'cloud_gce'
-            setup_steps: ''
-            task_name: 'test_serviceaccount_credential'
-            skip_tasks: 'test_create_storage_pool,test_deploy_gpu_instance,test_pro_images'
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'cloud_gce'
+                  setup_steps: ''
+                  task_name: 'test_serviceaccount_credential'
+                  skip_tasks: 'test_create_storage_pool,test_deploy_gpu_instance,test_pro_images'
     publishers:
       - integration-artifacts
