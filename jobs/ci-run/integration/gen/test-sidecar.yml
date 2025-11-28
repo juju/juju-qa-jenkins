@@ -98,11 +98,20 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - run-integration-test-microk8s:
-            test_name: 'sidecar'
-            setup_steps: ''
-            task_name: 'test_credential_get_k8s'
-            skip_tasks: 'test_deploy_and_force_remove_application,test_deploy_and_remove_application,test_pebble_checks,test_pebble_notices,test_rootless'
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                  test_name: 'sidecar'
+                  setup_steps: ''
+                  task_name: 'test_credential_get_k8s'
+                  skip_tasks: 'test_deploy_and_force_remove_application,test_deploy_and_remove_application,test_pebble_checks,test_pebble_notices,test_rootless'
     publishers:
       - integration-artifacts
 
