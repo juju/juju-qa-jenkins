@@ -33,9 +33,6 @@
               python3
               shellcheck
             ];
-            shellHook = ''
-              exec zsh
-            '';
           };
       });
     };

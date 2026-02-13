@@ -17,6 +17,7 @@ aws ecr-public get-login-password | skopeo login -u AWS --password-stdin public.
 
 # use the latest skopeo for doing the actual copy.
 podman run --rm -v $XDG_RUNTIME_DIR/containers/auth.json:/auth.json quay.io/skopeo/stable:latest copy --authfile /auth.json --all docker://public.ecr.aws/juju/juju-db:4.4 docker://public.ecr.aws/jujuqabot/build-${SHORT_GIT_COMMIT}/juju-db:4.4 &
+podman run --rm -v $XDG_RUNTIME_DIR/containers/auth.json:/auth.json quay.io/skopeo/stable:latest copy --authfile /auth.json --all docker://public.ecr.aws/juju/juju-db:4.4.30 docker://public.ecr.aws/jujuqabot/build-${SHORT_GIT_COMMIT}/juju-db:4.4.30 &
 podman run --rm -v $XDG_RUNTIME_DIR/containers/auth.json:/auth.json quay.io/skopeo/stable:latest copy --authfile /auth.json --all docker://public.ecr.aws/juju/charm-base:ubuntu-18.04 docker://public.ecr.aws/jujuqabot/build-${SHORT_GIT_COMMIT}/charm-base:ubuntu-18.04 &
 podman run --rm -v $XDG_RUNTIME_DIR/containers/auth.json:/auth.json quay.io/skopeo/stable:latest copy --authfile /auth.json --all docker://public.ecr.aws/juju/charm-base:ubuntu-20.04 docker://public.ecr.aws/jujuqabot/build-${SHORT_GIT_COMMIT}/charm-base:ubuntu-20.04 &
 podman run --rm -v $XDG_RUNTIME_DIR/containers/auth.json:/auth.json quay.io/skopeo/stable:latest copy --authfile /auth.json --all docker://public.ecr.aws/juju/charm-base:ubuntu-22.04 docker://public.ecr.aws/jujuqabot/build-${SHORT_GIT_COMMIT}/charm-base:ubuntu-22.04 &
