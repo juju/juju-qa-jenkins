@@ -4,6 +4,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    if: false # jenkins charm deployment is not working
 
     steps:
       - name: Checkout
