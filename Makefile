@@ -3,7 +3,6 @@ IGNORE_STATIC_ANALYSIS ?=
 PUSH_JOB               ?=
 PUSH_TARGET            ?= "jobs/ci-run"
 JJB_CONF_PATH          ?= jenkins-jjb
-JUJU_REPO_PATH         ?= "${GOPATH}/src/github.com/juju/juju"
 
 cwd              = $(shell pwd)
 virtualenv_dir   = $(cwd)/venv
@@ -61,6 +60,7 @@ dot-graph:
 	@echo "" >"$(tmpfile)"; go run ./tools/dag/main.go "${PWD}/jobs"<"$(tmpfile)"
 
 gen-wire-tests:
+	@test -n "$(GH_TOKEN)" || (echo "GH_TOKEN must be set for gen-wire-tests" && exit 1)
 	$(eval config := "./tools/gen-wire-tests/juju.config")
 	@go run ./tools/gen-wire-tests/main.go \
 		"./jobs/ci-run/integration/gen" \

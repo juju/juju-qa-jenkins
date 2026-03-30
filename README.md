@@ -23,7 +23,7 @@ To build the job descriptions run:
 
 ```
 export GH_TOKEN=<your github token>
-JUJU_REPO_PATH="<juju-repo-on-branch-to-generate-jobs-from>" make gen-wire-tests
+make gen-wire-tests
 ```
 
 ## Uploading to Jenkins
