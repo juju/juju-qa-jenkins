@@ -32,13 +32,25 @@
           current-parameters: true
         - name: 'test-cmr-test-offer-consume-lxd'
           current-parameters: true
+        - name: 'test-cmr-test-offer-find-external-user-aws'
+          current-parameters: true
+        - name: 'test-cmr-test-offer-find-external-user-lxd'
+          current-parameters: true
+        - name: 'test-cmr-test-offer-find-non-admin-aws'
+          current-parameters: true
+        - name: 'test-cmr-test-offer-find-non-admin-lxd'
+          current-parameters: true
+        - name: 'test-cmr-test-offer-permissions-aws'
+          current-parameters: true
+        - name: 'test-cmr-test-offer-permissions-lxd'
+          current-parameters: true
 
 - job:
     name: test-cmr-test-offer-consume-aws
     node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test cmr suite on aws
+      Test test_offer_consume in cmr suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -94,11 +106,12 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - install-go
       - run-integration-test:
             test_name: 'cmr'
             setup_steps: ''
-            task_name: ''
-            skip_tasks: ''
+            task_name: 'test_offer_consume'
+            skip_tasks: 'test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -107,7 +120,7 @@
     node: ephemeral-noble-8c-32g-amd64
     concurrent: true
     description: |-
-      Test cmr suite on lxd
+      Test test_offer_consume in cmr suite on lxd
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -159,10 +172,419 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - install-go
       - run-integration-test:
             test_name: 'cmr'
             setup_steps: ''
-            task_name: ''
-            skip_tasks: ''
+            task_name: 'test_offer_consume'
+            skip_tasks: 'test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-cmr-test-offer-find-external-user-aws
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_offer_find_external_user in cmr suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'ec2'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - install-go
+      - run-integration-test:
+            test_name: 'cmr'
+            setup_steps: ''
+            task_name: 'test_offer_find_external_user'
+            skip_tasks: 'test_offer_consume,test_offer_find_non_admin,test_offer_permissions'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-cmr-test-offer-find-external-user-lxd
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_offer_find_external_user in cmr suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'localhost'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - install-go
+      - run-integration-test:
+            test_name: 'cmr'
+            setup_steps: ''
+            task_name: 'test_offer_find_external_user'
+            skip_tasks: 'test_offer_consume,test_offer_find_non_admin,test_offer_permissions'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-cmr-test-offer-find-non-admin-aws
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_offer_find_non_admin in cmr suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'ec2'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - install-go
+      - run-integration-test:
+            test_name: 'cmr'
+            setup_steps: ''
+            task_name: 'test_offer_find_non_admin'
+            skip_tasks: 'test_offer_consume,test_offer_find_external_user,test_offer_permissions'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-cmr-test-offer-find-non-admin-lxd
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_offer_find_non_admin in cmr suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'localhost'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - install-go
+      - run-integration-test:
+            test_name: 'cmr'
+            setup_steps: ''
+            task_name: 'test_offer_find_non_admin'
+            skip_tasks: 'test_offer_consume,test_offer_find_external_user,test_offer_permissions'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-cmr-test-offer-permissions-aws
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_offer_permissions in cmr suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'ec2'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - install-go
+      - run-integration-test:
+            test_name: 'cmr'
+            setup_steps: ''
+            task_name: 'test_offer_permissions'
+            skip_tasks: 'test_offer_consume,test_offer_find_external_user,test_offer_find_non_admin'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-cmr-test-offer-permissions-lxd
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_offer_permissions in cmr suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'localhost'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - install-go
+      - run-integration-test:
+            test_name: 'cmr'
+            setup_steps: ''
+            task_name: 'test_offer_permissions'
+            skip_tasks: 'test_offer_consume,test_offer_find_external_user,test_offer_find_non_admin'
     publishers:
       - integration-artifacts

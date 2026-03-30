@@ -405,7 +405,7 @@ func parseTaskNames(dir ghObject) []string {
 
 		req, _ := http.NewRequest("GET", f.DownloadURL, nil)
 		token := os.Getenv("GH_TOKEN")
-		if token == "" {
+		if token != "" {
 			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 		}
 
@@ -465,7 +465,6 @@ func parseTaskNames(dir ghObject) []string {
 					}
 					return true
 				})
-
 			}
 			return true
 		})
@@ -618,6 +617,9 @@ const Template = `
       - common
       - select-oci-registry
       - prepare-integration-test
+{{- if eq $.SuiteName "cmr" }}
+      - install-go
+{{- end }}
 {{- $minRegexp := index $.MinVersions $task_name -}}
 {{- if eq $minRegexp "" }}
   {{- $minRegexp = index $.MinVersions (printf "%s-%s" $.SuiteName $task_name) -}}
