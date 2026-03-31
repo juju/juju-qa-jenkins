@@ -132,6 +132,41 @@ def delete_instances(client, name_id, old_age=OLD_MACHINE_AGE, dry_run=False):
                 log.error('Cannot delete {}'.format(node_name))
     return deleted_count
 
+def delete_security_groups(client, name_prefix="juju-", dry_run=False):
+    """Delete all security groups with the provided description.
+    Only security groups not in use will be deleted by gcloud.
+
+    :param client: The gcloud client.
+    :param name_prefix: Prefix of the names of the groups to return.
+    :param dry_run: Do not make changes when True.
+    """
+    groups = list_security_groups(client=client, name_prefix=name_prefix, print_out=dry_run)
+    for group in groups:
+        if not dry_run:
+            try:
+                if client.ex_destroy_firewall(group):
+                    log.debug('Deleted security group {}'.format(group))
+            except Exception as e:
+                log.debug('Attempted delete of security group {}, may still be in use: {}'.format(group, e))
+
+def list_security_groups(client, name_prefix="juju-", print_out=False):
+    """Return a list of security group names
+
+    Use print_out=True to print a listing of security group names.
+
+    :param client: The gcloud client.
+    :param name_prefix: Prefix of the names of the groups to return.
+    :param print_out: Print the found resources to STDOUT?
+    :return: A list of Security Groups.
+    """
+    groups = []
+    for grp in client.ex_list_firewalls():
+        if grp.name.startswith(name_prefix):
+            if print_out:
+                print('{}'.format(grp))
+            groups.append(grp)
+    return groups
+
 
 def parse_args(argv):
     """Return the argument parser for this program."""
@@ -174,6 +209,12 @@ def parse_args(argv):
     di_parser.add_argument(
         'filter',
         help='A glob pattern to select gce name or juju instance-id')
+    dsg_parser = subparsers.add_parser(
+        'delete-security-groups',
+        help='delete security groups with the given prefix.')
+    dsg_parser.add_argument(
+        'filter',
+        help='A prefix pattern to select security groups')
     args = parser.parse_args(argv[1:])
     if not all(
             [args.sa_email, args.pem_path, args.project_id]):
@@ -194,6 +235,10 @@ def main(argv):
             delete_instances(
                 client, args.filter,
                 old_age=args.old_age, dry_run=args.dry_run)
+        elif args.command == 'delete-security-groups':
+            delete_security_groups(
+                client, name_prefix=args.filter, dry_run=args.dry_run)
+                
     except Exception as e:
         print(e)
         return 1
