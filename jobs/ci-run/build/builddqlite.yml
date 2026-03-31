@@ -197,8 +197,25 @@
 - builder:
     name: "make-cross-dqlite"
     builders:
-      - host-src-command:
-          src_command: !include-raw-verbatim: ../scripts/snippet_make-dqlite-cross-build.sh
+      - shell: |-
+          #!/bin/bash
+          set -eu
+
+          if [ -z "{arch}" ]; then
+              echo "arch var is empty"
+              exit 1
+          fi
+
+          echo "Cross compiling dqlite for {arch}"
+
+          sudo docker run --rm --privileged multiarch/qemu-user-static:register --reset
+          sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+          sudo docker run --mount "type=bind,source=$JUJU_SRC_PATH,target=/juju" "multiarch/ubuntu-core:{arch}-focal" /bin/bash -c '
+          apt-get update
+          apt-get install sudo make -y
+          cd /juju
+          make -j`nproc` dqlite-build
 
 - builder:
     name: "upload-s3-dqlite"
