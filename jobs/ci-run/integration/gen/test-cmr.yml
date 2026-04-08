@@ -243,11 +243,20 @@
       - select-oci-registry
       - prepare-integration-test
       - install-go
-      - run-integration-test:
-            test_name: 'cmr'
-            setup_steps: ''
-            task_name: 'test_offer_find_external_user'
-            skip_tasks: 'test_offer_consume,test_offer_find_non_admin,test_offer_permissions'
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'cmr'
+                  setup_steps: ''
+                  task_name: 'test_offer_find_external_user'
+                  skip_tasks: 'test_offer_consume,test_offer_find_non_admin,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -309,11 +318,20 @@
       - select-oci-registry
       - prepare-integration-test
       - install-go
-      - run-integration-test:
-            test_name: 'cmr'
-            setup_steps: ''
-            task_name: 'test_offer_find_external_user'
-            skip_tasks: 'test_offer_consume,test_offer_find_non_admin,test_offer_permissions'
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'cmr'
+                  setup_steps: ''
+                  task_name: 'test_offer_find_external_user'
+                  skip_tasks: 'test_offer_consume,test_offer_find_non_admin,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -379,11 +397,20 @@
       - select-oci-registry
       - prepare-integration-test
       - install-go
-      - run-integration-test:
-            test_name: 'cmr'
-            setup_steps: ''
-            task_name: 'test_offer_find_non_admin'
-            skip_tasks: 'test_offer_consume,test_offer_find_external_user,test_offer_permissions'
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'cmr'
+                  setup_steps: ''
+                  task_name: 'test_offer_find_non_admin'
+                  skip_tasks: 'test_offer_consume,test_offer_find_external_user,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -445,11 +472,20 @@
       - select-oci-registry
       - prepare-integration-test
       - install-go
-      - run-integration-test:
-            test_name: 'cmr'
-            setup_steps: ''
-            task_name: 'test_offer_find_non_admin'
-            skip_tasks: 'test_offer_consume,test_offer_find_external_user,test_offer_permissions'
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'cmr'
+                  setup_steps: ''
+                  task_name: 'test_offer_find_non_admin'
+                  skip_tasks: 'test_offer_consume,test_offer_find_external_user,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -515,11 +551,20 @@
       - select-oci-registry
       - prepare-integration-test
       - install-go
-      - run-integration-test:
-            test_name: 'cmr'
-            setup_steps: ''
-            task_name: 'test_offer_permissions'
-            skip_tasks: 'test_offer_consume,test_offer_find_external_user,test_offer_find_non_admin'
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'cmr'
+                  setup_steps: ''
+                  task_name: 'test_offer_permissions'
+                  skip_tasks: 'test_offer_consume,test_offer_find_external_user,test_offer_find_non_admin'
     publishers:
       - integration-artifacts
 
@@ -581,10 +626,19 @@
       - select-oci-registry
       - prepare-integration-test
       - install-go
-      - run-integration-test:
-            test_name: 'cmr'
-            setup_steps: ''
-            task_name: 'test_offer_permissions'
-            skip_tasks: 'test_offer_consume,test_offer_find_external_user,test_offer_find_non_admin'
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'cmr'
+                  setup_steps: ''
+                  task_name: 'test_offer_permissions'
+                  skip_tasks: 'test_offer_consume,test_offer_find_external_user,test_offer_find_non_admin'
     publishers:
       - integration-artifacts
