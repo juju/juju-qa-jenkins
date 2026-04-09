@@ -6,15 +6,14 @@ JJB_CONF_PATH          ?= jenkins-jjb
 
 cwd              = $(shell pwd)
 virtualenv_dir   = $(cwd)/venv
-python_base_path = $(shell which python3)
 
 .PHONY: ensure-venv
 ensure-venv:
-	$(python_base_path) -m venv $(virtualenv_dir)
+	uv venv --python 3.11 $(virtualenv_dir) --allow-existing --seed
 
 .PHONY: install-deps
 install-deps: ensure-venv
-	PIP_CONSTRAINTS=./constraints.txt $(virtualenv_dir)/bin/pip3 install -r requirements.txt
+	VIRTUAL_ENV=$(virtualenv_dir) UV_CONSTRAINT=./constraint.txt uv pip install -r requirements.txt
 	# The postbuildscript plugin version is "3.1.0-375.v3db_cd92485e1" which cannot be parsed.
 	# So we override to set it to "3.1.0".
 	# jenkins-job-builder only cares if the plugin version is > 2.
