@@ -38,10 +38,11 @@ type Config struct {
 }
 
 type Task struct {
-	Clouds        []Cloud
-	SubTasks      []string
-	ExcludedTasks []string
-	Timeout       map[string]int
+	Clouds             []Cloud
+	SubTasks           []string
+	ExcludedTasks      []string
+	ExcludedCloudTasks map[string][]string
+	Timeout            map[string]int
 }
 
 type Cloud struct {
@@ -68,12 +69,6 @@ var (
 //   - for versions 3.n, match if the minor version has 2+ digits or is a
 //     single digit greater than or equal to n
 var minVersionRegex = map[string]string{
-	"3.0": "^[4-9].*|^3\\\\.([0-9]|\\\\d{{2,}})(\\\\.|-).*",
-	"3.1": "^[4-9].*|^3\\\\.([1-9]|\\\\d{{2,}})(\\\\.|-).*",
-	"3.2": "^[4-9].*|^3\\\\.([2-9]|\\\\d{{2,}})(\\\\.|-).*",
-	"3.3": "^[4-9].*|^3\\\\.([3-9]|\\\\d{{2,}})(\\\\.|-).*",
-	"3.4": "^[4-9].*|^3\\\\.([4-9]|\\\\d{{2,}})(\\\\.|-).*",
-	"3.5": "^[4-9].*|^3\\\\.([5-9]|\\\\d{{2,}})(\\\\.|-).*",
 	"3.6": "^[4-9].*|^3\\\\.([6-9]|\\\\d{{2,}})(\\\\.|-).*",
 	"4.0": "^[5-9].*|^4\\\\.([0-9]|\\\\d{{2,}})(\\\\.|-).*",
 }
@@ -259,6 +254,7 @@ func fetchTestsFromRepo(pb *progressbar.ProgressBar, config Config, suiteInfo []
 		// Expose all non skipped sub-tasks!
 		taskNames := []string{suiteName}
 		excluded := []string{}
+		excludedCloudTasks := make(map[string][]string)
 		if !contains(config.Folders.PreventSplit, suiteName) {
 			taskNames = []string{}
 			subTaskNames := parseTaskNames(dir)
@@ -267,6 +263,22 @@ func fetchTestsFromRepo(pb *progressbar.ProgressBar, config Config, suiteInfo []
 					taskNames = append(taskNames, subTask)
 				} else {
 					excluded = append(excluded, subTask)
+				}
+				fullName := suiteName + "-" + subTask
+				if contains(config.Folders.SkipAWS, fullName) {
+					excludedCloudTasks[aws.Name] = append(excludedCloudTasks[aws.Name], subTask)
+				}
+				if contains(config.Folders.SkipAzure, fullName) {
+					excludedCloudTasks[azure.Name] = append(excludedCloudTasks[azure.Name], subTask)
+				}
+				if contains(config.Folders.SkipGoogle, fullName) {
+					excludedCloudTasks[google.Name] = append(excludedCloudTasks[google.Name], subTask)
+				}
+				if contains(config.Folders.SkipLXD, fullName) {
+					excludedCloudTasks[lxd.Name] = append(excludedCloudTasks[lxd.Name], subTask)
+				}
+				if contains(config.Folders.SkipMicrok8s, fullName) {
+					excludedCloudTasks[microk8s.Name] = append(excludedCloudTasks[microk8s.Name], subTask)
 				}
 			}
 		}
@@ -291,10 +303,11 @@ func fetchTestsFromRepo(pb *progressbar.ProgressBar, config Config, suiteInfo []
 		}
 
 		testSuites[suiteName] = Task{
-			Clouds:        clouds,
-			SubTasks:      taskNames,
-			ExcludedTasks: excluded,
-			Timeout:       config.Folders.Timeout[suiteName],
+			Clouds:             clouds,
+			SubTasks:           taskNames,
+			ExcludedTasks:      excluded,
+			ExcludedCloudTasks: excludedCloudTasks,
+			Timeout:            config.Folders.Timeout[suiteName],
 		}
 	}
 	return testSuites
@@ -363,27 +376,29 @@ func writeJobDefinitions(
 	}
 
 	if err := t.Execute(f, struct {
-		SuiteName     string
-		Clouds        []Cloud
-		TaskNames     []string
-		SkipTasks     []string
-		ExcludedTasks string
-		Ephemeral     map[string]bool
-		CrossCloud    map[string]bool
-		Timeout       map[string]int
-		MinVersions   map[string]string
-		MaxVersions   map[string]string
+		SuiteName          string
+		Clouds             []Cloud
+		TaskNames          []string
+		SkipTasks          []string
+		ExcludedTasks      string
+		ExcludedCloudTasks map[string][]string
+		Ephemeral          map[string]bool
+		CrossCloud         map[string]bool
+		Timeout            map[string]int
+		MinVersions        map[string]string
+		MaxVersions        map[string]string
 	}{
-		SuiteName:     suiteName,
-		Clouds:        task.Clouds,
-		TaskNames:     task.SubTasks,
-		SkipTasks:     joined,
-		ExcludedTasks: strings.Join(task.ExcludedTasks, ","),
-		Ephemeral:     ephemeral,
-		CrossCloud:    crossCloud,
-		Timeout:       task.Timeout,
-		MinVersions:   minVersions,
-		MaxVersions:   maxVersions,
+		SuiteName:          suiteName,
+		Clouds:             task.Clouds,
+		TaskNames:          task.SubTasks,
+		SkipTasks:          joined,
+		ExcludedTasks:      strings.Join(task.ExcludedTasks, ","),
+		ExcludedCloudTasks: task.ExcludedCloudTasks,
+		Ephemeral:          ephemeral,
+		CrossCloud:         crossCloud,
+		Timeout:            task.Timeout,
+		MinVersions:        minVersions,
+		MaxVersions:        maxVersions,
 	}); err != nil {
 		log.Fatalf("unable to execute template %q with error %v", suiteName, err)
 	}
@@ -526,6 +541,9 @@ const Template = `
 {{- range $k, $skip_tasks := $node.SkipTasks}}
 {{- range $cloud := $node.Clouds}}
     {{- $task_name := index $node.TaskNames $k}}
+        {{- if (contains (index $node.ExcludedCloudTasks $cloud.Name) $task_name) }}
+          {{- continue }}
+        {{- end }}
         - name: 'test-{{$.SuiteName}}-{{ensureHyphen $task_name}}-{{$cloud.Name}}'
           current-parameters: true
 {{- end}}
@@ -549,6 +567,9 @@ const Template = `
       {{- $builder = "run-integration-test-microk8s" -}}
       {{- $run_on = "ephemeral-noble-8c-32g-amd64" -}}
     {{- end }}
+{{- if (contains (index $node.ExcludedCloudTasks $cloud.Name) $task_name) }}
+  {{- continue }}
+{{- end }}
 {{$timeout := (index $node.Timeout $task_name)}}
 - job:
     name: {{$full_task_name}}

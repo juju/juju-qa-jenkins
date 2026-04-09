@@ -99,7 +99,7 @@
           # Accounts for tests which do not exist
           # until a given Juju version.
           condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
           label: "${{JUJU_VERSION}}"
           on-evaluation-failure: "dont-run"
           steps:
@@ -173,7 +173,7 @@
           # Accounts for tests which do not exist
           # until a given Juju version.
           condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
           label: "${{JUJU_VERSION}}"
           on-evaluation-failure: "dont-run"
           steps:

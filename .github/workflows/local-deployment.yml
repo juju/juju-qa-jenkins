@@ -46,4 +46,5 @@ jobs:
           query_plugins_info=True
           EOF
 
+          sudo snap install astral-uv --classic
           STATIC_ANALYSIS_JOB=test_static_analysis_shell PUSH_TARGET="jobs" make push-local

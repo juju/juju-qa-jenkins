@@ -10,6 +10,11 @@ jobs:
         with:
           path: src/github.com/juju/juju-qa-jenkins
 
+      - name: "Install Dependencies"
+        run: |
+          set -eux
+          sudo snap install astral-uv --classic
+
       - name: "Static Analysis: Shell Check"
         run: |
           STATIC_ANALYSIS_JOB=test_static_analysis_shell make static-analysis
