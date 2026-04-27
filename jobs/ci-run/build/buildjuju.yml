@@ -172,7 +172,7 @@
           set -eu
 
           touch build.properties
-          echo "OCI_REGISTRY_USERNAME=public.ecr.aws/jujuqabot/build-${{SHORT_GIT_COMMIT}}" >> build.properties
+          echo "PUSH_OCI_REGISTRY=public.ecr.aws/jujuqabot/build-${{SHORT_GIT_COMMIT}}" >> build.properties
 
           cat build.properties
       - inject:
