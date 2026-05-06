@@ -86,6 +86,20 @@
           # Install microk8s and kubectl
           sudo snap install microk8s --classic --channel={channel}
           sudo snap install kubectl --classic --channel={channel}
+
+          sudo snap stop microk8s
+
+          if curl -v --fail https://docker-cache.us-east-1.aws.jujuqa.com; then
+            sudo tee /var/snap/microk8s/current/args/certs.d/docker.io/hosts.toml << 'EOF'
+          server = "https://docker-cache.us-east-1.aws.jujuqa.com"
+
+          [host."docker-cache.us-east-1.aws.jujuqa.com"]
+          capabilities = ["pull", "resolve"]
+          EOF
+          fi
+
+          sudo snap start microk8s
+
           echo "waiting for microk8s storage to become available"
 
           NEXT_WAIT_TIME=0
