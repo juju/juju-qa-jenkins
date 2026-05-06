@@ -25,21 +25,28 @@
     builders:
     - get-s3-build-details
     - set-test-description
-    - multijob:
-        name: 'IntegrationTests-storage_k8s'
-        projects:
-        - name: 'test-storage_k8s-test-add-unit-attach-storage-microk8s'
-          current-parameters: true
-        - name: 'test-storage_k8s-test-add-unit-attach-storage-scaling-race-condition-microk8s'
-          current-parameters: true
-        - name: 'test-storage_k8s-test-add-unit-duplicate-pvc-exists-microk8s'
-          current-parameters: true
-        - name: 'test-storage_k8s-test-deploy-attach-storage-microk8s'
-          current-parameters: true
-        - name: 'test-storage_k8s-test-force-import-filesystem-microk8s'
-          current-parameters: true
-        - name: 'test-storage_k8s-test-import-filesystem-microk8s'
-          current-parameters: true
+    - conditional-step:
+        condition-kind: regex-match
+        # Matches Juju >= 3.6; suite introduced in that version.
+        regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+        label: "${{JUJU_VERSION}}"
+        on-evaluation-failure: "dont-run"
+        steps:
+          - multijob:
+              name: 'IntegrationTests-storage_k8s'
+              projects:
+              - name: 'test-storage_k8s-test-add-unit-attach-storage-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-add-unit-attach-storage-scaling-race-condition-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-add-unit-duplicate-pvc-exists-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-deploy-attach-storage-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-force-import-filesystem-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-import-filesystem-microk8s'
+                current-parameters: true
 
 - job:
     name: test-storage_k8s-test-add-unit-attach-storage-microk8s
@@ -98,20 +105,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test-microk8s:
-                  test_name: 'storage_k8s'
-                  setup_steps: ''
-                  task_name: 'test_add_unit_attach_storage'
-                  skip_tasks: 'test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+      - run-integration-test-microk8s:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_attach_storage'
+            skip_tasks: 'test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
     publishers:
       - integration-artifacts
 
@@ -172,20 +170,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test-microk8s:
-                  test_name: 'storage_k8s'
-                  setup_steps: ''
-                  task_name: 'test_add_unit_attach_storage_scaling_race_condition'
-                  skip_tasks: 'test_add_unit_attach_storage,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+      - run-integration-test-microk8s:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_attach_storage_scaling_race_condition'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
     publishers:
       - integration-artifacts
 
@@ -246,20 +235,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test-microk8s:
-                  test_name: 'storage_k8s'
-                  setup_steps: ''
-                  task_name: 'test_add_unit_duplicate_pvc_exists'
-                  skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+      - run-integration-test-microk8s:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_add_unit_duplicate_pvc_exists'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
     publishers:
       - integration-artifacts
 
@@ -320,20 +300,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test-microk8s:
-                  test_name: 'storage_k8s'
-                  setup_steps: ''
-                  task_name: 'test_deploy_attach_storage'
-                  skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_force_import_filesystem,test_import_filesystem'
+      - run-integration-test-microk8s:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_deploy_attach_storage'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_force_import_filesystem,test_import_filesystem'
     publishers:
       - integration-artifacts
 
@@ -394,20 +365,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test-microk8s:
-                  test_name: 'storage_k8s'
-                  setup_steps: ''
-                  task_name: 'test_force_import_filesystem'
-                  skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_import_filesystem'
+      - run-integration-test-microk8s:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_force_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_import_filesystem'
     publishers:
       - integration-artifacts
 
@@ -468,19 +430,10 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test-microk8s:
-                  test_name: 'storage_k8s'
-                  setup_steps: ''
-                  task_name: 'test_import_filesystem'
-                  skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem'
+      - run-integration-test-microk8s:
+            test_name: 'storage_k8s'
+            setup_steps: ''
+            task_name: 'test_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem'
     publishers:
       - integration-artifacts

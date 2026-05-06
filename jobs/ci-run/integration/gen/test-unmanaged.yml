@@ -25,17 +25,24 @@
     builders:
     - get-s3-build-details
     - set-test-description
-    - multijob:
-        name: 'IntegrationTests-unmanaged'
-        projects:
-        - name: 'test-unmanaged-test-deploy-unmanaged-aws'
-          current-parameters: true
-        - name: 'test-unmanaged-test-deploy-unmanaged-lxd'
-          current-parameters: true
-        - name: 'test-unmanaged-test-spaces-unmanaged-aws'
-          current-parameters: true
-        - name: 'test-unmanaged-test-spaces-unmanaged-lxd'
-          current-parameters: true
+    - conditional-step:
+        condition-kind: regex-match
+        # Matches Juju >= 4.0; suite introduced in that version.
+        regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+        label: "${{JUJU_VERSION}}"
+        on-evaluation-failure: "dont-run"
+        steps:
+          - multijob:
+              name: 'IntegrationTests-unmanaged'
+              projects:
+              - name: 'test-unmanaged-test-deploy-unmanaged-aws'
+                current-parameters: true
+              - name: 'test-unmanaged-test-deploy-unmanaged-lxd'
+                current-parameters: true
+              - name: 'test-unmanaged-test-spaces-unmanaged-aws'
+                current-parameters: true
+              - name: 'test-unmanaged-test-spaces-unmanaged-lxd'
+                current-parameters: true
 
 - job:
     name: test-unmanaged-test-deploy-unmanaged-aws
@@ -98,20 +105,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                  test_name: 'unmanaged'
-                  setup_steps: ''
-                  task_name: 'test_deploy_unmanaged'
-                  skip_tasks: 'test_spaces_unmanaged'
+      - run-integration-test:
+            test_name: 'unmanaged'
+            setup_steps: ''
+            task_name: 'test_deploy_unmanaged'
+            skip_tasks: 'test_spaces_unmanaged'
     publishers:
       - integration-artifacts
 
@@ -172,20 +170,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                  test_name: 'unmanaged'
-                  setup_steps: ''
-                  task_name: 'test_deploy_unmanaged'
-                  skip_tasks: 'test_spaces_unmanaged'
+      - run-integration-test:
+            test_name: 'unmanaged'
+            setup_steps: ''
+            task_name: 'test_deploy_unmanaged'
+            skip_tasks: 'test_spaces_unmanaged'
     publishers:
       - integration-artifacts
 
@@ -250,20 +239,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                  test_name: 'unmanaged'
-                  setup_steps: ''
-                  task_name: 'test_spaces_unmanaged'
-                  skip_tasks: 'test_deploy_unmanaged'
+      - run-integration-test:
+            test_name: 'unmanaged'
+            setup_steps: ''
+            task_name: 'test_spaces_unmanaged'
+            skip_tasks: 'test_deploy_unmanaged'
     publishers:
       - integration-artifacts
 
@@ -324,19 +304,10 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                  test_name: 'unmanaged'
-                  setup_steps: ''
-                  task_name: 'test_spaces_unmanaged'
-                  skip_tasks: 'test_deploy_unmanaged'
+      - run-integration-test:
+            test_name: 'unmanaged'
+            setup_steps: ''
+            task_name: 'test_spaces_unmanaged'
+            skip_tasks: 'test_deploy_unmanaged'
     publishers:
       - integration-artifacts

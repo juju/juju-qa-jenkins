@@ -237,6 +237,7 @@
           # Accounts for tests which do not exist
           # until a given Juju version.
           condition-kind: regex-match
+          # Matches Juju >= 4.0; task introduced in that version.
           regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
           label: "${{JUJU_VERSION}}"
           on-evaluation-failure: "dont-run"
@@ -311,6 +312,7 @@
           # Accounts for tests which do not exist
           # until a given Juju version.
           condition-kind: regex-match
+          # Matches Juju >= 4.0; task introduced in that version.
           regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
           label: "${{JUJU_VERSION}}"
           on-evaluation-failure: "dont-run"

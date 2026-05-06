@@ -25,17 +25,27 @@
     builders:
     - get-s3-build-details
     - set-test-description
-    - multijob:
-        name: 'IntegrationTests-branches'
-        projects:
-        - name: 'test-branches-test-active-branch-output-aws'
-          current-parameters: true
-        - name: 'test-branches-test-active-branch-output-lxd'
-          current-parameters: true
-        - name: 'test-branches-test-branch-aws'
-          current-parameters: true
-        - name: 'test-branches-test-branch-lxd'
-          current-parameters: true
+    - conditional-step:
+        condition-kind: not
+        condition-operand:
+          condition-kind: regex-match
+          # Matches Juju >= 4.0; negated above to skip
+          # versions from 4.0 onward (suite removed in that version).
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+        on-evaluation-failure: "dont-run"
+        steps:
+          - multijob:
+              name: 'IntegrationTests-branches'
+              projects:
+              - name: 'test-branches-test-active-branch-output-aws'
+                current-parameters: true
+              - name: 'test-branches-test-active-branch-output-lxd'
+                current-parameters: true
+              - name: 'test-branches-test-branch-aws'
+                current-parameters: true
+              - name: 'test-branches-test-branch-lxd'
+                current-parameters: true
 
 - job:
     name: test-branches-test-active-branch-output-aws
@@ -98,22 +108,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Do not run on regexp version match.
-          # Accounts for tests which do not exist
-          # in later Juju versions.
-          condition-kind: not
-          condition-operand:
-            condition-kind: regex-match
-            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
-            label: "${{JUJU_VERSION}}"
-            on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                test_name: 'branches'
-                setup_steps: ''
-                task_name: 'test_active_branch_output'
-                skip_tasks: 'test_branch'
+      - run-integration-test:
+            test_name: 'branches'
+            setup_steps: ''
+            task_name: 'test_active_branch_output'
+            skip_tasks: 'test_branch'
     publishers:
       - integration-artifacts
 
@@ -174,22 +173,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Do not run on regexp version match.
-          # Accounts for tests which do not exist
-          # in later Juju versions.
-          condition-kind: not
-          condition-operand:
-            condition-kind: regex-match
-            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
-            label: "${{JUJU_VERSION}}"
-            on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                test_name: 'branches'
-                setup_steps: ''
-                task_name: 'test_active_branch_output'
-                skip_tasks: 'test_branch'
+      - run-integration-test:
+            test_name: 'branches'
+            setup_steps: ''
+            task_name: 'test_active_branch_output'
+            skip_tasks: 'test_branch'
     publishers:
       - integration-artifacts
 
@@ -254,22 +242,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Do not run on regexp version match.
-          # Accounts for tests which do not exist
-          # in later Juju versions.
-          condition-kind: not
-          condition-operand:
-            condition-kind: regex-match
-            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
-            label: "${{JUJU_VERSION}}"
-            on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                test_name: 'branches'
-                setup_steps: ''
-                task_name: 'test_branch'
-                skip_tasks: 'test_active_branch_output'
+      - run-integration-test:
+            test_name: 'branches'
+            setup_steps: ''
+            task_name: 'test_branch'
+            skip_tasks: 'test_active_branch_output'
     publishers:
       - integration-artifacts
 
@@ -330,21 +307,10 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Do not run on regexp version match.
-          # Accounts for tests which do not exist
-          # in later Juju versions.
-          condition-kind: not
-          condition-operand:
-            condition-kind: regex-match
-            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
-            label: "${{JUJU_VERSION}}"
-            on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                test_name: 'branches'
-                setup_steps: ''
-                task_name: 'test_branch'
-                skip_tasks: 'test_active_branch_output'
+      - run-integration-test:
+            test_name: 'branches'
+            setup_steps: ''
+            task_name: 'test_branch'
+            skip_tasks: 'test_active_branch_output'
     publishers:
       - integration-artifacts

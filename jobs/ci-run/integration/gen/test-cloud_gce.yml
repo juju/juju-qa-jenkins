@@ -25,17 +25,24 @@
     builders:
     - get-s3-build-details
     - set-test-description
-    - multijob:
-        name: 'IntegrationTests-cloud_gce'
-        projects:
-        - name: 'test-cloud_gce-test-create-storage-pool-google'
-          current-parameters: true
-        - name: 'test-cloud_gce-test-deploy-gpu-instance-google'
-          current-parameters: true
-        - name: 'test-cloud_gce-test-pro-images-google'
-          current-parameters: true
-        - name: 'test-cloud_gce-test-serviceaccount-credential-google'
-          current-parameters: true
+    - conditional-step:
+        condition-kind: regex-match
+        # Matches Juju >= 3.6; suite introduced in that version.
+        regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+        label: "${{JUJU_VERSION}}"
+        on-evaluation-failure: "dont-run"
+        steps:
+          - multijob:
+              name: 'IntegrationTests-cloud_gce'
+              projects:
+              - name: 'test-cloud_gce-test-create-storage-pool-google'
+                current-parameters: true
+              - name: 'test-cloud_gce-test-deploy-gpu-instance-google'
+                current-parameters: true
+              - name: 'test-cloud_gce-test-pro-images-google'
+                current-parameters: true
+              - name: 'test-cloud_gce-test-serviceaccount-credential-google'
+                current-parameters: true
 
 - job:
     name: test-cloud_gce-test-create-storage-pool-google
@@ -98,20 +105,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                  test_name: 'cloud_gce'
-                  setup_steps: ''
-                  task_name: 'test_create_storage_pool'
-                  skip_tasks: 'test_deploy_gpu_instance,test_pro_images,test_serviceaccount_credential'
+      - run-integration-test:
+            test_name: 'cloud_gce'
+            setup_steps: ''
+            task_name: 'test_create_storage_pool'
+            skip_tasks: 'test_deploy_gpu_instance,test_pro_images,test_serviceaccount_credential'
     publishers:
       - integration-artifacts
 
@@ -176,20 +174,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                  test_name: 'cloud_gce'
-                  setup_steps: ''
-                  task_name: 'test_deploy_gpu_instance'
-                  skip_tasks: 'test_create_storage_pool,test_pro_images,test_serviceaccount_credential'
+      - run-integration-test:
+            test_name: 'cloud_gce'
+            setup_steps: ''
+            task_name: 'test_deploy_gpu_instance'
+            skip_tasks: 'test_create_storage_pool,test_pro_images,test_serviceaccount_credential'
     publishers:
       - integration-artifacts
 
@@ -254,20 +243,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                  test_name: 'cloud_gce'
-                  setup_steps: ''
-                  task_name: 'test_pro_images'
-                  skip_tasks: 'test_create_storage_pool,test_deploy_gpu_instance,test_serviceaccount_credential'
+      - run-integration-test:
+            test_name: 'cloud_gce'
+            setup_steps: ''
+            task_name: 'test_pro_images'
+            skip_tasks: 'test_create_storage_pool,test_deploy_gpu_instance,test_serviceaccount_credential'
     publishers:
       - integration-artifacts
 
@@ -332,19 +312,10 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                  test_name: 'cloud_gce'
-                  setup_steps: ''
-                  task_name: 'test_serviceaccount_credential'
-                  skip_tasks: 'test_create_storage_pool,test_deploy_gpu_instance,test_pro_images'
+      - run-integration-test:
+            test_name: 'cloud_gce'
+            setup_steps: ''
+            task_name: 'test_serviceaccount_credential'
+            skip_tasks: 'test_create_storage_pool,test_deploy_gpu_instance,test_pro_images'
     publishers:
       - integration-artifacts

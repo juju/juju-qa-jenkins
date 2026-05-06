@@ -25,13 +25,20 @@
     builders:
     - get-s3-build-details
     - set-test-description
-    - multijob:
-        name: 'IntegrationTests-dashboard'
-        projects:
-        - name: 'test-dashboard-test-dashboard-deploy-aws'
-          current-parameters: true
-        - name: 'test-dashboard-test-dashboard-deploy-lxd'
-          current-parameters: true
+    - conditional-step:
+        condition-kind: regex-match
+        # Matches Juju >= 3.6; suite introduced in that version.
+        regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+        label: "${{JUJU_VERSION}}"
+        on-evaluation-failure: "dont-run"
+        steps:
+          - multijob:
+              name: 'IntegrationTests-dashboard'
+              projects:
+              - name: 'test-dashboard-test-dashboard-deploy-aws'
+                current-parameters: true
+              - name: 'test-dashboard-test-dashboard-deploy-lxd'
+                current-parameters: true
 
 - job:
     name: test-dashboard-test-dashboard-deploy-aws
@@ -94,20 +101,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                  test_name: 'dashboard'
-                  setup_steps: ''
-                  task_name: ''
-                  skip_tasks: ''
+      - run-integration-test:
+            test_name: 'dashboard'
+            setup_steps: ''
+            task_name: ''
+            skip_tasks: ''
     publishers:
       - integration-artifacts
 
@@ -168,19 +166,10 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                  test_name: 'dashboard'
-                  setup_steps: ''
-                  task_name: ''
-                  skip_tasks: ''
+      - run-integration-test:
+            test_name: 'dashboard'
+            setup_steps: ''
+            task_name: ''
+            skip_tasks: ''
     publishers:
       - integration-artifacts

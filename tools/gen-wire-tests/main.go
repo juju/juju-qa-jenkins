@@ -404,23 +404,41 @@ func writeJobDefinitions(
 		crossCloud[test] = true
 	}
 
+	suiteMinVersion := ""
+	suiteMaxVersion := ""
+	suiteMinLabel := ""
+	suiteMaxLabel := ""
+	if v, ok := introduced[suiteName]; ok {
+		suiteMinVersion = buildMinVersionRegex(v)
+		suiteMinLabel = v
+	}
+	if v, ok := removed[suiteName]; ok {
+		suiteMaxVersion = buildMinVersionRegex(v)
+		suiteMaxLabel = v
+	}
+	// suiteVersionOR is true when the suite was removed in an earlier
+	// branch but re-introduced in a later one. The parent multijob
+	// must then use OR logic: run on (< removed) OR (>= introduced),
+	// rather than the normal AND: (>= introduced) AND (< removed).
+	suiteVersionOR := suiteMinVersion != "" &&
+		suiteMaxVersion != "" &&
+		versionLess(removed[suiteName], introduced[suiteName])
 	minVersions := make(map[string]string)
 	maxVersions := make(map[string]string)
+	minVersionLabels := make(map[string]string)
+	maxVersionLabels := make(map[string]string)
 	for _, subTask := range task.SubTasks {
 		if v, ok := introduced[subTask]; ok {
 			minVersions[subTask] = buildMinVersionRegex(v)
+			minVersionLabels[subTask] = v
 		}
 		if v, ok := introduced[suiteName+"-"+subTask]; ok {
 			minVersions[suiteName+"-"+subTask] = buildMinVersionRegex(v)
-		}
-		if v, ok := introduced[suiteName]; ok {
-			minVersions[suiteName+"-"+subTask] = buildMinVersionRegex(v)
+			minVersionLabels[suiteName+"-"+subTask] = v
 		}
 		if v, ok := removed[suiteName+"-"+subTask]; ok {
 			maxVersions[suiteName+"-"+subTask] = buildMinVersionRegex(v)
-		}
-		if v, ok := removed[suiteName]; ok {
-			maxVersions[suiteName+"-"+subTask] = buildMinVersionRegex(v)
+			maxVersionLabels[suiteName+"-"+subTask] = v
 		}
 	}
 
@@ -436,6 +454,13 @@ func writeJobDefinitions(
 		Timeout            map[string]int
 		MinVersions        map[string]string
 		MaxVersions        map[string]string
+		MinVersionLabels   map[string]string
+		MaxVersionLabels   map[string]string
+		SuiteMinVersion    string
+		SuiteMaxVersion    string
+		SuiteMinLabel      string
+		SuiteMaxLabel      string
+		SuiteVersionOR     bool
 	}{
 		SuiteName:          suiteName,
 		Clouds:             task.Clouds,
@@ -448,6 +473,13 @@ func writeJobDefinitions(
 		Timeout:            task.Timeout,
 		MinVersions:        minVersions,
 		MaxVersions:        maxVersions,
+		MinVersionLabels:   minVersionLabels,
+		MaxVersionLabels:   maxVersionLabels,
+		SuiteMinVersion:    suiteMinVersion,
+		SuiteMaxVersion:    suiteMaxVersion,
+		SuiteMinLabel:      suiteMinLabel,
+		SuiteMaxLabel:      suiteMaxLabel,
+		SuiteVersionOR:     suiteVersionOR,
 	}); err != nil {
 		log.Fatalf(
 			"unable to execute template %q with error %v",
@@ -720,6 +752,21 @@ func contains(haystack []string, needle string) bool {
 	return false
 }
 
+// versionLess reports whether version string a is strictly less than
+// b. Both are expected to be in "major.minor" form (e.g. "3.6").
+func versionLess(a, b string) bool {
+	aMaj, aMin, _ := strings.Cut(a, ".")
+	bMaj, bMin, _ := strings.Cut(b, ".")
+	ai, _ := strconv.Atoi(aMaj)
+	bi, _ := strconv.Atoi(bMaj)
+	if ai != bi {
+		return ai < bi
+	}
+	ai, _ = strconv.Atoi(aMin)
+	bi, _ = strconv.Atoi(bMin)
+	return ai < bi
+}
+
 // matchesList returns true if name matches any entry in list. Entries
 // may contain '*' as a glob wildcard (e.g. "*_k8s").
 func matchesList(list []string, name string) bool {
@@ -768,6 +815,56 @@ const Template = `
     - get-s3-build-details
     - set-test-description
 {{- if gt (len $node.TaskNames) 0 }}
+{{- $suiteMin := $.SuiteMinVersion -}}
+{{- $suiteMax := $.SuiteMaxVersion -}}
+{{- $suiteMinLabel := $.SuiteMinLabel -}}
+{{- $suiteMaxLabel := $.SuiteMaxLabel -}}
+{{- if or (ne $suiteMin "") (ne $suiteMax "") }}
+    - conditional-step:
+  {{- if and (ne $suiteMin "") (ne $suiteMax "") }}
+        condition-kind: {{if $.SuiteVersionOR}}or{{else}}and{{end}}
+        condition-operands:
+          - condition-kind: not
+            condition-operand:
+              condition-kind: regex-match
+              # Matches Juju >= {{$suiteMaxLabel}}; negated above to skip
+              # versions from {{$suiteMaxLabel}} onward (suite removed in that version).
+              regex: "{{ $suiteMax }}"
+              label: "{{ "${{JUJU_VERSION}}" }}"
+          - condition-kind: regex-match
+            # Matches Juju >= {{$suiteMinLabel}}; suite introduced in that version.
+            regex: "{{ $suiteMin }}"
+            label: "{{ "${{JUJU_VERSION}}" }}"
+  {{- else if ne $suiteMax "" }}
+        condition-kind: not
+        condition-operand:
+          condition-kind: regex-match
+          # Matches Juju >= {{$suiteMaxLabel}}; negated above to skip
+          # versions from {{$suiteMaxLabel}} onward (suite removed in that version).
+          regex: "{{ $suiteMax }}"
+          label: "{{ "${{JUJU_VERSION}}" }}"
+  {{- else }}
+        condition-kind: regex-match
+        # Matches Juju >= {{$suiteMinLabel}}; suite introduced in that version.
+        regex: "{{ $suiteMin }}"
+        label: "{{ "${{JUJU_VERSION}}" }}"
+  {{- end }}
+        on-evaluation-failure: "dont-run"
+        steps:
+          - multijob:
+              name: 'IntegrationTests-{{.SuiteName}}'
+              projects:
+{{- range $k, $skip_tasks := $node.SkipTasks}}
+{{- range $cloud := $node.Clouds}}
+    {{- $task_name := index $node.TaskNames $k}}
+              {{- if (contains (index $node.ExcludedCloudTasks $cloud.Name) $task_name) }}
+                {{- continue }}
+              {{- end }}
+              - name: 'test-{{$.SuiteName}}-{{ensureHyphen $task_name}}-{{$cloud.Name}}'
+                current-parameters: true
+{{- end}}
+{{- end}}
+{{- else }}
     - multijob:
         name: 'IntegrationTests-{{.SuiteName}}'
         projects:
@@ -779,6 +876,7 @@ const Template = `
         {{- end }}
         - name: 'test-{{$.SuiteName}}-{{ensureHyphen $task_name}}-{{$cloud.Name}}'
           current-parameters: true
+{{- end}}
 {{- end}}
 {{- end}}
 {{- end}}
@@ -875,10 +973,13 @@ const Template = `
       - install-go
 {{- end }}
 {{- $minRegexp := index $.MinVersions $task_name -}}
+{{- $minLabel := index $.MinVersionLabels $task_name -}}
 {{- if eq $minRegexp "" }}
   {{- $minRegexp = index $.MinVersions (printf "%s-%s" $.SuiteName $task_name) -}}
+  {{- $minLabel = index $.MinVersionLabels (printf "%s-%s" $.SuiteName $task_name) -}}
 {{- end }}
 {{- $excludeRegexp := index $.MaxVersions (printf "%s-%s" $.SuiteName $task_name) -}}
+{{- $excludeLabel := index $.MaxVersionLabels (printf "%s-%s" $.SuiteName $task_name) -}}
 {{- if or (ne $minRegexp "") (ne $excludeRegexp "") }}
       - conditional-step:
   {{- if and (ne $minRegexp "") (ne $excludeRegexp "") }}
@@ -890,12 +991,15 @@ const Template = `
             - condition-kind: not
               condition-operand:
                 condition-kind: regex-match
+                # Matches Juju >= {{$excludeLabel}}; negated above to skip
+                # versions from {{$excludeLabel}} onward (task removed in that version).
                 regex: "{{ $excludeRegexp }}"
                 label: "{{ "${{JUJU_VERSION}}" }}"
             # Only run on regexp version match.
             # Accounts for tests which do not exist
             # until a given Juju version.
             - condition-kind: regex-match
+              # Matches Juju >= {{$minLabel}}; task introduced in that version.
               regex: "{{ $minRegexp }}"
               label: "{{ "${{JUJU_VERSION}}" }}"
           on-evaluation-failure: "dont-run"
@@ -918,6 +1022,8 @@ const Template = `
           condition-kind: not
           condition-operand:
             condition-kind: regex-match
+            # Matches Juju >= {{$excludeLabel}}; negated above to skip
+            # versions from {{$excludeLabel}} onward (task removed in that version).
             regex: "{{ $excludeRegexp }}"
             label: "{{ "${{JUJU_VERSION}}" }}"
             on-evaluation-failure: "dont-run"
@@ -937,6 +1043,7 @@ const Template = `
           # Accounts for tests which do not exist
           # until a given Juju version.
           condition-kind: regex-match
+          # Matches Juju >= {{$minLabel}}; task introduced in that version.
           regex: "{{ $minRegexp }}"
           label: "{{ "${{JUJU_VERSION}}" }}"
           on-evaluation-failure: "dont-run"

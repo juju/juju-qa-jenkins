@@ -25,11 +25,18 @@
     builders:
     - get-s3-build-details
     - set-test-description
-    - multijob:
-        name: 'IntegrationTests-smoke_k8s'
-        projects:
-        - name: 'test-smoke_k8s-test-deploy-microk8s'
-          current-parameters: true
+    - conditional-step:
+        condition-kind: regex-match
+        # Matches Juju >= 4.0; suite introduced in that version.
+        regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+        label: "${{JUJU_VERSION}}"
+        on-evaluation-failure: "dont-run"
+        steps:
+          - multijob:
+              name: 'IntegrationTests-smoke_k8s'
+              projects:
+              - name: 'test-smoke_k8s-test-deploy-microk8s'
+                current-parameters: true
 
 - job:
     name: test-smoke_k8s-test-deploy-microk8s
@@ -88,19 +95,10 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test-microk8s:
-                  test_name: 'smoke_k8s'
-                  setup_steps: ''
-                  task_name: ''
-                  skip_tasks: ''
+      - run-integration-test-microk8s:
+            test_name: 'smoke_k8s'
+            setup_steps: ''
+            task_name: ''
+            skip_tasks: ''
     publishers:
       - integration-artifacts

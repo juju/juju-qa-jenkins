@@ -25,13 +25,20 @@
     builders:
     - get-s3-build-details
     - set-test-description
-    - multijob:
-        name: 'IntegrationTests-cloud_azure'
-        projects:
-        - name: 'test-cloud_azure-test-managed-identity-azure'
-          current-parameters: true
-        - name: 'test-cloud_azure-test-storage-account-type-azure'
-          current-parameters: true
+    - conditional-step:
+        condition-kind: regex-match
+        # Matches Juju >= 3.6; suite introduced in that version.
+        regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+        label: "${{JUJU_VERSION}}"
+        on-evaluation-failure: "dont-run"
+        steps:
+          - multijob:
+              name: 'IntegrationTests-cloud_azure'
+              projects:
+              - name: 'test-cloud_azure-test-managed-identity-azure'
+                current-parameters: true
+              - name: 'test-cloud_azure-test-storage-account-type-azure'
+                current-parameters: true
 
 - job:
     name: test-cloud_azure-test-managed-identity-azure
@@ -94,20 +101,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                  test_name: 'cloud_azure'
-                  setup_steps: ''
-                  task_name: 'test_managed_identity'
-                  skip_tasks: 'test_storage_account_type'
+      - run-integration-test:
+            test_name: 'cloud_azure'
+            setup_steps: ''
+            task_name: 'test_managed_identity'
+            skip_tasks: 'test_storage_account_type'
     publishers:
       - integration-artifacts
 
@@ -172,19 +170,10 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Only run on regexp version match.
-          # Accounts for tests which do not exist
-          # until a given Juju version.
-          condition-kind: regex-match
-          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
-          label: "${{JUJU_VERSION}}"
-          on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                  test_name: 'cloud_azure'
-                  setup_steps: ''
-                  task_name: 'test_storage_account_type'
-                  skip_tasks: 'test_managed_identity'
+      - run-integration-test:
+            test_name: 'cloud_azure'
+            setup_steps: ''
+            task_name: 'test_storage_account_type'
+            skip_tasks: 'test_managed_identity'
     publishers:
       - integration-artifacts

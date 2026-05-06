@@ -39,6 +39,7 @@ files:
     - .github/workflows/static-analysis.yml
     - .github/workflows/local-deployment.yml
     - yamlfmt.yaml
+    - tools/gen-wire-tests/2.9.yaml
     - tools/gen-wire-tests/3.6.yaml
     - tools/gen-wire-tests/4.0.yaml
     - tools/gen-wire-tests/main.yaml
@@ -98,6 +99,7 @@ files:
     - .github/workflows/local-deployment.yml
     - jobs/ci-run/integration/gen/*
     - yamlfmt.yaml
+    - tools/gen-wire-tests/2.9.yaml
     - tools/gen-wire-tests/3.6.yaml
     - tools/gen-wire-tests/4.0.yaml
     - tools/gen-wire-tests/main.yaml
@@ -142,6 +144,7 @@ files:
     - .github/workflows/static-analysis.yml
     - .github/workflows/local-deployment.yml
     - yamlfmt.yaml
+    - tools/gen-wire-tests/2.9.yaml
     - tools/gen-wire-tests/3.6.yaml
     - tools/gen-wire-tests/4.0.yaml
     - tools/gen-wire-tests/main.yaml
