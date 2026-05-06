@@ -91,7 +91,7 @@
     wrappers:
       - default-integration-test-wrapper
       - timeout:
-          timeout: 30
+          timeout: 45
           fail: true
           type: absolute
     builders:
@@ -160,7 +160,7 @@
     wrappers:
       - default-integration-test-wrapper
       - timeout:
-          timeout: 60
+          timeout: 45
           fail: true
           type: absolute
     builders:
@@ -229,7 +229,7 @@
     wrappers:
       - default-integration-test-wrapper
       - timeout:
-          timeout: 30
+          timeout: 45
           fail: true
           type: absolute
     builders:
@@ -294,7 +294,7 @@
     wrappers:
       - default-integration-test-wrapper
       - timeout:
-          timeout: 30
+          timeout: 45
           fail: true
           type: absolute
     builders:

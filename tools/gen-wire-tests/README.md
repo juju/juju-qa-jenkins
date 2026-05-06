@@ -10,9 +10,17 @@ It is split into two commands:
 - `generate` — reads those saved YAML files and a config file (via
   stdin) to produce the Jenkins job definition YAML files.
 
-The `collect` output files (`3.6.yaml`, `main.yaml`) are committed to
-this repository so that `generate` can be run without GitHub access or
-API token.
+The three tracked branches are:
+
+| Branch | Juju version |
+|--------|-------------|
+| `3.6`  | 3.6         |
+| `4.0`  | 4.0         |
+| `main` | 4.1         |
+
+The `collect` output files (`3.6.yaml`, `4.0.yaml`, `main.yaml`) are
+committed to this repository so that `generate` can be run without
+GitHub access or an API token.
 
 ## Usage
 

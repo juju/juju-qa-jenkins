@@ -168,6 +168,8 @@
 
           # Just in case, wait for cloud-init.
           cloud-init status --wait 2> /dev/null || true
+
+          # Wait for apt
           while sudo lsof /var/lib/dpkg/lock-frontend 2> /dev/null; do
               echo "Waiting for dpkg lock..."
               sleep 10
@@ -177,6 +179,51 @@
               sleep 10
           done
 
+          # Fetches EC2 instance metadata via IMDSv2 and displays it
+          # in a plain summary.
+
+          METADATA_URL="http://169.254.169.254/latest/meta-data"
+          TOKEN_URL="http://169.254.169.254/latest/api/token"
+          TOKEN_TTL=21600
+
+          TOKEN=$(curl -sf \
+              -X PUT \
+              -H "X-aws-ec2-metadata-token-ttl-seconds: $TOKEN_TTL" \
+              "$TOKEN_URL")
+
+          if [ -z "$TOKEN" ]; then
+              printf 'not running on EC2\n'
+              exit 0
+          fi
+
+          # fetch <path> queries one metadata endpoint, returning "-"
+          # when the field is unavailable (e.g. public-ipv4 on a
+          # private-only instance).
+          fetch() {
+              curl -sf \
+                  -H "X-aws-ec2-metadata-token: $TOKEN" \
+                  "$METADATA_URL/$1" 2>/dev/null \
+                  || printf '-'
+          }
+
+          # row <label> <value> prints one formatted metadata row.
+          row() {
+              printf "%-24s %s\n" "$1" "$2"
+          }
+
+          printf '\n=== AWS EC2 Instance Metadata ===\n\n'
+
+          row "Instance ID:"       "$(fetch instance-id)"
+          row "Instance Type:"     "$(fetch instance-type)"
+          row "AMI ID:"            "$(fetch ami-id)"
+          row "Region:"            "$(fetch placement/region)"
+          row "Availability Zone:" "$(fetch placement/availability-zone)"
+          row "Public IP:"         "$(fetch public-ipv4)"
+          row "Local IP:"          "$(fetch local-ipv4)"
+          row "Public Hostname:"   "$(fetch public-hostname)"
+          row "Local Hostname:"    "$(fetch local-hostname)"
+
+          printf '\n==================================\n\n'
 - builder:
     name: install-s3cmd
     builders:

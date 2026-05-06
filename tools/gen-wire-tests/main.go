@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"text/template"
 
@@ -21,12 +22,16 @@ import (
 // Config represents the configuration for gen-wire-tests.
 type Config struct {
 	Folders struct {
-		Skip         []string                  `yaml:"skip-all"`
-		SkipLXD      []string                  `yaml:"skip-lxd"`
-		SkipAWS      []string                  `yaml:"skip-aws"`
-		SkipGoogle   []string                  `yaml:"skip-google"`
-		SkipAzure    []string                  `yaml:"skip-azure"`
-		SkipMicrok8s []string                  `yaml:"skip-microk8s"`
+		Skip     []string `yaml:"skip-all"`
+		LXD      []string `yaml:"lxd"`
+		AWS      []string `yaml:"aws"`
+		Google   []string `yaml:"google"`
+		Azure    []string `yaml:"azure"`
+		Microk8s []string `yaml:"microk8s"`
+		// ExcludeTasks maps cloud name to suite-subtask pairs that
+		// should be excluded from that cloud's jobs even when the
+		// parent suite is allowed. e.g. "controller-test_limit_access"
+		ExcludeTasks map[string][]string       `yaml:"exclude-tasks"`
 		SkipSubTasks []string                  `yaml:"skip-subtasks"`
 		PreventSplit []string                  `yaml:"prevent-split"`
 		Ephemeral    []string                  `yaml:"ephemeral"`
@@ -69,27 +74,26 @@ var (
 	microk8s = Cloud{Name: "microk8s", CloudName: "microk8s", ProviderName: "k8s"}
 )
 
-// minVersionRegex maps relevant minor semantic version releases to
-// regexps that match that version or later. Regexps must match the
-// entire string.
-//
-// For 3.n versions:
-//   - Match any major version 4 or later; or
-//   - For versions 3.n, match if the minor version has 2+ digits or
-//     is a single digit >= n.
-var minVersionRegex = map[string]string{
-	"3.6": "^[4-9].*|^3\\\\.([6-9]|\\\\d{{2,}})(\\\\.|-).*",
-	"4.0": "^[5-9].*|^4\\\\.([0-9]|\\\\d{{2,}})(\\\\.|-).*",
-	"4.1": "^[5-9].*|^4\\\\.([1-9]|\\\\d{{2,}})(\\\\.|-).*",
-	"4.2": "^[5-9].*|^4\\\\.([2-9]|\\\\d{{2,}})(\\\\.|-).*",
+// allClouds is the ordered list of all supported clouds.
+var allClouds = []Cloud{aws, azure, google, lxd, microk8s}
+
+// Override repoOrg when testing on personal branches.
+const repoOrg = "juju"
+
+// branchVersion pairs a GitHub branch name with the Juju version it
+// tracks.
+type branchVersion struct {
+	Branch  string
+	Version string
 }
 
-// Override these when testing on personal branches.
-const (
-	v4BranchName = "main"
-	v3BranchName = "3.6"
-	repoOrg      = "juju"
-)
+// branches is the ordered list of Juju repo branches to collect and
+// generate from, in ascending version order.
+var branches = []branchVersion{
+	{Branch: "3.6", Version: "3.6"},
+	{Branch: "4.0", Version: "4.0"},
+	{Branch: "main", Version: "4.1"},
+}
 
 // main dispatches to the collect or generate subcommand.
 func main() {
@@ -121,8 +125,8 @@ func cmdCollect(args []string) {
 		log.Fatalf("collect: unable to create output dir: %v", err)
 	}
 
-	for _, branch := range []string{v3BranchName, v4BranchName} {
-		suiteInfo := fetchSuitesFromRepo(branch)
+	for _, bv := range branches {
+		suiteInfo := fetchSuitesFromRepo(bv.Branch)
 
 		pb := progressbar.NewOptions(
 			len(suiteInfo),
@@ -130,7 +134,7 @@ func cmdCollect(args []string) {
 			progressbar.OptionShowElapsedTimeOnFinish(),
 			progressbar.OptionSetWidth(50),
 			progressbar.OptionSetDescription(
-				fmt.Sprintf("Collecting %s...", branch),
+				fmt.Sprintf("Collecting %s...", bv.Branch),
 			),
 			progressbar.OptionSetTheme(progressbar.Theme{
 				Saucer:        "=",
@@ -155,10 +159,10 @@ func cmdCollect(args []string) {
 		if err != nil {
 			log.Fatalf(
 				"collect: unable to marshal branch %q: %v",
-				branch, err,
+				bv.Branch, err,
 			)
 		}
-		outputPath := filepath.Join(outputDir, branch+".yaml")
+		outputPath := filepath.Join(outputDir, bv.Branch+".yaml")
 		if err := os.WriteFile(outputPath, data, 0644); err != nil {
 			log.Fatalf(
 				"collect: unable to write %q: %v",
@@ -224,15 +228,13 @@ func cmdGenerate(args []string) {
 		log.Fatal("config parse error: ", err)
 	}
 
-	v4Suites := readBranchSuites(
-		filepath.Join(suitesDir, v4BranchName+".yaml"),
-	)
-	v3Suites := readBranchSuites(
-		filepath.Join(suitesDir, v3BranchName+".yaml"),
-	)
-
-	v4Tests := buildTestsFromSuites(config, v4Suites)
-	v3Tests := buildTestsFromSuites(config, v3Suites)
+	branchTests := make([]map[string]Task, len(branches))
+	for i, bv := range branches {
+		bs := readBranchSuites(
+			filepath.Join(suitesDir, bv.Branch+".yaml"),
+		)
+		branchTests[i] = buildTestsFromSuites(config, bs)
+	}
 
 	funcMap := map[string]interface{}{
 		"ensureHyphen": func(s string) string {
@@ -251,15 +253,22 @@ func cmdGenerate(args []string) {
 		template.New("integration").Funcs(funcMap).Parse(Template),
 	)
 
+	// Merge in version order. Later branches overwrite earlier ones.
+	// A suite absent from the next branch is marked removed at that
+	// next branch's version.
 	allTests := make(map[string]Task)
-	for suiteName, task := range v3Tests {
-		allTests[suiteName] = task
-		if _, ok := v4Tests[suiteName]; !ok {
-			config.Folders.Removed[suiteName] = "4.0"
+	for i := range branches {
+		for suiteName, task := range branchTests[i] {
+			allTests[suiteName] = task
 		}
-	}
-	for suiteName, task := range v4Tests {
-		allTests[suiteName] = task
+		if i+1 < len(branches) {
+			next := branches[i+1]
+			for suiteName := range branchTests[i] {
+				if _, ok := branchTests[i+1][suiteName]; !ok {
+					config.Folders.Removed[suiteName] = next.Version
+				}
+			}
+		}
 	}
 
 	for suiteName, task := range allTests {
@@ -309,49 +318,38 @@ func buildTestsFromSuites(
 					excluded = append(excluded, subTask)
 				}
 				fullName := suiteName + "-" + subTask
-				if contains(config.Folders.SkipAWS, fullName) {
-					excludedCloudTasks[aws.Name] = append(
-						excludedCloudTasks[aws.Name], subTask,
-					)
-				}
-				if contains(config.Folders.SkipAzure, fullName) {
-					excludedCloudTasks[azure.Name] = append(
-						excludedCloudTasks[azure.Name], subTask,
-					)
-				}
-				if contains(config.Folders.SkipGoogle, fullName) {
-					excludedCloudTasks[google.Name] = append(
-						excludedCloudTasks[google.Name], subTask,
-					)
-				}
-				if contains(config.Folders.SkipLXD, fullName) {
-					excludedCloudTasks[lxd.Name] = append(
-						excludedCloudTasks[lxd.Name], subTask,
-					)
-				}
-				if contains(config.Folders.SkipMicrok8s, fullName) {
-					excludedCloudTasks[microk8s.Name] = append(
-						excludedCloudTasks[microk8s.Name], subTask,
-					)
+				for _, cloud := range allClouds {
+					if contains(
+						config.Folders.ExcludeTasks[cloud.Name],
+						fullName,
+					) {
+						excludedCloudTasks[cloud.Name] = append(
+							excludedCloudTasks[cloud.Name], subTask,
+						)
+					}
 				}
 			}
 		}
 
 		clouds := make([]Cloud, 0)
-		if !contains(config.Folders.SkipAWS, suiteName) {
+		if matchesList(config.Folders.AWS, suiteName) {
 			clouds = append(clouds, aws)
 		}
-		if !contains(config.Folders.SkipAzure, suiteName) {
+		if matchesList(config.Folders.Azure, suiteName) {
 			clouds = append(clouds, azure)
 		}
-		if !contains(config.Folders.SkipGoogle, suiteName) {
+		if matchesList(config.Folders.Google, suiteName) {
 			clouds = append(clouds, google)
 		}
-		if !contains(config.Folders.SkipLXD, suiteName) {
+		if matchesList(config.Folders.LXD, suiteName) {
 			clouds = append(clouds, lxd)
 		}
-		if !contains(config.Folders.SkipMicrok8s, suiteName) {
+		if matchesList(config.Folders.Microk8s, suiteName) {
 			clouds = append(clouds, microk8s)
+		}
+
+		if len(clouds) == 0 {
+			continue
 		}
 
 		testSuites[suiteName] = Task{
@@ -413,19 +411,19 @@ func writeJobDefinitions(
 	maxVersions := make(map[string]string)
 	for _, subTask := range task.SubTasks {
 		if introduced, ok := config.Folders.Introduced[subTask]; ok {
-			minVersions[subTask] = minVersionRegex[introduced]
+			minVersions[subTask] = buildMinVersionRegex(introduced)
 		}
 		if introduced, ok := config.Folders.Introduced[suiteName+"-"+subTask]; ok {
-			minVersions[suiteName+"-"+subTask] = minVersionRegex[introduced]
+			minVersions[suiteName+"-"+subTask] = buildMinVersionRegex(introduced)
 		}
 		if introduced, ok := config.Folders.Introduced[suiteName]; ok {
-			minVersions[suiteName+"-"+subTask] = minVersionRegex[introduced]
+			minVersions[suiteName+"-"+subTask] = buildMinVersionRegex(introduced)
 		}
 		if removed, ok := config.Folders.Removed[suiteName+"-"+subTask]; ok {
-			maxVersions[suiteName+"-"+subTask] = minVersionRegex[removed]
+			maxVersions[suiteName+"-"+subTask] = buildMinVersionRegex(removed)
 		}
 		if removed, ok := config.Folders.Removed[suiteName]; ok {
-			maxVersions[suiteName+"-"+subTask] = minVersionRegex[removed]
+			maxVersions[suiteName+"-"+subTask] = buildMinVersionRegex(removed)
 		}
 	}
 
@@ -631,9 +629,62 @@ func parseTaskNames(dir ghObject) []string {
 	return subtasks
 }
 
+// buildMinVersionRegex returns a regexp string that matches any Juju
+// version >= the given "major.minor" version string. The returned
+// string uses JJB-style brace escaping ({{, }}) and is suitable for
+// direct insertion into a Jenkins job builder YAML template.
+//
+// For a version M.N it matches:
+//   - any version with major > M; or
+//   - major == M with a single-digit minor >= N, or any 2+ digit minor.
+func buildMinVersionRegex(version string) string {
+	majStr, minStr, ok := strings.Cut(version, ".")
+	if !ok {
+		log.Fatalf(
+			"buildMinVersionRegex: invalid version %q", version,
+		)
+	}
+	maj, err := strconv.Atoi(majStr)
+	if err != nil {
+		log.Fatalf(
+			"buildMinVersionRegex: invalid major in %q: %v",
+			version, err,
+		)
+	}
+	min, err := strconv.Atoi(minStr)
+	if err != nil {
+		log.Fatalf(
+			"buildMinVersionRegex: invalid minor in %q: %v",
+			version, err,
+		)
+	}
+	return fmt.Sprintf(
+		"^[%d-9].*|^%d\\\\.([%d-9]|\\\\d{{2,}})(\\\\.|-).*",
+		maj+1, maj, min,
+	)
+}
+
 func contains(haystack []string, needle string) bool {
 	for _, skip := range haystack {
 		if needle == skip {
+			return true
+		}
+	}
+	return false
+}
+
+// matchesList returns true if name matches any entry in list. Entries
+// may contain '*' as a glob wildcard (e.g. "*_k8s").
+func matchesList(list []string, name string) bool {
+	for _, pattern := range list {
+		if !strings.Contains(pattern, "*") {
+			if pattern == name {
+				return true
+			}
+			continue
+		}
+		matched, err := filepath.Match(pattern, name)
+		if err == nil && matched {
 			return true
 		}
 	}
