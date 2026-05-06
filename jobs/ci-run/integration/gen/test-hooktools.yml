@@ -232,11 +232,20 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'hooktools'
-            setup_steps: ''
-            task_name: 'test_storage_hook_tools'
-            skip_tasks: 'test_state_hook_tools'
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'hooktools'
+                  setup_steps: ''
+                  task_name: 'test_storage_hook_tools'
+                  skip_tasks: 'test_state_hook_tools'
     publishers:
       - integration-artifacts
 
@@ -297,10 +306,19 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'hooktools'
-            setup_steps: ''
-            task_name: 'test_storage_hook_tools'
-            skip_tasks: 'test_state_hook_tools'
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'hooktools'
+                  setup_steps: ''
+                  task_name: 'test_storage_hook_tools'
+                  skip_tasks: 'test_state_hook_tools'
     publishers:
       - integration-artifacts

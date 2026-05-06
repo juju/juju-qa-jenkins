@@ -1,0 +1,129 @@
+suites:
+  agents:
+  - test_charmrevisionupdater
+  appdata:
+  - test_appdata_int
+  backup:
+  - test_basic_backup
+  bootstrap:
+  - test_bootstrap_simplestream
+  branches:
+  - test_active_branch_output
+  - test_branch
+  caasadmission:
+  - test_controller_model_admission
+  - test_model_chicken_and_egg
+  - test_new_model_admission
+  charmhub:
+  - test_charmhub_download
+  - test_charmhub_find
+  - test_charmhub_info
+  ck:
+  - test_deploy_ck
+  cli:
+  - test_display_clouds
+  - test_local_charms
+  - test_model_config
+  - test_model_constraints
+  - test_model_defaults
+  - test_unregister
+  cmr:
+  - test_offer_consume
+  constraints:
+  - test_constraints_common
+  controller:
+  - test_enable_ha
+  - test_metrics
+  - test_mongo_memory_profile
+  coslite:
+  - test_deploy_coslite
+  credential:
+  - test_add_remove_credential
+  - test_controller_credentials
+  deploy:
+  - test_cmr_bundles_export_overlay
+  - test_deploy_bundles
+  - test_deploy_charms
+  - test_deploy_default_series
+  - test_deploy_os
+  - test_deploy_revision
+  deploy_aks:
+  - test_deploy_aks_charms
+  deploy_caas:
+  - test_deploy_charm
+  examples:
+  - test_example
+  - test_other
+  firewall:
+  - test_bundle_with_exposed_endpoints
+  - test_expose_app_ec2
+  hooks:
+  - test_dispatching_script
+  - test_start_hook_fires_after_reboot
+  hooktools:
+  - test_state_hook_tools
+  kubeflow:
+  - test_deploy_kubeflow
+  machine:
+  - test_logs
+  magma:
+  - test_deploy_magma
+  manual:
+  - test_deploy_manual
+  - test_spaces_manual
+  metrics: []
+  model:
+  - test_model_config
+  - test_model_destroy
+  - test_model_metrics
+  - test_model_migration
+  - test_model_migration_saas_common
+  - test_model_migration_saas_external
+  - test_model_migration_version
+  - test_model_multi
+  - test_model_status
+  network:
+  - test_network_health
+  ovs_maas:
+  - test_ovs_netplan_config
+  refresh:
+  - test_basic
+  - test_switch
+  relations:
+  - test_relation_data_exchange
+  - test_relation_departing_unit
+  - test_relation_list_app
+  resources:
+  - test_basic_resources
+  - test_upgrade_resources
+  sidecar:
+  - test_deploy_and_force_remove_application
+  - test_deploy_and_remove_application
+  smoke:
+  - test_build
+  - test_deploy
+  spaces_ec2:
+  - test_juju_bind
+  - test_machines_in_spaces
+  - test_upgrade_charm_with_bind
+  static_analysis:
+  - test_copyright
+  - test_doc_go
+  - test_schema
+  - test_static_analysis_go
+  - test_static_analysis_python
+  - test_static_analysis_shell
+  storage:
+  - test_charm_storage
+  - test_persistent_storage
+  unit:
+  - test_unit_series
+  upgrade:
+  - test_upgrade_simplestream
+  - test_upgrade_simplestream_previous
+  upgrade_series:
+  - test_upgrade_series_relation
+  user:
+  - test_user_login_password
+  - test_user_manage
+  - test_user_register

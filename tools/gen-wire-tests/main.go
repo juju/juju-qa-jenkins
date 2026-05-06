@@ -37,8 +37,6 @@ type Config struct {
 		Ephemeral    []string                  `yaml:"ephemeral"`
 		CrossCloud   []string                  `yaml:"cross-cloud"`
 		Timeout      map[string]map[string]int `yaml:"timeout"`
-		Introduced   map[string]string         `yaml:"introduced"`
-		Removed      map[string]string         `yaml:"removed"`
 	}
 }
 
@@ -90,6 +88,7 @@ type branchVersion struct {
 // branches is the ordered list of Juju repo branches to collect and
 // generate from, in ascending version order.
 var branches = []branchVersion{
+	{Branch: "2.9", Version: "2.9"},
 	{Branch: "3.6", Version: "3.6"},
 	{Branch: "4.0", Version: "4.0"},
 	{Branch: "main", Version: "4.1"},
@@ -228,13 +227,16 @@ func cmdGenerate(args []string) {
 		log.Fatal("config parse error: ", err)
 	}
 
+	allBranchSuites := make([]BranchSuites, len(branches))
 	branchTests := make([]map[string]Task, len(branches))
 	for i, bv := range branches {
 		bs := readBranchSuites(
 			filepath.Join(suitesDir, bv.Branch+".yaml"),
 		)
+		allBranchSuites[i] = bs
 		branchTests[i] = buildTestsFromSuites(config, bs)
 	}
+	introduced, removed := calculateVersions(allBranchSuites)
 
 	funcMap := map[string]interface{}{
 		"ensureHyphen": func(s string) string {
@@ -254,25 +256,18 @@ func cmdGenerate(args []string) {
 	)
 
 	// Merge in version order. Later branches overwrite earlier ones.
-	// A suite absent from the next branch is marked removed at that
-	// next branch's version.
 	allTests := make(map[string]Task)
 	for i := range branches {
 		for suiteName, task := range branchTests[i] {
 			allTests[suiteName] = task
 		}
-		if i+1 < len(branches) {
-			next := branches[i+1]
-			for suiteName := range branchTests[i] {
-				if _, ok := branchTests[i+1][suiteName]; !ok {
-					config.Folders.Removed[suiteName] = next.Version
-				}
-			}
-		}
 	}
 
 	for suiteName, task := range allTests {
-		writeJobDefinitions(t, config, outputDir, task, suiteName)
+		writeJobDefinitions(
+			t, config, outputDir, task,
+			suiteName, introduced, removed,
+		)
 	}
 }
 
@@ -369,6 +364,8 @@ func writeJobDefinitions(
 	outputDir string,
 	task Task,
 	suiteName string,
+	introduced map[string]string,
+	removed map[string]string,
 ) {
 	outputPath := filepath.Join(
 		outputDir, fmt.Sprintf("test-%s.yml", suiteName),
@@ -410,20 +407,20 @@ func writeJobDefinitions(
 	minVersions := make(map[string]string)
 	maxVersions := make(map[string]string)
 	for _, subTask := range task.SubTasks {
-		if introduced, ok := config.Folders.Introduced[subTask]; ok {
-			minVersions[subTask] = buildMinVersionRegex(introduced)
+		if v, ok := introduced[subTask]; ok {
+			minVersions[subTask] = buildMinVersionRegex(v)
 		}
-		if introduced, ok := config.Folders.Introduced[suiteName+"-"+subTask]; ok {
-			minVersions[suiteName+"-"+subTask] = buildMinVersionRegex(introduced)
+		if v, ok := introduced[suiteName+"-"+subTask]; ok {
+			minVersions[suiteName+"-"+subTask] = buildMinVersionRegex(v)
 		}
-		if introduced, ok := config.Folders.Introduced[suiteName]; ok {
-			minVersions[suiteName+"-"+subTask] = buildMinVersionRegex(introduced)
+		if v, ok := introduced[suiteName]; ok {
+			minVersions[suiteName+"-"+subTask] = buildMinVersionRegex(v)
 		}
-		if removed, ok := config.Folders.Removed[suiteName+"-"+subTask]; ok {
-			maxVersions[suiteName+"-"+subTask] = buildMinVersionRegex(removed)
+		if v, ok := removed[suiteName+"-"+subTask]; ok {
+			maxVersions[suiteName+"-"+subTask] = buildMinVersionRegex(v)
 		}
-		if removed, ok := config.Folders.Removed[suiteName]; ok {
-			maxVersions[suiteName+"-"+subTask] = buildMinVersionRegex(removed)
+		if v, ok := removed[suiteName]; ok {
+			maxVersions[suiteName+"-"+subTask] = buildMinVersionRegex(v)
 		}
 	}
 
@@ -627,6 +624,56 @@ func parseTaskNames(dir ghObject) []string {
 	}
 	sort.Strings(subtasks)
 	return subtasks
+}
+
+// calculateVersions computes introduced and removed version strings
+// for suites and subtasks by comparing consecutive branch YAML files.
+// A key is either "suite" or "suite-subtask". "introduced" means the
+// item first appeared after the oldest tracked branch. "removed" means
+// the item was present in one branch but absent in the next.
+func calculateVersions(
+	allBranchSuites []BranchSuites,
+) (introduced, removed map[string]string) {
+	introduced = make(map[string]string)
+	removed = make(map[string]string)
+	for i := 0; i+1 < len(allBranchSuites); i++ {
+		cur := allBranchSuites[i]
+		next := allBranchSuites[i+1]
+		nextVersion := branches[i+1].Version
+		for suiteName, nextTasks := range next.Suites {
+			curTasks, existed := cur.Suites[suiteName]
+			if !existed {
+				introduced[suiteName] = nextVersion
+				continue
+			}
+			curSet := make(map[string]bool, len(curTasks))
+			for _, t := range curTasks {
+				curSet[t] = true
+			}
+			for _, t := range nextTasks {
+				if !curSet[t] {
+					introduced[suiteName+"-"+t] = nextVersion
+				}
+			}
+		}
+		for suiteName, curTasks := range cur.Suites {
+			nextTasks, exists := next.Suites[suiteName]
+			if !exists {
+				removed[suiteName] = nextVersion
+				continue
+			}
+			nextSet := make(map[string]bool, len(nextTasks))
+			for _, t := range nextTasks {
+				nextSet[t] = true
+			}
+			for _, t := range curTasks {
+				if !nextSet[t] {
+					removed[suiteName+"-"+t] = nextVersion
+				}
+			}
+		}
+	}
+	return introduced, removed
 }
 
 // buildMinVersionRegex returns a regexp string that matches any Juju
