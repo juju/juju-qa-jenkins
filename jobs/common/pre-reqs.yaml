@@ -164,7 +164,7 @@
     builders:
       - shell: |-
           #!/bin/bash
-          set -eux
+          set -eu
 
           # Just in case, wait for cloud-init.
           cloud-init status --wait 2> /dev/null || true
