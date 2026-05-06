@@ -62,7 +62,8 @@ func main() {
 	offeredJobNames := make(map[string]int)
 	consumedJobNames := make(map[string]int)
 
-	walkBuilders := func(builders []interface{}) {
+	var walkBuilders func([]interface{})
+	walkBuilders = func(builders []interface{}) {
 		for _, v := range builders {
 			switch v.(type) {
 			case string:
@@ -78,6 +79,22 @@ func main() {
 						for _, v := range names {
 							consumedJobNames[v]++
 						}
+						continue
+					}
+					if k == "conditional-step" {
+						cs, ok := v.(map[interface{}]interface{})
+						if !ok {
+							continue
+						}
+						steps, ok := cs["steps"]
+						if !ok {
+							continue
+						}
+						slice, ok := steps.([]interface{})
+						if !ok {
+							continue
+						}
+						walkBuilders(slice)
 						continue
 					}
 					consumedJobNames[k.(string)]++
