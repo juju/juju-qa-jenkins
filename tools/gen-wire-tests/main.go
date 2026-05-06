@@ -18,7 +18,7 @@ import (
 	"mvdan.cc/sh/v3/syntax"
 )
 
-// Config represents the different ways to config the linter
+// Config represents the configuration for gen-wire-tests.
 type Config struct {
 	Folders struct {
 		Skip         []string                  `yaml:"skip-all"`
@@ -37,6 +37,14 @@ type Config struct {
 	}
 }
 
+// BranchSuites holds the collected suite and subtask names for a
+// branch, as written by the collect command.
+type BranchSuites struct {
+	// Suites maps suite name to its ordered list of subtask names.
+	Suites map[string][]string `yaml:"suites"`
+}
+
+// Task holds the resolved job configuration for a single test suite.
 type Task struct {
 	Clouds             []Cloud
 	SubTasks           []string
@@ -45,6 +53,7 @@ type Task struct {
 	Timeout            map[string]int
 }
 
+// Cloud describes a target cloud for integration testing.
 type Cloud struct {
 	Name         string
 	CloudName    string
@@ -60,14 +69,14 @@ var (
 	microk8s = Cloud{Name: "microk8s", CloudName: "microk8s", ProviderName: "k8s"}
 )
 
-// minVersionRegex is a map from relevant minor semantic version releases
-// to regexps that match versions matching or later. Regexps need to match
-// the entire version string
+// minVersionRegex maps relevant minor semantic version releases to
+// regexps that match that version or later. Regexps must match the
+// entire string.
 //
-// Do this for 3.n versions by:
-//   - Matching any major version 4 or later; or
-//   - for versions 3.n, match if the minor version has 2+ digits or is a
-//     single digit greater than or equal to n
+// For 3.n versions:
+//   - Match any major version 4 or later; or
+//   - For versions 3.n, match if the minor version has 2+ digits or
+//     is a single digit >= n.
 var minVersionRegex = map[string]string{
 	"3.6": "^[4-9].*|^3\\\\.([6-9]|\\\\d{{2,}})(\\\\.|-).*",
 	"4.0": "^[5-9].*|^4\\\\.([0-9]|\\\\d{{2,}})(\\\\.|-).*",
@@ -75,48 +84,132 @@ var minVersionRegex = map[string]string{
 	"4.2": "^[5-9].*|^4\\\\.([2-9]|\\\\d{{2,}})(\\\\.|-).*",
 }
 
-// Override tests if testing on personal branches.
+// Override these when testing on personal branches.
 const (
 	v4BranchName = "main"
 	v3BranchName = "3.6"
 	repoOrg      = "juju"
 )
 
-// Gen-wire-tests will generate the integration test files for the juju
-// integration tests. This will help prevent wire up mistakes or any missing
-// test suite tests.
-//
-// It expects two arguments to be passed in:
-// - outputDir: the location of the new jenkins config files
-//
-// Additionally it expects a config file passed in via stdin, this allows the
-// configuration of the gen-wire-tests. In reality it allows the skipping of
-// folders that are custom and don't follow the generic setup.
+// main dispatches to the collect or generate subcommand.
 func main() {
-	if len(os.Args) < 1 {
-		log.Fatal("expected directory argument only.")
+	if len(os.Args) < 2 {
+		log.Fatal("expected command: collect or generate")
 	}
-	outputDir := os.Args[1]
+	switch os.Args[1] {
+	case "collect":
+		cmdCollect(os.Args[2:])
+	case "generate":
+		cmdGenerate(os.Args[2:])
+	default:
+		log.Fatalf(
+			"unknown command %q, expected collect or generate",
+			os.Args[1],
+		)
+	}
+}
+
+// cmdCollect fetches test suite and subtask information from GitHub for
+// each known branch and writes it to a YAML file per branch in the
+// given output directory (e.g. 3.6.yaml, main.yaml).
+func cmdCollect(args []string) {
+	if len(args) < 1 {
+		log.Fatal("collect: expected output directory argument")
+	}
+	outputDir := args[0]
+	if err := os.MkdirAll(outputDir, os.ModePerm); err != nil {
+		log.Fatalf("collect: unable to create output dir: %v", err)
+	}
+
+	for _, branch := range []string{v3BranchName, v4BranchName} {
+		suiteInfo := fetchSuitesFromRepo(branch)
+
+		pb := progressbar.NewOptions(
+			len(suiteInfo),
+			progressbar.OptionUseANSICodes(false),
+			progressbar.OptionShowElapsedTimeOnFinish(),
+			progressbar.OptionSetWidth(50),
+			progressbar.OptionSetDescription(
+				fmt.Sprintf("Collecting %s...", branch),
+			),
+			progressbar.OptionSetTheme(progressbar.Theme{
+				Saucer:        "=",
+				SaucerHead:    ">",
+				SaucerPadding: " ",
+				BarStart:      "[",
+				BarEnd:        "]",
+			}),
+		)
+
+		collected := BranchSuites{
+			Suites: make(map[string][]string, len(suiteInfo)),
+		}
+		for _, dir := range suiteInfo {
+			pb.Add(1)
+			collected.Suites[dir.Name] = parseTaskNames(dir)
+		}
+		_ = pb.Exit()
+		fmt.Println()
+
+		data, err := yaml.Marshal(collected)
+		if err != nil {
+			log.Fatalf(
+				"collect: unable to marshal branch %q: %v",
+				branch, err,
+			)
+		}
+		outputPath := filepath.Join(outputDir, branch+".yaml")
+		if err := os.WriteFile(outputPath, data, 0644); err != nil {
+			log.Fatalf(
+				"collect: unable to write %q: %v",
+				outputPath, err,
+			)
+		}
+		log.Printf("Written %s", outputPath)
+	}
+}
+
+// cmdGenerate reads collected branch YAML files from suitesDir and a
+// config from stdin, then writes Jenkins job definition YAML files to
+// outputDir.
+func cmdGenerate(args []string) {
+	if len(args) < 2 {
+		log.Fatal(
+			"generate: expected suites directory and output directory",
+		)
+	}
+	suitesDir := args[0]
+	outputDir := args[1]
 
 	if outDir, err := os.Open(outputDir); os.IsNotExist(err) {
 		if err := os.MkdirAll(outputDir, os.ModePerm); err != nil {
 			log.Fatal("unable to create output dir", outputDir)
 		}
 	} else {
-		log.Printf("Warning: Output directory %q already exists. It may overwrite files!\n", outputDir)
-		// Remove all yaml files so that git can track deleted files as well as new ones.
+		log.Printf(
+			"Warning: Output directory %q already exists."+
+				" It may overwrite files!\n",
+			outputDir,
+		)
+		// Remove all yaml files so that git can track deletions too.
 		outFiles, err := outDir.Readdirnames(0)
 		if err != nil {
-			log.Println("")
-			log.Fatalf("unable to read output dir files: %v\n "+
-				"If you are having an issue reading from stdin, check your terminal is not part of a strictly confined snap (e.g. an built-in IDE terminal)", err)
+			log.Fatalf(
+				"unable to read output dir files: %v\n "+
+					"If you are having an issue reading from stdin,"+
+					" check your terminal is not part of a strictly"+
+					" confined snap (e.g. an built-in IDE terminal)",
+				err,
+			)
 		}
 		for _, f := range outFiles {
 			if !strings.HasSuffix(f, ".yml") {
 				continue
 			}
 			if err := os.Remove(filepath.Join(outputDir, f)); err != nil {
-				log.Fatalf("unable to remove existing file %q: %v", f, err)
+				log.Fatalf(
+					"unable to remove existing file %q: %v", f, err,
+				)
 			}
 		}
 	}
@@ -131,31 +224,15 @@ func main() {
 		log.Fatal("config parse error: ", err)
 	}
 
-	v4fourSuiteInfo := fetchSuitesFromRepo(v4BranchName)
+	v4Suites := readBranchSuites(
+		filepath.Join(suitesDir, v4BranchName+".yaml"),
+	)
+	v3Suites := readBranchSuites(
+		filepath.Join(suitesDir, v3BranchName+".yaml"),
+	)
 
-	// Create progress bar ASAP with known info.
-	pb := progressbar.NewOptions(2*len(v4fourSuiteInfo),
-		progressbar.OptionUseANSICodes(false),
-		progressbar.OptionSetTheme(progressbar.ThemeASCII),
-		progressbar.OptionShowElapsedTimeOnFinish(),
-		progressbar.OptionSetWidth(50),
-		progressbar.OptionSetDescription("Reading test suites..."),
-		progressbar.OptionSetTheme(progressbar.Theme{
-			Saucer:        "=",
-			SaucerHead:    ">",
-			SaucerPadding: " ",
-			BarStart:      "[",
-			BarEnd:        "]",
-		}))
-
-	v3SuiteInfo := fetchSuitesFromRepo(v3BranchName)
-
-	v4Tests := fetchTestsFromRepo(pb, config, v4fourSuiteInfo)
-	v3Tests := fetchTestsFromRepo(pb, config, v3SuiteInfo)
-
-	// Finish the progress bar.
-	_ = pb.Exit()
-	fmt.Println()
+	v4Tests := buildTestsFromSuites(config, v4Suites)
+	v3Tests := buildTestsFromSuites(config, v3Suites)
 
 	funcMap := map[string]interface{}{
 		"ensureHyphen": func(s string) string {
@@ -170,7 +247,9 @@ func main() {
 			return false
 		},
 	}
-	t := template.Must(template.New("integration").Funcs(funcMap).Parse(Template))
+	t := template.Must(
+		template.New("integration").Funcs(funcMap).Parse(Template),
+	)
 
 	allTests := make(map[string]Task)
 	for suiteName, task := range v3Tests {
@@ -188,78 +267,41 @@ func main() {
 	}
 }
 
-type ghObject struct {
-	Name        string `json:"name"`
-	Path        string `json:"path"`
-	Type        string `json:"type"`
-	URL         string `json:"url"`
-	DownloadURL string `json:"download_url"`
+// readBranchSuites reads a branch YAML file produced by cmdCollect.
+func readBranchSuites(path string) BranchSuites {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf(
+			"unable to read branch suites file %q: %v", path, err,
+		)
+	}
+	var bs BranchSuites
+	if err := yaml.Unmarshal(data, &bs); err != nil {
+		log.Fatalf(
+			"unable to parse branch suites file %q: %v", path, err,
+		)
+	}
+	return bs
 }
 
-func fetchGithubObjects(url string) ([]ghObject, error) {
-	client := http.DefaultClient
-	req, _ := http.NewRequest("GET", url, nil)
-
-	req.Header.Add("Accept", "application/vnd.github+json")
-	token := os.Getenv("GH_TOKEN")
-	if token != "" {
-		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatalf("unable to fetch URL %q: %v", url, err)
-	}
-	if resp.StatusCode != 200 {
-		log.Fatalf("unable to fetch URL %q; status code %d", url, resp.StatusCode)
-	}
-	defer resp.Body.Close()
-
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalf("unable to get URL %q content: %v", url, err)
-	}
-	var ghObjects []ghObject
-	err = json.Unmarshal(data, &ghObjects)
-	if err != nil {
-		log.Fatalf("unable to unmarshal URL %q content: %v", url, err)
-	}
-	return ghObjects, nil
-}
-
-func fetchSuitesFromRepo(branch string) []ghObject {
-	url := fmt.Sprintf("https://api.github.com/repos/%s/juju/contents/tests/suites?ref=%s", repoOrg, branch)
-	ghObjects, err := fetchGithubObjects(url)
-	if err != nil {
-		log.Fatal("unable to fetch GitHub objects: ", err)
-	}
-
-	var ghDirectories []ghObject
-	for _, o := range ghObjects {
-		if o.Type != "dir" {
-			continue
-		}
-		ghDirectories = append(ghDirectories, o)
-	}
-	return ghDirectories
-}
-
-func fetchTestsFromRepo(pb *progressbar.ProgressBar, config Config, suiteInfo []ghObject) map[string]Task {
-	var suiteNames []string
+// buildTestsFromSuites applies config to a BranchSuites and returns
+// the resulting Task map. It replaces the old fetchTestsFromRepo, with
+// the GitHub-fetching part moved to cmdCollect.
+func buildTestsFromSuites(
+	config Config,
+	bs BranchSuites,
+) map[string]Task {
 	testSuites := make(map[string]Task)
-	for _, dir := range suiteInfo {
-		suiteName := dir.Name
-		pb.Add(1)
-
+	for suiteName, subTaskNames := range bs.Suites {
 		if contains(config.Folders.Skip, suiteName) {
 			continue
 		}
-		// Expose all non skipped sub-tasks!
+
 		taskNames := []string{suiteName}
 		excluded := []string{}
 		excludedCloudTasks := make(map[string][]string)
 		if !contains(config.Folders.PreventSplit, suiteName) {
 			taskNames = []string{}
-			subTaskNames := parseTaskNames(dir)
 			for _, subTask := range subTaskNames {
 				if !contains(config.Folders.SkipSubTasks, subTask) {
 					taskNames = append(taskNames, subTask)
@@ -268,24 +310,32 @@ func fetchTestsFromRepo(pb *progressbar.ProgressBar, config Config, suiteInfo []
 				}
 				fullName := suiteName + "-" + subTask
 				if contains(config.Folders.SkipAWS, fullName) {
-					excludedCloudTasks[aws.Name] = append(excludedCloudTasks[aws.Name], subTask)
+					excludedCloudTasks[aws.Name] = append(
+						excludedCloudTasks[aws.Name], subTask,
+					)
 				}
 				if contains(config.Folders.SkipAzure, fullName) {
-					excludedCloudTasks[azure.Name] = append(excludedCloudTasks[azure.Name], subTask)
+					excludedCloudTasks[azure.Name] = append(
+						excludedCloudTasks[azure.Name], subTask,
+					)
 				}
 				if contains(config.Folders.SkipGoogle, fullName) {
-					excludedCloudTasks[google.Name] = append(excludedCloudTasks[google.Name], subTask)
+					excludedCloudTasks[google.Name] = append(
+						excludedCloudTasks[google.Name], subTask,
+					)
 				}
 				if contains(config.Folders.SkipLXD, fullName) {
-					excludedCloudTasks[lxd.Name] = append(excludedCloudTasks[lxd.Name], subTask)
+					excludedCloudTasks[lxd.Name] = append(
+						excludedCloudTasks[lxd.Name], subTask,
+					)
 				}
 				if contains(config.Folders.SkipMicrok8s, fullName) {
-					excludedCloudTasks[microk8s.Name] = append(excludedCloudTasks[microk8s.Name], subTask)
+					excludedCloudTasks[microk8s.Name] = append(
+						excludedCloudTasks[microk8s.Name], subTask,
+					)
 				}
 			}
 		}
-
-		suiteNames = append(suiteNames, suiteName)
 
 		clouds := make([]Cloud, 0)
 		if !contains(config.Folders.SkipAWS, suiteName) {
@@ -322,7 +372,9 @@ func writeJobDefinitions(
 	task Task,
 	suiteName string,
 ) {
-	outputPath := filepath.Join(outputDir, fmt.Sprintf("test-%s.yml", suiteName))
+	outputPath := filepath.Join(
+		outputDir, fmt.Sprintf("test-%s.yml", suiteName),
+	)
 	f, err := os.Create(outputPath)
 	if err != nil {
 		log.Fatal("unable to create output file", outputPath)
@@ -359,21 +411,21 @@ func writeJobDefinitions(
 
 	minVersions := make(map[string]string)
 	maxVersions := make(map[string]string)
-	for _, task := range task.SubTasks {
-		if introduced, ok := config.Folders.Introduced[task]; ok {
-			minVersions[task] = minVersionRegex[introduced]
+	for _, subTask := range task.SubTasks {
+		if introduced, ok := config.Folders.Introduced[subTask]; ok {
+			minVersions[subTask] = minVersionRegex[introduced]
 		}
-		if introduced, ok := config.Folders.Introduced[suiteName+"-"+task]; ok {
-			minVersions[suiteName+"-"+task] = minVersionRegex[introduced]
+		if introduced, ok := config.Folders.Introduced[suiteName+"-"+subTask]; ok {
+			minVersions[suiteName+"-"+subTask] = minVersionRegex[introduced]
 		}
 		if introduced, ok := config.Folders.Introduced[suiteName]; ok {
-			minVersions[suiteName+"-"+task] = minVersionRegex[introduced]
+			minVersions[suiteName+"-"+subTask] = minVersionRegex[introduced]
 		}
-		if removed, ok := config.Folders.Removed[suiteName+"-"+task]; ok {
-			maxVersions[suiteName+"-"+task] = minVersionRegex[removed]
+		if removed, ok := config.Folders.Removed[suiteName+"-"+subTask]; ok {
+			maxVersions[suiteName+"-"+subTask] = minVersionRegex[removed]
 		}
 		if removed, ok := config.Folders.Removed[suiteName]; ok {
-			maxVersions[suiteName+"-"+task] = minVersionRegex[removed]
+			maxVersions[suiteName+"-"+subTask] = minVersionRegex[removed]
 		}
 	}
 
@@ -402,9 +454,77 @@ func writeJobDefinitions(
 		MinVersions:        minVersions,
 		MaxVersions:        maxVersions,
 	}); err != nil {
-		log.Fatalf("unable to execute template %q with error %v", suiteName, err)
+		log.Fatalf(
+			"unable to execute template %q with error %v",
+			suiteName, err,
+		)
 	}
 	f.Sync()
+}
+
+type ghObject struct {
+	Name        string `json:"name"`
+	Path        string `json:"path"`
+	Type        string `json:"type"`
+	URL         string `json:"url"`
+	DownloadURL string `json:"download_url"`
+}
+
+func fetchGithubObjects(url string) ([]ghObject, error) {
+	client := http.DefaultClient
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("Accept", "application/vnd.github+json")
+	token := os.Getenv("GH_TOKEN")
+	if token != "" {
+		req.Header.Add(
+			"Authorization", fmt.Sprintf("Bearer %s", token),
+		)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatalf("unable to fetch URL %q: %v", url, err)
+	}
+	if resp.StatusCode != 200 {
+		log.Fatalf(
+			"unable to fetch URL %q; status code %d",
+			url, resp.StatusCode,
+		)
+	}
+	defer resp.Body.Close()
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalf("unable to get URL %q content: %v", url, err)
+	}
+	var ghObjects []ghObject
+	err = json.Unmarshal(data, &ghObjects)
+	if err != nil {
+		log.Fatalf(
+			"unable to unmarshal URL %q content: %v", url, err,
+		)
+	}
+	return ghObjects, nil
+}
+
+func fetchSuitesFromRepo(branch string) []ghObject {
+	url := fmt.Sprintf(
+		"https://api.github.com/repos/%s/juju/contents/tests/suites?ref=%s",
+		repoOrg, branch,
+	)
+	ghObjects, err := fetchGithubObjects(url)
+	if err != nil {
+		log.Fatal("unable to fetch GitHub objects: ", err)
+	}
+
+	var ghDirectories []ghObject
+	for _, o := range ghObjects {
+		if o.Type != "dir" {
+			continue
+		}
+		ghDirectories = append(ghDirectories, o)
+	}
+	return ghDirectories
 }
 
 func parseTaskNames(dir ghObject) []string {
@@ -412,7 +532,9 @@ func parseTaskNames(dir ghObject) []string {
 
 	ghObjects, err := fetchGithubObjects(dir.URL)
 	if err != nil {
-		log.Fatalf("unable to fetch test suite %q files: %v", dir.Name, err)
+		log.Fatalf(
+			"unable to fetch test suite %q files: %v", dir.Name, err,
+		)
 	}
 
 	for _, f := range ghObjects {
@@ -423,23 +545,33 @@ func parseTaskNames(dir ghObject) []string {
 		req, _ := http.NewRequest("GET", f.DownloadURL, nil)
 		token := os.Getenv("GH_TOKEN")
 		if token != "" {
-			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
+			req.Header.Add(
+				"Authorization", fmt.Sprintf("Bearer %s", token),
+			)
 		}
 
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
-			log.Fatalf("unable to get test file %q context: %v", f.Name, err)
+			log.Fatalf(
+				"unable to get test file %q context: %v", f.Name, err,
+			)
 		}
 		if resp.StatusCode != 200 {
 			_ = resp.Body.Close()
-			log.Fatalf("unable to get test file %q context; status code: %d", f.Name, resp.StatusCode)
+			log.Fatalf(
+				"unable to get test file %q context; status code: %d",
+				f.Name, resp.StatusCode,
+			)
 		}
 
 		parser := syntax.NewParser(syntax.Variant(syntax.LangBash))
 		prog, err := parser.Parse(resp.Body, "task.sh")
 		if err != nil {
 			_ = resp.Body.Close()
-			log.Fatalf("unable to parse test suite task content with error %v", err)
+			log.Fatalf(
+				"unable to parse test suite task content with error %v",
+				err,
+			)
 		}
 		_ = resp.Body.Close()
 		syntax.Walk(prog, func(node syntax.Node) bool {
@@ -450,8 +582,8 @@ func parseTaskNames(dir ghObject) []string {
 					return true
 				}
 
-				// Traverse the function body to ensure that anything with
-				// test is called.
+				// Traverse the function body to ensure that anything
+				// with test is called.
 				if _, ok := tasks[t.Name.Value]; !ok {
 					tasks[t.Name.Value] = 1
 				} else {
@@ -461,14 +593,16 @@ func parseTaskNames(dir ghObject) []string {
 				syntax.Walk(t.Body, func(node syntax.Node) bool {
 					switch t := node.(type) {
 					case *syntax.CallExpr:
-						// We're not interested in items called outside of our
-						// function case.
+						// We're not interested in items called outside
+						// of our function case.
 						if len(t.Args) == 0 {
 							return true
 						}
 						for _, arg := range t.Args {
 							lit, ok := arg.Parts[0].(*syntax.Lit)
-							if !ok || !strings.HasPrefix(lit.Value, "test_") {
+							if !ok || !strings.HasPrefix(
+								lit.Value, "test_",
+							) {
 								return true
 							}
 							if _, ok := tasks[lit.Value]; !ok {
@@ -477,7 +611,6 @@ func parseTaskNames(dir ghObject) []string {
 								tasks[lit.Value]++
 							}
 						}
-
 						return true
 					}
 					return true
@@ -507,8 +640,8 @@ func contains(haystack []string, needle string) bool {
 	return false
 }
 
-// Template represents the integration test configuration for jenkins job
-// builder to run.
+// Template is the integration test configuration template for Jenkins
+// job builder.
 const Template = `
 {{$node := .}}
 # Code generated by gen-wire-tests. DO NOT EDIT.

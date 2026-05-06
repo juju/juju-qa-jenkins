@@ -68,15 +68,25 @@ dot-graph:
 	$(eval tmpfile := $(shell mktemp))
 	@echo "" >"$(tmpfile)"; go run ./tools/dag/main.go "${PWD}/jobs"<"$(tmpfile)"
 
+collect-wire-tests:
+	@if [ -z "$$GH_TOKEN" ] && command -v gh >/dev/null 2>&1; then \
+		export GH_TOKEN=$$(gh auth token 2>/dev/null); \
+	fi; \
+	if [ -z "$$GH_TOKEN" ]; then \
+		echo "GH_TOKEN must be set or gh CLI must be authenticated"; \
+		exit 1; \
+	fi; \
+	go run ./tools/gen-wire-tests/main.go collect \
+		"./tools/gen-wire-tests"
+
 gen-wire-tests:
-	@test -n "$(GH_TOKEN)" || (echo "GH_TOKEN must be set for gen-wire-tests" && exit 1)
 	$(eval config := "./tools/gen-wire-tests/juju.config")
-	@go run ./tools/gen-wire-tests/main.go \
+	@go run ./tools/gen-wire-tests/main.go generate \
+		"./tools/gen-wire-tests" \
 		"./jobs/ci-run/integration/gen" \
-		"main" \
 		<"${config}"
 
-.PHONY: clean
+.PHONY: collect-wire-tests gen-wire-tests clean
 clean:
 	rm -rf venv
 	find $(cwd) -iname "*.pyc" -delete

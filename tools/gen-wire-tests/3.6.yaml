@@ -1,0 +1,196 @@
+suites:
+  agents:
+  - test_charmrevisionupdater
+  appdata:
+  - test_appdata_int
+  authorized_keys:
+  - test_machine_ssh
+  - test_user_ssh_keys
+  backup:
+  - test_basic_backup
+  bootstrap:
+  - test_bootstrap_simplestream
+  branches:
+  - test_active_branch_output
+  - test_branch
+  caasadmission:
+  - test_controller_model_admission
+  - test_model_chicken_and_egg
+  - test_new_model_admission
+  charmhub:
+  - test_charmhub_download
+  - test_charmhub_find
+  - test_charmhub_info
+  ck:
+  - test_deploy_ck
+  cli:
+  - test_block_commands
+  - test_diff_bundle
+  - test_display_clouds
+  - test_local_charms
+  - test_model_config
+  - test_model_constraints
+  - test_model_defaults
+  - test_unregister
+  cloud_azure:
+  - test_managed_identity
+  - test_storage_account_type
+  cloud_gce:
+  - test_create_storage_pool
+  - test_deploy_gpu_instance
+  - test_pro_images
+  - test_root_disk_source
+  - test_serviceaccount_credential
+  cmr:
+  - test_offer_consume
+  - test_offer_find_external_user
+  - test_offer_find_non_admin
+  constraints:
+  - test_constraints_common
+  - test_constraints_model
+  controller:
+  - test_enable_ha
+  - test_limit_access
+  - test_metrics
+  - test_mongo_memory_profile
+  - test_query_tracing
+  controllercharm:
+  - test_prometheus
+  coslite:
+  - test_deploy_coslite
+  credential:
+  - test_add_remove_credential
+  - test_controller_credentials
+  dashboard:
+  - test_dashboard_deploy
+  deploy:
+  - test_cmr_bundles_export_overlay
+  - test_deploy_bundles
+  - test_deploy_charms
+  - test_deploy_default_series
+  - test_deploy_os
+  - test_deploy_revision
+  deploy_aks:
+  - test_deploy_aks_charms
+  deploy_caas:
+  - test_deploy_charm
+  examples:
+  - test_example
+  - test_other
+  firewall:
+  - test_bundle_with_exposed_endpoints
+  - test_expose_app_ec2
+  - test_firewall_ssh_ec2
+  - test_firewall_ssh_gce
+  hooks:
+  - test_dispatching_script
+  - test_start_hook_fires_after_reboot
+  hooktools:
+  - test_state_hook_tools
+  kubeflow:
+  - test_deploy_kubeflow
+  machine:
+  - test_logs
+  manual:
+  - test_deploy_manual
+  - test_spaces_manual
+  model:
+  - test_model_config
+  - test_model_destroy
+  - test_model_metrics
+  - test_model_migration
+  - test_model_migration_saas_common
+  - test_model_migration_saas_external
+  - test_model_migration_version
+  - test_model_multi
+  - test_model_status
+  network:
+  - test_network_health
+  ovs_maas:
+  - test_ovs_netplan_config
+  refresh:
+  - test_basic
+  - test_switch
+  relations:
+  - test_relation_data_exchange
+  - test_relation_departing_unit
+  - test_relation_list_app
+  - test_relation_model_get
+  resources:
+  - test_basic_resources
+  - test_container_resources
+  - test_upgrade_resources
+  secrets_iaas:
+  - test_obsolete_revisions
+  - test_secret_drain
+  - test_secrets_cmr
+  - test_secrets_juju
+  - test_secrets_k8s
+  - test_secrets_vault
+  - test_user_secret_drain
+  secrets_k8s:
+  - test_add_multiple_secrets_parallel
+  - test_secret_drain
+  - test_secrets
+  - test_secrets_cmr
+  - test_user_secret_drain
+  - test_user_secrets
+  sidecar:
+  - test_credential_get_k8s
+  - test_deploy_and_force_remove_application
+  - test_deploy_and_remove_application
+  - test_pebble_checks
+  - test_pebble_notices
+  - test_rootless
+  smoke:
+  - test_build
+  - test_deploy
+  spaces_ec2:
+  - test_juju_bind
+  - test_machines_in_spaces
+  - test_upgrade_charm_with_bind
+  spaces_gce:
+  - test_machines_in_spaces
+  static_analysis:
+  - test_copyright
+  - test_doc_go
+  - test_licence
+  - test_schema
+  - test_static_analysis_go
+  - test_static_analysis_python
+  - test_static_analysis_shell
+  - test_versions
+  storage:
+  - test_application_storage
+  - test_charm_storage
+  - test_model_storage_block
+  - test_model_storage_filesystem
+  - test_persistent_storage
+  storage_k8s:
+  - test_add_unit_attach_storage
+  - test_add_unit_attach_storage_scaling_race_condition
+  - test_add_unit_duplicate_pvc_exists
+  - test_deploy_attach_storage
+  - test_force_import_filesystem
+  - test_import_filesystem
+  - test_remove_app_while_storage_update_stuck
+  - test_scale_after_storage_update_crash
+  - test_scale_and_update_storage
+  - test_scale_and_update_storage_successive
+  - test_scale_app_with_updated_storage_self_healing
+  - test_scale_down_and_back_up_retains_storage_sizes
+  - test_scale_resumes_after_storage_update_missing_sts
+  - test_storage_update_after_scale_crash
+  - test_update_pool_same_provider_different_storage_class
+  - test_update_storage_constraints_validation_error
+  unit:
+  - test_unit_series
+  upgrade:
+  - test_upgrade_simplestream
+  - test_upgrade_simplestream_previous
+  upgrade_series:
+  - test_upgrade_series_relation
+  user:
+  - test_user_login_password
+  - test_user_manage
+  - test_user_register
