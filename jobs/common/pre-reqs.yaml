@@ -199,17 +199,17 @@
           # fetch <path> queries one metadata endpoint, returning "-"
           # when the field is unavailable (e.g. public-ipv4 on a
           # private-only instance).
-          fetch() {
+          fetch() {{
               curl -sf \
                   -H "X-aws-ec2-metadata-token: $TOKEN" \
                   "$METADATA_URL/$1" 2>/dev/null \
                   || printf '-'
-          }
+          }}
 
           # row <label> <value> prints one formatted metadata row.
-          row() {
+          row() {{
               printf "%-24s %s\n" "$1" "$2"
-          }
+          }}
 
           printf '\n=== AWS EC2 Instance Metadata ===\n\n'
 

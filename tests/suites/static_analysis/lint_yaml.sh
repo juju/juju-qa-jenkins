@@ -39,6 +39,9 @@ files:
     - .github/workflows/static-analysis.yml
     - .github/workflows/local-deployment.yml
     - yamlfmt.yaml
+    - tools/gen-wire-tests/3.6.yaml
+    - tools/gen-wire-tests/4.0.yaml
+    - tools/gen-wire-tests/main.yaml
 jobs:
   ignore:
     - build-dqlite
@@ -95,6 +98,9 @@ files:
     - .github/workflows/local-deployment.yml
     - jobs/ci-run/integration/gen/*
     - yamlfmt.yaml
+    - tools/gen-wire-tests/3.6.yaml
+    - tools/gen-wire-tests/4.0.yaml
+    - tools/gen-wire-tests/main.yaml
 jobs:
   ignore:
     - build-dqlite:build-dqlite-runner
@@ -136,6 +142,9 @@ files:
     - .github/workflows/static-analysis.yml
     - .github/workflows/local-deployment.yml
     - yamlfmt.yaml
+    - tools/gen-wire-tests/3.6.yaml
+    - tools/gen-wire-tests/4.0.yaml
+    - tools/gen-wire-tests/main.yaml
 jobs:
   ignore: []
 EOF
