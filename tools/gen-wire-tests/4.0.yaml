@@ -24,6 +24,7 @@ suites:
   - test_deploy_ck
   cli:
   - test_block_commands
+  - test_diff_bundle
   - test_display_clouds
   - test_local_charms
   - test_model_config
@@ -37,6 +38,7 @@ suites:
   - test_create_storage_pool
   - test_deploy_gpu_instance
   - test_pro_images
+  - test_root_disk_source
   - test_serviceaccount_credential
   cmr:
   - test_offer_consume
@@ -88,9 +90,7 @@ suites:
   - test_deploy_kubeflow
   machine:
   - test_logs
-  manual:
-  - test_deploy_manual
-  - test_spaces_manual
+  - test_provisioning_info
   model:
   - test_model_config
   - test_model_destroy
@@ -121,15 +121,18 @@ suites:
   secrets_iaas:
   - test_obsolete_revisions
   - test_secret_drain
+  - test_secret_nonleader_unit_owned
   - test_secrets_cmr
   - test_secrets_juju
   - test_secrets_k8s
   - test_secrets_vault
+  - test_track_latest_revision
   - test_user_secret_drain
   secrets_k8s:
   - test_add_multiple_secrets_parallel
   - test_secret_drain
   - test_secrets
+  - test_secrets_cmr
   - test_user_secret_drain
   - test_user_secrets
   sidecar:

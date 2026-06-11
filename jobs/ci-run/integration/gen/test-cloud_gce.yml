@@ -41,6 +41,8 @@
                 current-parameters: true
               - name: 'test-cloud_gce-test-pro-images-google'
                 current-parameters: true
+              - name: 'test-cloud_gce-test-root-disk-source-google'
+                current-parameters: true
               - name: 'test-cloud_gce-test-serviceaccount-credential-google'
                 current-parameters: true
 
@@ -109,7 +111,7 @@
             test_name: 'cloud_gce'
             setup_steps: ''
             task_name: 'test_create_storage_pool'
-            skip_tasks: 'test_deploy_gpu_instance,test_pro_images,test_serviceaccount_credential'
+            skip_tasks: 'test_deploy_gpu_instance,test_pro_images,test_root_disk_source,test_serviceaccount_credential'
     publishers:
       - integration-artifacts
 
@@ -178,7 +180,7 @@
             test_name: 'cloud_gce'
             setup_steps: ''
             task_name: 'test_deploy_gpu_instance'
-            skip_tasks: 'test_create_storage_pool,test_pro_images,test_serviceaccount_credential'
+            skip_tasks: 'test_create_storage_pool,test_pro_images,test_root_disk_source,test_serviceaccount_credential'
     publishers:
       - integration-artifacts
 
@@ -247,7 +249,76 @@
             test_name: 'cloud_gce'
             setup_steps: ''
             task_name: 'test_pro_images'
-            skip_tasks: 'test_create_storage_pool,test_deploy_gpu_instance,test_serviceaccount_credential'
+            skip_tasks: 'test_create_storage_pool,test_deploy_gpu_instance,test_root_disk_source,test_serviceaccount_credential'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-cloud_gce-test-root-disk-source-google
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_root_disk_source in cloud_gce suite on google
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'google'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'gce'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test:
+            test_name: 'cloud_gce'
+            setup_steps: ''
+            task_name: 'test_root_disk_source'
+            skip_tasks: 'test_create_storage_pool,test_deploy_gpu_instance,test_pro_images,test_serviceaccount_credential'
     publishers:
       - integration-artifacts
 
@@ -316,6 +387,6 @@
             test_name: 'cloud_gce'
             setup_steps: ''
             task_name: 'test_serviceaccount_credential'
-            skip_tasks: 'test_create_storage_pool,test_deploy_gpu_instance,test_pro_images'
+            skip_tasks: 'test_create_storage_pool,test_deploy_gpu_instance,test_pro_images,test_root_disk_source'
     publishers:
       - integration-artifacts

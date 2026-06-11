@@ -117,6 +117,7 @@ suites:
   - test_relation_list_app
   - test_relation_model_get
   resources:
+  - test_attach_resources
   - test_basic_resources
   - test_container_resources
   - test_upgrade_resources
@@ -133,6 +134,7 @@ suites:
   - test_secret_drain
   - test_secrets
   - test_secrets_cmr
+  - test_secrets_token_reuse
   - test_user_secret_drain
   - test_user_secrets
   sidecar:
@@ -170,6 +172,7 @@ suites:
   - test_add_unit_attach_storage
   - test_add_unit_attach_storage_scaling_race_condition
   - test_add_unit_duplicate_pvc_exists
+  - test_deleted_pvc_recreated_with_new_storage
   - test_deploy_attach_storage
   - test_force_import_filesystem
   - test_import_filesystem

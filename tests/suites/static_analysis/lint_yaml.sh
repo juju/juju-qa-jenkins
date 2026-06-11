@@ -38,6 +38,7 @@ files:
   skip:
     - .github/workflows/static-analysis.yml
     - .github/workflows/local-deployment.yml
+    - .github/workflows/push-jenkins.yml
     - yamlfmt.yaml
     - tools/gen-wire-tests/2.9.yaml
     - tools/gen-wire-tests/3.6.yaml
@@ -97,6 +98,7 @@ files:
   skip:
     - .github/workflows/static-analysis.yml
     - .github/workflows/local-deployment.yml
+    - .github/workflows/push-jenkins.yml
     - jobs/ci-run/integration/gen/*
     - yamlfmt.yaml
     - tools/gen-wire-tests/2.9.yaml
@@ -143,6 +145,7 @@ files:
   skip:
     - .github/workflows/static-analysis.yml
     - .github/workflows/local-deployment.yml
+    - .github/workflows/push-jenkins.yml
     - yamlfmt.yaml
     - tools/gen-wire-tests/2.9.yaml
     - tools/gen-wire-tests/3.6.yaml

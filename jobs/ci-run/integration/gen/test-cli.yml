@@ -30,6 +30,8 @@
         projects:
         - name: 'test-cli-test-block-commands-lxd'
           current-parameters: true
+        - name: 'test-cli-test-diff-bundle-lxd'
+          current-parameters: true
         - name: 'test-cli-test-display-clouds-lxd'
           current-parameters: true
         - name: 'test-cli-test-local-charms-lxd'
@@ -114,7 +116,82 @@
                   test_name: 'cli'
                   setup_steps: ''
                   task_name: 'test_block_commands'
-                  skip_tasks: 'test_display_clouds,test_local_charms,test_model_config,test_model_constraints,test_model_defaults,test_unregister'
+                  skip_tasks: 'test_diff_bundle,test_display_clouds,test_local_charms,test_model_config,test_model_constraints,test_model_defaults,test_unregister'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-cli-test-diff-bundle-lxd
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_diff_bundle in cli suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'localhost'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 3.6; task introduced in that version.
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'cli'
+                  setup_steps: ''
+                  task_name: 'test_diff_bundle'
+                  skip_tasks: 'test_block_commands,test_display_clouds,test_local_charms,test_model_config,test_model_constraints,test_model_defaults,test_unregister'
     publishers:
       - integration-artifacts
 
@@ -179,7 +256,7 @@
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_display_clouds'
-            skip_tasks: 'test_block_commands,test_local_charms,test_model_config,test_model_constraints,test_model_defaults,test_unregister'
+            skip_tasks: 'test_block_commands,test_diff_bundle,test_local_charms,test_model_config,test_model_constraints,test_model_defaults,test_unregister'
     publishers:
       - integration-artifacts
 
@@ -244,7 +321,7 @@
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_local_charms'
-            skip_tasks: 'test_block_commands,test_display_clouds,test_model_config,test_model_constraints,test_model_defaults,test_unregister'
+            skip_tasks: 'test_block_commands,test_diff_bundle,test_display_clouds,test_model_config,test_model_constraints,test_model_defaults,test_unregister'
     publishers:
       - integration-artifacts
 
@@ -309,7 +386,7 @@
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_model_config'
-            skip_tasks: 'test_block_commands,test_display_clouds,test_local_charms,test_model_constraints,test_model_defaults,test_unregister'
+            skip_tasks: 'test_block_commands,test_diff_bundle,test_display_clouds,test_local_charms,test_model_constraints,test_model_defaults,test_unregister'
     publishers:
       - integration-artifacts
 
@@ -374,7 +451,7 @@
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_model_constraints'
-            skip_tasks: 'test_block_commands,test_display_clouds,test_local_charms,test_model_config,test_model_defaults,test_unregister'
+            skip_tasks: 'test_block_commands,test_diff_bundle,test_display_clouds,test_local_charms,test_model_config,test_model_defaults,test_unregister'
     publishers:
       - integration-artifacts
 
@@ -439,7 +516,7 @@
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_model_defaults'
-            skip_tasks: 'test_block_commands,test_display_clouds,test_local_charms,test_model_config,test_model_constraints,test_unregister'
+            skip_tasks: 'test_block_commands,test_diff_bundle,test_display_clouds,test_local_charms,test_model_config,test_model_constraints,test_unregister'
     publishers:
       - integration-artifacts
 
@@ -504,6 +581,6 @@
             test_name: 'cli'
             setup_steps: ''
             task_name: 'test_unregister'
-            skip_tasks: 'test_block_commands,test_display_clouds,test_local_charms,test_model_config,test_model_constraints,test_model_defaults'
+            skip_tasks: 'test_block_commands,test_diff_bundle,test_display_clouds,test_local_charms,test_model_config,test_model_constraints,test_model_defaults'
     publishers:
       - integration-artifacts
