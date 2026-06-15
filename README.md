@@ -28,8 +28,21 @@ make gen-wire-tests
 
 ## Uploading to Jenkins
 
-To push, you need to be on the Canonical VPN and have your authentication token ready. If you don't have any, create an
-[API Token on jenkins](https://www.jenkins.io/doc/book/system-administration/authenticating-scripted-clients/)
+Changes merged into `main` are automatically synced to
+[QA PS7 Jenkins](https://jenkins-juju-qa-ps7.jenkins.canonical.com/k8s-jenkins-juju-qa-ps7-server-jenkins-k8s/)
+through GitHub Actions.
+
+The automatic sync workflow requires these repository secrets:
+
+- `JENKINS_PS7_USER`: the Jenkins username related to the API key
+- `JENKINS_PS7_ACCESS_TOKEN`: the Jenkins API key
+
+The current QA Jenkins at https://jenkins.juju.canonical.com/ is still synced
+manually.
+
+To push manually, you need to be on the Canonical VPN and have your
+authentication token ready. If you don't have any, create an
+[API Token on Jenkins](https://www.jenkins.io/doc/book/system-administration/authenticating-scripted-clients/).
 
 Then setup the environment variables:
 
@@ -48,6 +61,12 @@ And push to https://jenkins.juju.canonical.com/ with:
 
 ```bash
 make push
+```
+
+To manually push to https://jenkins-juju-qa-ps7.jenkins.canonical.com/k8s-jenkins-juju-qa-ps7-server-jenkins-k8s/ instead:
+
+```bash
+JJB_CONF_PATH=./jenkins_jobs_ps7.ini make push
 ```
 
 ## Run on Noble 24.04

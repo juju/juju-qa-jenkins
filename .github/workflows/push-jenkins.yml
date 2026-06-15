@@ -1,0 +1,43 @@
+name: "Push Jenkins Jobs"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - jobs/common/**
+      - jobs/ci-run/**
+      - Makefile
+      - requirements.txt
+      - constraint.txt
+      - jenkins_jobs_ps7.ini
+      - .github/workflows/push-jenkins.yml
+  workflow_dispatch:
+
+concurrency:
+  group: push-qa-ps7-jenkins-jobs
+  cancel-in-progress: false
+
+jobs:
+  push:
+    name: Push jobs to QA PS7 Jenkins
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Push jobs
+        env:
+          JENKINS_USER: ${{ secrets.JENKINS_PS7_USER }}
+          JENKINS_ACCESS_TOKEN: ${{ secrets.JENKINS_PS7_ACCESS_TOKEN }}
+          STATIC_ANALYSIS_JOB: test_static_analysis_shell
+          JJB_CONF_PATH: ./jenkins_jobs_ps7.ini
+        run: |
+          set -euxo pipefail
+          make push
+        shell: bash
