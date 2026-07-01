@@ -209,6 +209,23 @@
             juju_name=juju.exe
           fi
 
+          # Prefer jujuagentd (new name) for the agent binary, fall back
+          # to jujud for older versions that don't have jujuagentd.
+          agent_binary_name=
+          if [[ -f "${{build_platform_dir}}/jujuagentd" ]]; then
+            echo "jujuagentd exists for platform {platform}"
+            agent_binary_name=jujuagentd
+          elif [[ -f "${{build_platform_dir}}/jujuagentd.exe" ]]; then
+            echo "jujuagentd exists for platform {platform}"
+            agent_binary_name=jujuagentd.exe
+          elif [[ -f "${{build_platform_dir}}/jujud" ]]; then
+            echo "jujud exists for platform {platform}"
+            agent_binary_name=jujud
+          elif [[ -f "${{build_platform_dir}}/jujud.exe" ]]; then
+            echo "jujud exists for platform {platform}"
+            agent_binary_name=jujud.exe
+          fi
+
           jujud_name=
           if [[ -f "${{build_platform_dir}}/jujud" ]]; then
             echo "jujud exists for platform {platform}"
@@ -293,6 +310,7 @@
           tar cfJ ${{build_platform_dir}}/${{binary_tarball_name}} \
             -C ${{build_platform_dir}}/ \
             ${{juju_name}} \
+            ${{agent_binary_name}} \
             ${{jujud_name}} \
             ${{jujuc_name}} \
             ${{juju_metadata_name}} \
@@ -301,7 +319,7 @@
             ${{juju_installer_name}} \
             ${{wait_for_name}}
 
-          if [[ -z "${{jujud_name}}" && -z "${{jujuc_name}}" ]]; then
+          if [[ -z "${{agent_binary_name}}" && -z "${{jujuc_name}}" ]]; then
             echo "no agent tarball for platform {platform}"
             exit 0
           fi
@@ -314,5 +332,5 @@
             --group root \
             --no-same-owner \
             -C ${{build_platform_dir}}/ \
-            ${{jujud_name}} \
+            ${{agent_binary_name}} \
             ${{jujuc_name}}
