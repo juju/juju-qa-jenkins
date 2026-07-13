@@ -7,25 +7,6 @@ NOW=$(date +%s)
 REGIONS=(
     us-west-2
     us-east-1
-    us-east-2
-    ca-central-1
-    eu-west-1
-    eu-west-2
-    eu-west-3
-    eu-north-1
-    eu-central-1
-    ap-northeast-1
-    ap-northeast-2
-    ap-southeast-1
-    ap-southeast-2
-    ap-south-1
-    ap-east-1
-    me-south-1
-    sa-east-1
-    # not accessible regions for QA account.
-    # us-west-1
-    # cn-northwest-1
-    # cn-north-1
 )
 
 set +x
@@ -41,11 +22,11 @@ fi
 for region in ${REGIONS[@]}; do
     echo "=> checking ECR registries in $region..."
     for name in $(
-        aws ecr describe-repositories --region ${region} |
+        aws ecr-public describe-repositories --region ${region} |
         jq ".repositories[] | select( ${NOW} - ${CREATED_AT_SELECTOR} > (${HOURS} * 3600)  )" |
         jq -r .repositoryName
     ); do
-        aws ecr delete-repository --repository-name "${name}" --region ${region} --force
+        aws ecr-public delete-repository --repository-name "${name}" --region ${region} --force
         echo "  - ${name} DELETED!"
     done
 done
