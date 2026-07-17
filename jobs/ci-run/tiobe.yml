@@ -48,12 +48,19 @@
           #!/bin/bash
           set -eux
           echo "installing tools..."
-          go install github.com/juju/gocover-cobertura@latest
+          if [[ "${{COVERAGE_ENABLED:-false}}" == "true" ]]; then
+            go install github.com/juju/gocover-cobertura@latest
+          fi
           go install honnef.co/go/tools/cmd/staticcheck@v0.6.1
       - shell: |-
           #!/bin/bash
           set -eux
           PATH=$GOPATH/bin:$PATH
+
+          if [[ "${{COVERAGE_ENABLED:-false}}" != "true" ]]; then
+            echo "coverage collection is disabled; skipping coverage processing"
+            exit 0
+          fi
 
           echo "downloading unit coverage..."
           work=$(mktemp -d)

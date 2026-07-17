@@ -27,7 +27,7 @@ if [[ "{GOTEST_TYPE}" == "race" ]]; then
         JUJU_GOMOD_MODE=vendor make race-test VERBOSE_CHECK=1 TEST_TIMEOUT=${{TEST_TIMEOUT}} | tee ${{WORKSPACE}}/go-unittest.out
         exit_code=$?
     fi
-elif [[ "{GOTEST_TYPE}" == "xunit-report" ]]; then
+elif [[ "{GOTEST_TYPE}" == "xunit-report" || "${{COVERAGE_ENABLED:-false}}" != "true" ]]; then
     JUJU_GOMOD_MODE=vendor make test VERBOSE_CHECK=1 FUZZ_CHECK={FUZZ_CHECK} TEST_TIMEOUT=${{TEST_TIMEOUT}} | tee ${{WORKSPACE}}/go-unittest.out
     exit_code=$?
 elif [[ "{GOTEST_TYPE}" == "cover" ]]; then
