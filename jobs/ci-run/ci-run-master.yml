@@ -105,6 +105,8 @@
       - inject:
           properties-content: |-
             GITHUB_TOKEN=
+            # Repository-wide switch; publishing this job applies changes.
+            COVERAGE_ENABLED=false
       - setup-coverage-collect-url
       - inject:
           properties-content: |-
@@ -120,6 +122,7 @@
                 GITHUB_BRANCH_HEAD_SHA=${{GITHUB_BRANCH_HEAD_SHA}}
                 JUJU_BUILD_NUMBER=${{BUILD_NUMBER}}
                 GOVERSION=${{GOVERSION}}
+                COVERAGE_ENABLED=${{COVERAGE_ENABLED}}
                 INTEGRATION_COVERAGE_COLLECT_URL=${{INTEGRATION_COVERAGE_COLLECT_URL}}
                 UNIT_COVERAGE_COLLECT_URL=${{UNIT_COVERAGE_COLLECT_URL}}
       - get-s3-source-payload
@@ -257,6 +260,10 @@
           name: GOVERSION
           default: ""
           description: "Go version used for this build."
+      - string:
+          name: COVERAGE_ENABLED
+          default: ""
+          description: "Whether to collect unit and integration coverage. Set by ci-run-master."
       - string:
           name: UNIT_COVERAGE_COLLECT_URL
           default: ""
