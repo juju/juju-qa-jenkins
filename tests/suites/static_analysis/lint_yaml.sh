@@ -51,6 +51,8 @@ jobs:
     - ci-trigger-github-com-juju-juju
     - ci-build-juju
     - ci-gating-tests
+    - ci-gating-tests-branch-chains
+    - gating-tests-branch-chains
     - clean-workspaces
     - run-build-check-lxd
     - github-juju-check-jobs
