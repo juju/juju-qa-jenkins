@@ -18,7 +18,11 @@ export JUJU_NOTEST_MONGOJS=1
 
 set +e  # Will fail in reports gen if any errors occur
 set -o pipefail  # Need to error for make, not tees' success.
-if [[ "{GOTEST_TYPE}" == "race" ]]; then
+TEST_TYPE="{GOTEST_TYPE}"
+if [[ "${{TEST_TYPE}}" == "cover" && "${{COVERAGE_ENABLED:-false}}" != "true" ]]; then
+  TEST_TYPE="xunit-report"
+fi
+if [[ "${{TEST_TYPE}}" == "race" ]]; then
     if [ "$(make -q race-test > /dev/null 2>&1 || echo $?)" -eq 2 ]; then
         # if we don't have a race-test target, use go test.
         go test -v -race -test.timeout=${{TEST_TIMEOUT}} ./... | tee ${{WORKSPACE}}/go-unittest.out
@@ -27,10 +31,10 @@ if [[ "{GOTEST_TYPE}" == "race" ]]; then
         JUJU_GOMOD_MODE=vendor make race-test VERBOSE_CHECK=1 TEST_TIMEOUT=${{TEST_TIMEOUT}} | tee ${{WORKSPACE}}/go-unittest.out
         exit_code=$?
     fi
-elif [[ "{GOTEST_TYPE}" == "xunit-report" || "${{COVERAGE_ENABLED:-false}}" != "true" ]]; then
+elif [[ "${{TEST_TYPE}}" == "xunit-report" ]]; then
     JUJU_GOMOD_MODE=vendor make test VERBOSE_CHECK=1 FUZZ_CHECK={FUZZ_CHECK} TEST_TIMEOUT=${{TEST_TIMEOUT}} | tee ${{WORKSPACE}}/go-unittest.out
     exit_code=$?
-elif [[ "{GOTEST_TYPE}" == "cover" ]]; then
+elif [[ "${{TEST_TYPE}}" == "cover" ]]; then
     export GOCOVERDIR=`mktemp -d`
     JUJU_GOMOD_MODE=vendor make cover-test VERBOSE_CHECK=1 FUZZ_CHECK={FUZZ_CHECK} TEST_TIMEOUT=${{TEST_TIMEOUT}} GOCOVERDIR=${{GOCOVERDIR}} | tee ${{WORKSPACE}}/go-unittest.out
     exit_code=$?
