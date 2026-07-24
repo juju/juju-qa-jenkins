@@ -44,23 +44,23 @@
             - name: gating-integration-tests-arm64
               current-parameters: true
 
-# Per-branch gating chains. The un-suffixed "gating-tests" job above remains as
-# the catch-all chain for feature branches and manual runs; the jobs below give
+# Per-branch gating jobs. The un-suffixed "gating-tests" job above remains as
+# the generic job for feature branches and manual runs; the jobs below give
 # each maintained branch its own build history and trend.
 - project:
-    name: "gating-tests-branch-chains"
-    job_suffix:
+    name: "branch-gating-tests"
+    job_branch:
       - "2.9"
       - "3.6"
       - "4.0"
       - "main"
     jobs:
-      - "gating-tests-{job_suffix}"
+      - "gating-tests-{job_branch}"
 
 - job-template:
-    name: "gating-tests-{job_suffix}"
+    name: "gating-tests-{job_branch}"
     project-type: "multijob"
-    description: "Run gating tests for a Juju commit on the {job_suffix} branch"
+    description: "Run gating tests for a Juju commit on the {job_branch} branch"
     condition: SUCCESSFUL
     node: noop-parent-jobs
     concurrent: true

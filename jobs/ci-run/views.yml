@@ -12,8 +12,8 @@
     name: "gating-tests"
     view-type: list
     # Explicit job list, frozen to keep this umbrella view identical to its
-    # historical contents for outside automation. Per-branch gating jobs live
-    # in their own views below and must NOT appear here.
+    # historical contents for outside automation. Branch-specific gating jobs
+    # live in their own views below and must NOT appear here.
     job-name:
       - gating-functional-tests-ppc64el
       - gating-functional-tests-s390x

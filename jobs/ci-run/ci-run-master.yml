@@ -103,7 +103,7 @@
       - string:
           name: GITHUB_BRANCH_NAME
           default: ""
-          description: "Branch the commit belongs to. Used to route gating tests to the per-branch chain. Empty routes to the catch-all chain."
+          description: "Used to select the correct downstream gating test job to run. Empty values select the generic gating test job."
     builders:
       - resolve-git-sha
       - detect-commit-go-version
@@ -177,12 +177,12 @@
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-      # Route gating tests to the per-branch chain matching GITHUB_BRANCH_NAME.
+      # Select the downstream gating test job matching GITHUB_BRANCH_NAME.
       # These steps run last, so they only execute when all build phases passed
       # (matching the old "condition: SUCCESS" publisher behaviour).
       # Anything that is not a maintained branch (feature branches, manual
-      # builds, private-repo triggers) falls through to the catch-all
-      # ci-gating-tests chain.
+      # builds, private-repo triggers) falls through to the generic
+      # ci-gating-tests job.
       - conditional-step:
           condition-kind: strings-match
           condition-string1: "$GITHUB_BRANCH_NAME"
@@ -284,25 +284,25 @@
             predefined-parameters: |-
               SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
 
-# Per-branch gating chains. The un-suffixed "ci-gating-tests" job above remains
-# as the catch-all chain for feature branches and manual runs; the jobs below
+# Per-branch gating jobs. The un-suffixed "ci-gating-tests" job above remains
+# as the generic job for feature branches and manual runs; the jobs below
 # give each maintained branch its own build history and trend.
 - project:
-    name: "ci-gating-tests-branch-chains"
-    job_suffix:
+    name: "ci-branch-gating-tests"
+    job_branch:
       - "2.9"
       - "3.6"
       - "4.0"
       - "main"
     jobs:
-      - "ci-gating-tests-{job_suffix}"
+      - "ci-gating-tests-{job_branch}"
 
 - job-template:
-    name: "ci-gating-tests-{job_suffix}"
+    name: "ci-gating-tests-{job_branch}"
     disabled: false
     concurrent: false
     description: |
-      These tests are required to be all green before a Juju {job_suffix}
+      These tests are required to be all green before a Juju {job_branch}
       release is blessed for release.
     project-type: "multijob"
     node: noop-parent-jobs
@@ -334,7 +334,7 @@
           name: "Testing"
           condition: SUCCESSFUL
           projects:
-            - name: gating-tests-{job_suffix}
+            - name: gating-tests-{job_branch}
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
