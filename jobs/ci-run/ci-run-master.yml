@@ -49,6 +49,7 @@
             predefined-parameters: |-
               GITHUB_REPO=juju/juju
               GITHUB_BRANCH_HEAD_SHA=${{GITHUB_BRANCH_HEAD_SHA}}
+              GITHUB_BRANCH_NAME=${{GITHUB_BRANCH_NAME}}
 
 - job:
     name: "ci-build-juju"
@@ -99,6 +100,10 @@
           name: GITHUB_BRANCH_HEAD_SHA
           default: ""
           description: "Specific git SHA to build (used to overwrite triggered runs)."
+      - string:
+          name: GITHUB_BRANCH_NAME
+          default: ""
+          description: "Used to select the correct downstream gating test job to run. Empty values select the generic gating test job."
     builders:
       - resolve-git-sha
       - detect-commit-go-version
@@ -172,13 +177,66 @@
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-    publishers:
-      - trigger-parameterized-builds:
-          - project: "ci-gating-tests"
-            condition: SUCCESS
-            current-parameters: true
-            predefined-parameters: |-
-              SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+      # Select the downstream gating test job matching GITHUB_BRANCH_NAME.
+      # These steps run last, so they only execute when all build phases passed
+      # (matching the old "condition: SUCCESS" publisher behaviour).
+      # Anything that is not a maintained branch (feature branches, manual
+      # builds, private-repo triggers) falls through to the generic
+      # ci-gating-tests job.
+      - conditional-step:
+          condition-kind: strings-match
+          condition-string1: "$GITHUB_BRANCH_NAME"
+          condition-string2: "2.9"
+          condition-case-insensitive: false
+          steps:
+            - trigger-builds:
+                - project: "ci-gating-tests-2.9"
+                  current-parameters: true
+                  predefined-parameters: |-
+                    SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+      - conditional-step:
+          condition-kind: strings-match
+          condition-string1: "$GITHUB_BRANCH_NAME"
+          condition-string2: "3.6"
+          condition-case-insensitive: false
+          steps:
+            - trigger-builds:
+                - project: "ci-gating-tests-3.6"
+                  current-parameters: true
+                  predefined-parameters: |-
+                    SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+      - conditional-step:
+          condition-kind: strings-match
+          condition-string1: "$GITHUB_BRANCH_NAME"
+          condition-string2: "4.0"
+          condition-case-insensitive: false
+          steps:
+            - trigger-builds:
+                - project: "ci-gating-tests-4.0"
+                  current-parameters: true
+                  predefined-parameters: |-
+                    SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+      - conditional-step:
+          condition-kind: strings-match
+          condition-string1: "$GITHUB_BRANCH_NAME"
+          condition-string2: "main"
+          condition-case-insensitive: false
+          steps:
+            - trigger-builds:
+                - project: "ci-gating-tests-main"
+                  current-parameters: true
+                  predefined-parameters: |-
+                    SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+      - conditional-step:
+          condition-kind: regex-match
+          regex: '^(?!2\.9$|3\.6$|4\.0$|main$).*$'
+          label: "$GITHUB_BRANCH_NAME"
+          steps:
+            - trigger-builds:
+                - project: "ci-gating-tests"
+                  current-parameters: true
+                  predefined-parameters: |-
+                    SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
 - job:
     name: "ci-gating-tests"
     disabled: false
@@ -211,6 +269,72 @@
           condition: SUCCESSFUL
           projects:
             - name: gating-tests
+              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+            - name: unit-tests
+              current-parameters: true
+              predefined-parameters: |-
+                SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+    publishers:
+      - trigger-parameterized-builds:
+          - project: "analyse-juju-tics"
+            condition: SUCCESS
+            current-parameters: true
+            predefined-parameters: |-
+              SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+
+# Per-branch gating jobs. The un-suffixed "ci-gating-tests" job above remains
+# as the generic job for feature branches and manual runs; the jobs below
+# give each maintained branch its own build history and trend.
+- project:
+    name: "ci-branch-gating-tests"
+    job_branch:
+      - "2.9"
+      - "3.6"
+      - "4.0"
+      - "main"
+    jobs:
+      - "ci-gating-tests-{job_branch}"
+
+- job-template:
+    name: "ci-gating-tests-{job_branch}"
+    disabled: false
+    concurrent: false
+    description: |
+      These tests are required to be all green before a Juju {job_branch}
+      release is blessed for release.
+    project-type: "multijob"
+    node: noop-parent-jobs
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      # Give ci-run 20 hours to complete.
+      - timeout:
+          timeout: 1200
+          fail: true
+          type: absolute
+    properties:
+      - build-discarder:
+          days-to-keep: 30
+          num-to-keep: 50
+          artifact-days-to-keep: 30
+          artifact-num-to-keep: 50
+    parameters:
+      - validating-string:
+          name: SHORT_GIT_COMMIT
+          description: The git short hash for the commit you wish to test
+          regex: ^\S{{7}}$
+          msg: Enter a valid 7 char git sha
+    builders:
+      - get-s3-build-details
+      - set-test-description
+      - multijob:
+          name: "Testing"
+          condition: SUCCESSFUL
+          projects:
+            - name: gating-tests-{job_branch}
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
