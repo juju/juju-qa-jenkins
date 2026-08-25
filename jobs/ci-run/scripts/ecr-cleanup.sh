@@ -2,7 +2,7 @@
 set -euo pipefail
 
 export TZ=UTC
-HOURS=4
+HOURS=24
 NOW=$(date +%s)
 REGIONS=(
     us-west-2
