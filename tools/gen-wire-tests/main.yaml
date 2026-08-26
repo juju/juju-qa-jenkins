@@ -32,6 +32,8 @@ suites:
   - test_model_defaults
   - test_unregister
   cloud_azure:
+  - test_expose_app_azure
+  - test_ip_family
   - test_managed_identity
   - test_storage_account_type
   cloud_gce:
