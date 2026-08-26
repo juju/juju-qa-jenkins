@@ -22,12 +22,14 @@ import (
 // Config represents the configuration for gen-wire-tests.
 type Config struct {
 	Folders struct {
-		Skip     []string `yaml:"skip-all"`
-		LXD      []string `yaml:"lxd"`
-		AWS      []string `yaml:"aws"`
-		Google   []string `yaml:"google"`
-		Azure    []string `yaml:"azure"`
-		Microk8s []string `yaml:"microk8s"`
+		Introduced map[string]string `yaml:"introduced"`
+		Removed    map[string]string `yaml:"removed"`
+		Skip       []string          `yaml:"skip-all"`
+		LXD        []string          `yaml:"lxd"`
+		AWS        []string          `yaml:"aws"`
+		Google     []string          `yaml:"google"`
+		Azure      []string          `yaml:"azure"`
+		Microk8s   []string          `yaml:"microk8s"`
 		// ExcludeTasks maps cloud name to suite-subtask pairs that
 		// should be excluded from that cloud's jobs even when the
 		// parent suite is allowed. e.g. "controller-test_limit_access"
@@ -237,6 +239,12 @@ func cmdGenerate(args []string) {
 		branchTests[i] = buildTestsFromSuites(config, bs)
 	}
 	introduced, removed := calculateVersions(allBranchSuites)
+	for name, version := range config.Folders.Introduced {
+		introduced[name] = version
+	}
+	for name, version := range config.Folders.Removed {
+		removed[name] = version
+	}
 
 	funcMap := map[string]interface{}{
 		"ensureHyphen": func(s string) string {
@@ -250,6 +258,7 @@ func cmdGenerate(args []string) {
 			}
 			return false
 		},
+		"versionLess": versionLess,
 	}
 	t := template.Must(
 		template.New("integration").Funcs(funcMap).Parse(Template),
@@ -983,7 +992,7 @@ const Template = `
 {{- if or (ne $minRegexp "") (ne $excludeRegexp "") }}
       - conditional-step:
   {{- if and (ne $minRegexp "") (ne $excludeRegexp "") }}
-          condition-kind: and
+          condition-kind: {{if versionLess $excludeLabel $minLabel}}or{{else}}and{{end}}
           condition-operands:
             # Do not run on regexp version match.
             # Accounts for tests which do not exist
