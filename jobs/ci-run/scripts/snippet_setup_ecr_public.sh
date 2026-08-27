@@ -22,4 +22,5 @@ podman run --rm -v $XDG_RUNTIME_DIR/containers/auth.json:/auth.json quay.io/skop
 podman run --rm -v $XDG_RUNTIME_DIR/containers/auth.json:/auth.json quay.io/skopeo/stable:latest copy --authfile /auth.json --all docker://public.ecr.aws/juju/charm-base:ubuntu-20.04 docker://public.ecr.aws/jujuqabot/build-${SHORT_GIT_COMMIT}/charm-base:ubuntu-20.04 &
 podman run --rm -v $XDG_RUNTIME_DIR/containers/auth.json:/auth.json quay.io/skopeo/stable:latest copy --authfile /auth.json --all docker://public.ecr.aws/juju/charm-base:ubuntu-22.04 docker://public.ecr.aws/jujuqabot/build-${SHORT_GIT_COMMIT}/charm-base:ubuntu-22.04 &
 podman run --rm -v $XDG_RUNTIME_DIR/containers/auth.json:/auth.json quay.io/skopeo/stable:latest copy --authfile /auth.json --all docker://public.ecr.aws/juju/charm-base:ubuntu-24.04 docker://public.ecr.aws/jujuqabot/build-${SHORT_GIT_COMMIT}/charm-base:ubuntu-24.04 &
+podman run --rm -v $XDG_RUNTIME_DIR/containers/auth.json:/auth.json quay.io/skopeo/stable:latest copy --authfile /auth.json --all docker://public.ecr.aws/juju/charm-base:ubuntu-26.04 docker://public.ecr.aws/jujuqabot/build-${SHORT_GIT_COMMIT}/charm-base:ubuntu-26.04 &
 wait
