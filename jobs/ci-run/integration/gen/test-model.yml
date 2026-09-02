@@ -46,6 +46,12 @@
           current-parameters: true
         - name: 'test-model-test-model-metrics-lxd'
           current-parameters: true
+        - name: 'test-model-test-model-migration-abort-aws'
+          current-parameters: true
+        - name: 'test-model-test-model-migration-abort-google'
+          current-parameters: true
+        - name: 'test-model-test-model-migration-abort-lxd'
+          current-parameters: true
         - name: 'test-model-test-model-migration-aws'
           current-parameters: true
         - name: 'test-model-test-model-migration-google'
@@ -148,7 +154,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_config'
-            skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+            skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -217,7 +223,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_config'
-            skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+            skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -282,7 +288,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_config'
-            skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+            skip_tasks: 'test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -351,7 +357,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_destroy'
-            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -420,7 +426,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_destroy'
-            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -485,7 +491,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_destroy'
-            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+            skip_tasks: 'test_model_config,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -554,7 +560,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_metrics'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -623,7 +629,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_metrics'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -688,7 +694,240 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_metrics'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-model-test-model-migration-abort-aws
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_model_migration_abort in model suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'ec2'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 90
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 4.1; task introduced in that version.
+          regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'model'
+                  setup_steps: ''
+                  task_name: 'test_model_migration_abort'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-model-test-model-migration-abort-google
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_model_migration_abort in model suite on google
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'google'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'gce'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 90
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 4.1; task introduced in that version.
+          regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'model'
+                  setup_steps: ''
+                  task_name: 'test_model_migration_abort'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-model-test-model-migration-abort-lxd
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_model_migration_abort in model suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'localhost'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 90
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 4.1; task introduced in that version.
+          regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'model'
+                  setup_steps: ''
+                  task_name: 'test_model_migration_abort'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -779,7 +1018,7 @@
                   test_name: 'model'
                   setup_steps: ''
                   task_name: 'test_model_migration'
-                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -870,7 +1109,7 @@
                   test_name: 'model'
                   setup_steps: ''
                   task_name: 'test_model_migration'
-                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -957,7 +1196,7 @@
                   test_name: 'model'
                   setup_steps: ''
                   task_name: 'test_model_migration'
-                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -1048,7 +1287,7 @@
                   test_name: 'model'
                   setup_steps: ''
                   task_name: 'test_model_migration_saas_common'
-                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -1139,7 +1378,7 @@
                   test_name: 'model'
                   setup_steps: ''
                   task_name: 'test_model_migration_saas_common'
-                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -1226,7 +1465,7 @@
                   test_name: 'model'
                   setup_steps: ''
                   task_name: 'test_model_migration_saas_common'
-                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_external,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -1317,7 +1556,7 @@
                   test_name: 'model'
                   setup_steps: ''
                   task_name: 'test_model_migration_saas_external'
-                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_version,test_model_multi,test_model_status'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -1408,7 +1647,7 @@
                   test_name: 'model'
                   setup_steps: ''
                   task_name: 'test_model_migration_saas_external'
-                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_version,test_model_multi,test_model_status'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -1495,7 +1734,7 @@
                   test_name: 'model'
                   setup_steps: ''
                   task_name: 'test_model_migration_saas_external'
-                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_version,test_model_multi,test_model_status'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_version,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -1586,7 +1825,7 @@
                   test_name: 'model'
                   setup_steps: ''
                   task_name: 'test_model_migration_version'
-                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_multi,test_model_status'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -1677,7 +1916,7 @@
                   test_name: 'model'
                   setup_steps: ''
                   task_name: 'test_model_migration_version'
-                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_multi,test_model_status'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -1764,7 +2003,7 @@
                   test_name: 'model'
                   setup_steps: ''
                   task_name: 'test_model_migration_version'
-                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_multi,test_model_status'
+                  skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_multi,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -1833,7 +2072,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_multi'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_status'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -1902,7 +2141,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_multi'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_status'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -1967,7 +2206,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_multi'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_status'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_status'
     publishers:
       - integration-artifacts
 
@@ -2036,7 +2275,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_status'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
     publishers:
       - integration-artifacts
 
@@ -2105,7 +2344,7 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_status'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
     publishers:
       - integration-artifacts
 
@@ -2170,6 +2409,6 @@
             test_name: 'model'
             setup_steps: ''
             task_name: 'test_model_status'
-            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
+            skip_tasks: 'test_model_config,test_model_destroy,test_model_metrics,test_model_migration,test_model_migration_abort,test_model_migration_saas_common,test_model_migration_saas_external,test_model_migration_version,test_model_multi'
     publishers:
       - integration-artifacts
