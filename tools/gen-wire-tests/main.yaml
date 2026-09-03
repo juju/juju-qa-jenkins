@@ -7,7 +7,6 @@ suites:
   - test_appdata_int
   authorized_keys:
   - test_bootstrap_authorized_keys
-  - test_machine_ssh
   - test_migrate_authorized_keys
   - test_user_ssh_keys
   bootstrap:
@@ -44,6 +43,7 @@ suites:
   - test_serviceaccount_credential
   cmr:
   - test_offer_consume
+  - test_offer_consume_migrate
   - test_offer_find_external_user
   - test_offer_find_non_admin
   - test_offer_permissions
@@ -93,11 +93,13 @@ suites:
   machine:
   - test_logs
   - test_provisioning_info
+  - test_reprovisioning
   model:
   - test_model_config
   - test_model_destroy
   - test_model_metrics
   - test_model_migration
+  - test_model_migration_abort
   - test_model_migration_saas_common
   - test_model_migration_saas_external
   - test_model_migration_version
@@ -116,6 +118,7 @@ suites:
   - test_relation_list_app
   - test_relation_model_get
   resources:
+  - test_attach_resources
   - test_basic_resources
   - test_container_resources
   - test_empty_resources
@@ -125,6 +128,7 @@ suites:
   - test_secret_drain
   - test_secret_nonleader_unit_owned
   - test_secrets_cmr
+  - test_secrets_hook_commit
   - test_secrets_juju
   - test_secrets_k8s
   - test_secrets_vault
@@ -148,6 +152,7 @@ suites:
   - test_deploy
   smoke_k8s:
   - test_deploy
+  - test_destroy_controller
   smoke_k8s_psql:
   - test_deploy_postgresql
   spaces_ec2:
@@ -156,6 +161,9 @@ suites:
   - test_upgrade_charm_with_bind
   spaces_gce:
   - test_machines_in_spaces
+  ssh:
+  - test_ssh_k8s
+  - test_ssh_machine
   static_analysis:
   - test_copyright
   - test_doc_go
@@ -176,8 +184,11 @@ suites:
   - test_add_unit_attach_storage_scaling_race_condition
   - test_add_unit_duplicate_pvc_exists
   - test_deploy_attach_storage
+  - test_destroy_model_with_detached_storage
   - test_force_import_filesystem
   - test_import_filesystem
+  tla:
+  - test_tla_objectstore
   unmanaged:
   - test_deploy_unmanaged
   - test_spaces_unmanaged
