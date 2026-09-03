@@ -441,11 +441,24 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'authorized_keys'
-            setup_steps: ''
-            task_name: 'test_machine_ssh'
-            skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.1; negated above to skip
+            # versions from 4.1 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                test_name: 'authorized_keys'
+                setup_steps: ''
+                task_name: 'test_machine_ssh'
+                skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
     publishers:
       - integration-artifacts
 
@@ -510,11 +523,24 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'authorized_keys'
-            setup_steps: ''
-            task_name: 'test_machine_ssh'
-            skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.1; negated above to skip
+            # versions from 4.1 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                test_name: 'authorized_keys'
+                setup_steps: ''
+                task_name: 'test_machine_ssh'
+                skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
     publishers:
       - integration-artifacts
 
@@ -579,11 +605,24 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'authorized_keys'
-            setup_steps: ''
-            task_name: 'test_machine_ssh'
-            skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.1; negated above to skip
+            # versions from 4.1 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                test_name: 'authorized_keys'
+                setup_steps: ''
+                task_name: 'test_machine_ssh'
+                skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
     publishers:
       - integration-artifacts
 
@@ -644,11 +683,24 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - run-integration-test:
-            test_name: 'authorized_keys'
-            setup_steps: ''
-            task_name: 'test_machine_ssh'
-            skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.1; negated above to skip
+            # versions from 4.1 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                test_name: 'authorized_keys'
+                setup_steps: ''
+                task_name: 'test_machine_ssh'
+                skip_tasks: 'test_bootstrap_authorized_keys,test_migrate_authorized_keys,test_user_ssh_keys'
     publishers:
       - integration-artifacts
 

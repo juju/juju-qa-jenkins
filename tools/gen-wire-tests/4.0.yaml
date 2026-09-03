@@ -8,7 +8,6 @@ suites:
   authorized_keys:
   - test_bootstrap_authorized_keys
   - test_machine_ssh
-  - test_migrate_authorized_keys
   - test_user_ssh_keys
   bootstrap:
   - test_bootstrap_simplestream
@@ -95,10 +94,6 @@ suites:
   - test_model_config
   - test_model_destroy
   - test_model_metrics
-  - test_model_migration
-  - test_model_migration_saas_common
-  - test_model_migration_saas_external
-  - test_model_migration_version
   - test_model_multi
   - test_model_status
   network:
@@ -109,11 +104,13 @@ suites:
   - test_basic
   - test_switch
   relations:
+  - test_recursive_subordinate_units
   - test_relation_data_exchange
   - test_relation_departing_unit
   - test_relation_list_app
   - test_relation_model_get
   resources:
+  - test_attach_resources
   - test_basic_resources
   - test_container_resources
   - test_empty_resources
@@ -123,10 +120,10 @@ suites:
   - test_secret_drain
   - test_secret_nonleader_unit_owned
   - test_secrets_cmr
+  - test_secrets_hook_commit
   - test_secrets_juju
   - test_secrets_k8s
   - test_secrets_vault
-  - test_track_latest_revision
   - test_user_secret_drain
   secrets_k8s:
   - test_add_multiple_secrets_parallel
@@ -147,6 +144,7 @@ suites:
   - test_deploy
   smoke_k8s:
   - test_deploy
+  - test_destroy_controller
   smoke_k8s_psql:
   - test_deploy_postgresql
   spaces_ec2:
@@ -175,8 +173,11 @@ suites:
   - test_add_unit_attach_storage_scaling_race_condition
   - test_add_unit_duplicate_pvc_exists
   - test_deploy_attach_storage
+  - test_destroy_model_with_detached_storage
   - test_force_import_filesystem
   - test_import_filesystem
+  tla:
+  - test_tla_objectstore
   unmanaged:
   - test_deploy_unmanaged
   - test_spaces_unmanaged

@@ -28,6 +28,10 @@
     - multijob:
         name: 'IntegrationTests-resources'
         projects:
+        - name: 'test-resources-test-attach-resources-aws'
+          current-parameters: true
+        - name: 'test-resources-test-attach-resources-lxd'
+          current-parameters: true
         - name: 'test-resources-test-basic-resources-aws'
           current-parameters: true
         - name: 'test-resources-test-basic-resources-lxd'
@@ -44,6 +48,160 @@
           current-parameters: true
         - name: 'test-resources-test-upgrade-resources-lxd'
           current-parameters: true
+
+- job:
+    name: test-resources-test-attach-resources-aws
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_attach_resources in resources suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'ec2'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 3.6; task introduced in that version.
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'resources'
+                  setup_steps: ''
+                  task_name: 'test_attach_resources'
+                  skip_tasks: 'test_basic_resources,test_container_resources,test_empty_resources,test_upgrade_resources'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-resources-test-attach-resources-lxd
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_attach_resources in resources suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'localhost'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 3.6; task introduced in that version.
+          regex: "^[4-9].*|^3\\.([6-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'resources'
+                  setup_steps: ''
+                  task_name: 'test_attach_resources'
+                  skip_tasks: 'test_basic_resources,test_container_resources,test_empty_resources,test_upgrade_resources'
+    publishers:
+      - integration-artifacts
 
 - job:
     name: test-resources-test-basic-resources-aws
@@ -110,7 +268,7 @@
             test_name: 'resources'
             setup_steps: ''
             task_name: 'test_basic_resources'
-            skip_tasks: 'test_container_resources,test_empty_resources,test_upgrade_resources'
+            skip_tasks: 'test_attach_resources,test_container_resources,test_empty_resources,test_upgrade_resources'
     publishers:
       - integration-artifacts
 
@@ -175,7 +333,7 @@
             test_name: 'resources'
             setup_steps: ''
             task_name: 'test_basic_resources'
-            skip_tasks: 'test_container_resources,test_empty_resources,test_upgrade_resources'
+            skip_tasks: 'test_attach_resources,test_container_resources,test_empty_resources,test_upgrade_resources'
     publishers:
       - integration-artifacts
 
@@ -254,7 +412,7 @@
                   test_name: 'resources'
                   setup_steps: ''
                   task_name: 'test_container_resources'
-                  skip_tasks: 'test_basic_resources,test_empty_resources,test_upgrade_resources'
+                  skip_tasks: 'test_attach_resources,test_basic_resources,test_empty_resources,test_upgrade_resources'
     publishers:
       - integration-artifacts
 
@@ -329,7 +487,7 @@
                   test_name: 'resources'
                   setup_steps: ''
                   task_name: 'test_container_resources'
-                  skip_tasks: 'test_basic_resources,test_empty_resources,test_upgrade_resources'
+                  skip_tasks: 'test_attach_resources,test_basic_resources,test_empty_resources,test_upgrade_resources'
     publishers:
       - integration-artifacts
 
@@ -408,7 +566,7 @@
                   test_name: 'resources'
                   setup_steps: ''
                   task_name: 'test_empty_resources'
-                  skip_tasks: 'test_basic_resources,test_container_resources,test_upgrade_resources'
+                  skip_tasks: 'test_attach_resources,test_basic_resources,test_container_resources,test_upgrade_resources'
     publishers:
       - integration-artifacts
 
@@ -483,7 +641,7 @@
                   test_name: 'resources'
                   setup_steps: ''
                   task_name: 'test_empty_resources'
-                  skip_tasks: 'test_basic_resources,test_container_resources,test_upgrade_resources'
+                  skip_tasks: 'test_attach_resources,test_basic_resources,test_container_resources,test_upgrade_resources'
     publishers:
       - integration-artifacts
 
@@ -552,7 +710,7 @@
             test_name: 'resources'
             setup_steps: ''
             task_name: 'test_upgrade_resources'
-            skip_tasks: 'test_basic_resources,test_container_resources,test_empty_resources'
+            skip_tasks: 'test_attach_resources,test_basic_resources,test_container_resources,test_empty_resources'
     publishers:
       - integration-artifacts
 
@@ -617,6 +775,6 @@
             test_name: 'resources'
             setup_steps: ''
             task_name: 'test_upgrade_resources'
-            skip_tasks: 'test_basic_resources,test_container_resources,test_empty_resources'
+            skip_tasks: 'test_attach_resources,test_basic_resources,test_container_resources,test_empty_resources'
     publishers:
       - integration-artifacts

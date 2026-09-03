@@ -186,6 +186,10 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: "test-ssh-multijob"
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: "test-storage-multijob"
               current-parameters: true
               predefined-parameters: |-
