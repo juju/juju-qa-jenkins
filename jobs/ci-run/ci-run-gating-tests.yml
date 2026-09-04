@@ -43,3 +43,68 @@
               current-parameters: true
             - name: gating-integration-tests-arm64
               current-parameters: true
+
+# Per-branch gating jobs. The un-suffixed "gating-tests" job above remains as
+# the generic job for feature branches and manual runs; the jobs below give
+# each maintained branch its own build history and trend.
+- project:
+    name: "branch-gating-tests"
+    job_branch:
+      - "2.9"
+      - "3.6"
+      - "4.0"
+      - "main"
+    jobs:
+      - "gating-tests-{job_branch}"
+
+- job-template:
+    name: "gating-tests-{job_branch}"
+    project-type: "multijob"
+    description: "Run gating tests for a Juju commit on the {job_branch} branch"
+    condition: SUCCESSFUL
+    node: noop-parent-jobs
+    concurrent: true
+    wrappers:
+      - ansicolor
+      - workspace-cleanup
+      - timestamps
+      - timeout:
+          timeout: 300
+          fail: true
+          type: absolute
+    properties:
+      - build-discarder:
+          days-to-keep: 30
+          num-to-keep: 50
+          artifact-days-to-keep: 30
+          artifact-num-to-keep: 50
+    parameters:
+      - validating-string:
+          description: The git short hash for the commit you wish to test
+          name: SHORT_GIT_COMMIT
+          regex: ^\S{{7}}$
+          msg: Enter a valid 7 char git sha
+    publishers:
+      - email-ext:
+          recipients: juju-crew@lists.canonical.com
+          content-type: html
+          attach-build-log: true
+          first-failure: true
+          fixed-unhealthy: true
+          subject: "STOP THE LINE!"
+          body: |
+            <h1>functional-tests-amd64 test failure</h1>
+            These tests must pass. Diagnose the problem and assign to a member of the team today!
+            <br>
+            $DEFAULT_CONTENT
+    builders:
+      - get-s3-build-details
+      - set-test-description
+      - multijob:
+          name: GatingTests
+          # Defining BUILD_ARCH ensures the right binaries are pulled down.
+          projects:
+            - name: gating-integration-tests-amd64
+              current-parameters: true
+            - name: gating-integration-tests-arm64
+              current-parameters: true
