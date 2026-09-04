@@ -41,11 +41,35 @@
                 current-parameters: true
               - name: 'test-storage_k8s-test-add-unit-duplicate-pvc-exists-microk8s'
                 current-parameters: true
+              - name: 'test-storage_k8s-test-deleted-pvc-recreated-with-new-storage-microk8s'
+                current-parameters: true
               - name: 'test-storage_k8s-test-deploy-attach-storage-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-destroy-model-with-detached-storage-microk8s'
                 current-parameters: true
               - name: 'test-storage_k8s-test-force-import-filesystem-microk8s'
                 current-parameters: true
               - name: 'test-storage_k8s-test-import-filesystem-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-remove-app-while-storage-update-stuck-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-scale-after-storage-update-crash-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-scale-and-update-storage-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-scale-and-update-storage-successive-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-scale-app-with-updated-storage-self-healing-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-scale-down-and-back-up-retains-storage-sizes-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-scale-resumes-after-storage-update-missing-sts-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-storage-update-after-scale-crash-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-update-pool-same-provider-different-storage-class-microk8s'
+                current-parameters: true
+              - name: 'test-storage_k8s-test-update-storage-constraints-validation-error-microk8s'
                 current-parameters: true
 
 - job:
@@ -109,7 +133,7 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_add_unit_attach_storage'
-            skip_tasks: 'test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
     publishers:
       - integration-artifacts
 
@@ -174,7 +198,7 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_add_unit_attach_storage_scaling_race_condition'
-            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
     publishers:
       - integration-artifacts
 
@@ -239,7 +263,85 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_add_unit_duplicate_pvc_exists'
-            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-deleted-pvc-recreated-with-new-storage-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_deleted_pvc_recreated_with_new_storage in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.0; negated above to skip
+            # versions from 4.0 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                test_name: 'storage_k8s'
+                setup_steps: ''
+                task_name: 'test_deleted_pvc_recreated_with_new_storage'
+                skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
     publishers:
       - integration-artifacts
 
@@ -304,7 +406,82 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_deploy_attach_storage'
-            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_force_import_filesystem,test_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-destroy-model-with-detached-storage-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_destroy_model_with_detached_storage in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 4.0; task introduced in that version.
+          regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                  test_name: 'storage_k8s'
+                  setup_steps: ''
+                  task_name: 'test_destroy_model_with_detached_storage'
+                  skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
     publishers:
       - integration-artifacts
 
@@ -369,7 +546,7 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_force_import_filesystem'
-            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
     publishers:
       - integration-artifacts
 
@@ -434,6 +611,786 @@
             test_name: 'storage_k8s'
             setup_steps: ''
             task_name: 'test_import_filesystem'
-            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deploy_attach_storage,test_force_import_filesystem'
+            skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-remove-app-while-storage-update-stuck-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_remove_app_while_storage_update_stuck in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.0; negated above to skip
+            # versions from 4.0 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                test_name: 'storage_k8s'
+                setup_steps: ''
+                task_name: 'test_remove_app_while_storage_update_stuck'
+                skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-scale-after-storage-update-crash-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_scale_after_storage_update_crash in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.0; negated above to skip
+            # versions from 4.0 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                test_name: 'storage_k8s'
+                setup_steps: ''
+                task_name: 'test_scale_after_storage_update_crash'
+                skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-scale-and-update-storage-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_scale_and_update_storage in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.0; negated above to skip
+            # versions from 4.0 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                test_name: 'storage_k8s'
+                setup_steps: ''
+                task_name: 'test_scale_and_update_storage'
+                skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-scale-and-update-storage-successive-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_scale_and_update_storage_successive in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.0; negated above to skip
+            # versions from 4.0 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                test_name: 'storage_k8s'
+                setup_steps: ''
+                task_name: 'test_scale_and_update_storage_successive'
+                skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-scale-app-with-updated-storage-self-healing-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_scale_app_with_updated_storage_self_healing in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.0; negated above to skip
+            # versions from 4.0 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                test_name: 'storage_k8s'
+                setup_steps: ''
+                task_name: 'test_scale_app_with_updated_storage_self_healing'
+                skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-scale-down-and-back-up-retains-storage-sizes-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_scale_down_and_back_up_retains_storage_sizes in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.0; negated above to skip
+            # versions from 4.0 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                test_name: 'storage_k8s'
+                setup_steps: ''
+                task_name: 'test_scale_down_and_back_up_retains_storage_sizes'
+                skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-scale-resumes-after-storage-update-missing-sts-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_scale_resumes_after_storage_update_missing_sts in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.0; negated above to skip
+            # versions from 4.0 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                test_name: 'storage_k8s'
+                setup_steps: ''
+                task_name: 'test_scale_resumes_after_storage_update_missing_sts'
+                skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-storage-update-after-scale-crash-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_storage_update_after_scale_crash in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.0; negated above to skip
+            # versions from 4.0 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                test_name: 'storage_k8s'
+                setup_steps: ''
+                task_name: 'test_storage_update_after_scale_crash'
+                skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_update_pool_same_provider_different_storage_class,test_update_storage_constraints_validation_error'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-update-pool-same-provider-different-storage-class-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_update_pool_same_provider_different_storage_class in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.0; negated above to skip
+            # versions from 4.0 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                test_name: 'storage_k8s'
+                setup_steps: ''
+                task_name: 'test_update_pool_same_provider_different_storage_class'
+                skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_storage_constraints_validation_error'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-storage_k8s-test-update-storage-constraints-validation-error-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_update_storage_constraints_validation_error in storage_k8s suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.0; negated above to skip
+            # versions from 4.0 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                test_name: 'storage_k8s'
+                setup_steps: ''
+                task_name: 'test_update_storage_constraints_validation_error'
+                skip_tasks: 'test_add_unit_attach_storage,test_add_unit_attach_storage_scaling_race_condition,test_add_unit_duplicate_pvc_exists,test_deleted_pvc_recreated_with_new_storage,test_deploy_attach_storage,test_destroy_model_with_detached_storage,test_force_import_filesystem,test_import_filesystem,test_remove_app_while_storage_update_stuck,test_scale_after_storage_update_crash,test_scale_and_update_storage,test_scale_and_update_storage_successive,test_scale_app_with_updated_storage_self_healing,test_scale_down_and_back_up_retains_storage_sizes,test_scale_resumes_after_storage_update_missing_sts,test_storage_update_after_scale_crash,test_update_pool_same_provider_different_storage_class'
     publishers:
       - integration-artifacts

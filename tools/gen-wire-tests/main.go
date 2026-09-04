@@ -22,14 +22,12 @@ import (
 // Config represents the configuration for gen-wire-tests.
 type Config struct {
 	Folders struct {
-		Introduced map[string]string `yaml:"introduced"`
-		Removed    map[string]string `yaml:"removed"`
-		Skip       []string          `yaml:"skip-all"`
-		LXD        []string          `yaml:"lxd"`
-		AWS        []string          `yaml:"aws"`
-		Google     []string          `yaml:"google"`
-		Azure      []string          `yaml:"azure"`
-		Microk8s   []string          `yaml:"microk8s"`
+		Skip     []string `yaml:"skip-all"`
+		LXD      []string `yaml:"lxd"`
+		AWS      []string `yaml:"aws"`
+		Google   []string `yaml:"google"`
+		Azure    []string `yaml:"azure"`
+		Microk8s []string `yaml:"microk8s"`
 		// ExcludeTasks maps cloud name to suite-subtask pairs that
 		// should be excluded from that cloud's jobs even when the
 		// parent suite is allowed. e.g. "controller-test_limit_access"
@@ -230,21 +228,13 @@ func cmdGenerate(args []string) {
 	}
 
 	allBranchSuites := make([]BranchSuites, len(branches))
-	branchTests := make([]map[string]Task, len(branches))
 	for i, bv := range branches {
 		bs := readBranchSuites(
 			filepath.Join(suitesDir, bv.Branch+".yaml"),
 		)
 		allBranchSuites[i] = bs
-		branchTests[i] = buildTestsFromSuites(config, bs)
 	}
 	introduced, removed := calculateVersions(allBranchSuites)
-	for name, version := range config.Folders.Introduced {
-		introduced[name] = version
-	}
-	for name, version := range config.Folders.Removed {
-		removed[name] = version
-	}
 
 	funcMap := map[string]interface{}{
 		"ensureHyphen": func(s string) string {
@@ -258,19 +248,13 @@ func cmdGenerate(args []string) {
 			}
 			return false
 		},
-		"versionLess": versionLess,
+		"versionCondition": versionCondition,
 	}
 	t := template.Must(
 		template.New("integration").Funcs(funcMap).Parse(Template),
 	)
 
-	// Merge in version order. Later branches overwrite earlier ones.
-	allTests := make(map[string]Task)
-	for i := range branches {
-		for suiteName, task := range branchTests[i] {
-			allTests[suiteName] = task
-		}
-	}
+	allTests := buildAllTests(config, allBranchSuites)
 
 	for suiteName, task := range allTests {
 		writeJobDefinitions(
@@ -295,6 +279,47 @@ func readBranchSuites(path string) BranchSuites {
 		)
 	}
 	return bs
+}
+
+// mergeBranchSuites returns the union of suites and subtasks across all
+// collected branch inventories. Version conditions decide which branches can
+// run each item, so removing an item from the latest inventory must not remove
+// the generated job needed by older branches.
+func mergeBranchSuites(allBranchSuites []BranchSuites) BranchSuites {
+	merged := BranchSuites{Suites: make(map[string][]string)}
+	seen := make(map[string]map[string]bool)
+	for _, branchSuites := range allBranchSuites {
+		for suiteName, subTasks := range branchSuites.Suites {
+			if _, ok := merged.Suites[suiteName]; !ok {
+				merged.Suites[suiteName] = []string{}
+			}
+			if seen[suiteName] == nil {
+				seen[suiteName] = make(map[string]bool)
+			}
+			for _, subTask := range subTasks {
+				if seen[suiteName][subTask] {
+					continue
+				}
+				seen[suiteName][subTask] = true
+				merged.Suites[suiteName] = append(
+					merged.Suites[suiteName], subTask,
+				)
+			}
+		}
+	}
+	for suiteName := range merged.Suites {
+		sort.Strings(merged.Suites[suiteName])
+	}
+	return merged
+}
+
+func buildAllTests(
+	config Config,
+	allBranchSuites []BranchSuites,
+) map[string]Task {
+	return buildTestsFromSuites(
+		config, mergeBranchSuites(allBranchSuites),
+	)
 }
 
 // buildTestsFromSuites applies config to a BranchSuites and returns
@@ -403,6 +428,20 @@ func writeJobDefinitions(
 		joined[k] = strings.Join(v, ",")
 	}
 
+	projectNames := make([]string, 0, len(task.SubTasks)*len(task.Clouds))
+	for _, subTask := range task.SubTasks {
+		for _, cloud := range task.Clouds {
+			if contains(task.ExcludedCloudTasks[cloud.Name], subTask) {
+				continue
+			}
+			projectNames = append(projectNames, fmt.Sprintf(
+				"test-%s-%s-%s",
+				suiteName, strings.ReplaceAll(subTask, "_", "-"), cloud.Name,
+			))
+		}
+	}
+	sort.Strings(projectNames)
+
 	ephemeral := make(map[string]bool)
 	for _, test := range config.Folders.Ephemeral {
 		ephemeral[test] = true
@@ -455,6 +494,7 @@ func writeJobDefinitions(
 		SuiteName          string
 		Clouds             []Cloud
 		TaskNames          []string
+		ProjectNames       []string
 		SkipTasks          []string
 		ExcludedTasks      string
 		ExcludedCloudTasks map[string][]string
@@ -474,6 +514,7 @@ func writeJobDefinitions(
 		SuiteName:          suiteName,
 		Clouds:             task.Clouds,
 		TaskNames:          task.SubTasks,
+		ProjectNames:       projectNames,
 		SkipTasks:          joined,
 		ExcludedTasks:      strings.Join(task.ExcludedTasks, ","),
 		ExcludedCloudTasks: task.ExcludedCloudTasks,
@@ -776,6 +817,13 @@ func versionLess(a, b string) bool {
 	return ai < bi
 }
 
+func versionCondition(removed, introduced string) string {
+	if versionLess(removed, introduced) {
+		return "or"
+	}
+	return "and"
+}
+
 // matchesList returns true if name matches any entry in list. Entries
 // may contain '*' as a glob wildcard (e.g. "*_k8s").
 func matchesList(list []string, name string) bool {
@@ -863,29 +911,17 @@ const Template = `
           - multijob:
               name: 'IntegrationTests-{{.SuiteName}}'
               projects:
-{{- range $k, $skip_tasks := $node.SkipTasks}}
-{{- range $cloud := $node.Clouds}}
-    {{- $task_name := index $node.TaskNames $k}}
-              {{- if (contains (index $node.ExcludedCloudTasks $cloud.Name) $task_name) }}
-                {{- continue }}
-              {{- end }}
-              - name: 'test-{{$.SuiteName}}-{{ensureHyphen $task_name}}-{{$cloud.Name}}'
+{{- range $projectName := $node.ProjectNames}}
+              - name: '{{$projectName}}'
                 current-parameters: true
-{{- end}}
 {{- end}}
 {{- else }}
     - multijob:
         name: 'IntegrationTests-{{.SuiteName}}'
         projects:
-{{- range $k, $skip_tasks := $node.SkipTasks}}
-{{- range $cloud := $node.Clouds}}
-    {{- $task_name := index $node.TaskNames $k}}
-        {{- if (contains (index $node.ExcludedCloudTasks $cloud.Name) $task_name) }}
-          {{- continue }}
-        {{- end }}
-        - name: 'test-{{$.SuiteName}}-{{ensureHyphen $task_name}}-{{$cloud.Name}}'
+{{- range $projectName := $node.ProjectNames}}
+        - name: '{{$projectName}}'
           current-parameters: true
-{{- end}}
 {{- end}}
 {{- end}}
 {{- end}}
@@ -992,7 +1028,7 @@ const Template = `
 {{- if or (ne $minRegexp "") (ne $excludeRegexp "") }}
       - conditional-step:
   {{- if and (ne $minRegexp "") (ne $excludeRegexp "") }}
-          condition-kind: {{if versionLess $excludeLabel $minLabel}}or{{else}}and{{end}}
+          condition-kind: {{versionCondition $excludeLabel $minLabel}}
           condition-operands:
             # Do not run on regexp version match.
             # Accounts for tests which do not exist

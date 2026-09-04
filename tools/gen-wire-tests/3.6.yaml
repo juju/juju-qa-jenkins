@@ -43,6 +43,7 @@ suites:
   - test_serviceaccount_credential
   cmr:
   - test_offer_consume
+  - test_offer_consume_migrate
   - test_offer_find_external_user
   - test_offer_find_non_admin
   constraints:
