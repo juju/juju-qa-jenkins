@@ -134,6 +134,14 @@
               current-parameters: true
               predefined-parameters: |-
                 BUILD_ARCH=amd64
+            - name: "test-migration-multijob"
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
+            - name: "test-migration_k8s-multijob"
+              current-parameters: true
+              predefined-parameters: |-
+                BUILD_ARCH=amd64
             - name: "test-model-multijob"
               current-parameters: true
               predefined-parameters: |-
