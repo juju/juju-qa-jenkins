@@ -89,6 +89,17 @@ export BOOTSTRAP_PROVIDER
 export BOOTSTRAP_CLOUD
 export BOOTSTRAP_REUSE_LOCAL
 export OPERATOR_IMAGE_ACCOUNT
+# Snap based bootstrap (Juju 4.2+) uses the controller snap shipped in the
+# build payload; test runners have no toolchain to build one. Unset for
+# payloads without a snap (older branches) and for local runs, where
+# bootstrap builds the snap from source itself.
+CONTROLLER_SNAP_PATH=
+for _snap in "${BIN_DIR}"/jujud_*.snap; do
+  if [ -f "${_snap}" ]; then
+    CONTROLLER_SNAP_PATH="${_snap}"
+  fi
+done
+export CONTROLLER_SNAP_PATH
 # shellcheck source=/dev/null
 set -u
 

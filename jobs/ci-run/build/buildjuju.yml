@@ -64,6 +64,13 @@
           steps:
             - make-windows-installer:
                 platform: ${{PLATFORM}}
+      - conditional-step:
+          condition-kind: regex-match
+          label: "$PLATFORM"
+          regex: "linux/.*"
+          steps:
+            - make-jujud-snap:
+                platform: ${{PLATFORM}}
       - create-build-payload-tarballs:
           platform: ${{PLATFORM}}
           label: ${{LABEL:-}}
@@ -101,6 +108,67 @@
           cp "${{juju_exe}}" "${{iss_dir}}"
           (cd ${{iss_dir}} && xvfb-run -e /dev/stdout --auto-servernum wine "${{iscc_cmd}}" setup.iss)
           cp ${{iss_dir}}/Output/juju-setup-${{JUJU_VERSION}}.exe ${{build_platform_dir}}
+
+# make-jujud-snap builds the jujud controller snap for snap based bootstrap
+# (Juju 4.2+) and copies it next to the juju binaries so it ships in the
+# payload tarball. Branches without the snap based bootstrap (no
+# jujud-snap-build make target) are skipped via feature detection.
+# Expected parameters:
+#   platform: go style platform
+# Expected pre-requisites:
+# - make-juju has been called for the same platform as this command.
+- builder:
+    name: "make-jujud-snap"
+    builders:
+      - shell: |-
+          #!/bin/bash
+          set -eux
+
+          platform_dir={platform}
+          build_platform_dir="${{BUILD_DIR}}/${{platform_dir//\//_}}/bin"
+
+          if ! grep -q "^jujud-snap-build:" ${{JUJU_SRC_PATH}}/Makefile; then
+            echo "Skipping controller snap build; jujud-snap-build target not found"
+            exit 0
+          fi
+
+          if ! command -v snapcraft >/dev/null 2>&1; then
+            sudo snap install snapcraft --classic
+          fi
+          if ! snap list lxd >/dev/null 2>&1; then
+            sudo snap install lxd
+          fi
+          sudo lxd waitready --timeout 300 || true
+          # lxd init errors when already initialised, which is fine here.
+          sudo lxd init --auto >/dev/null 2>&1 || true
+          if ! getent group lxd | grep -qw "$USER"; then
+            sudo usermod -aG lxd "$USER"
+          fi
+
+          cd ${{JUJU_SRC_PATH}}
+          # sg applies the lxd group without a re-login; snapcraft talks to
+          # the lxd daemon for the container based build.
+          sg lxd -c "make jujud-snap-build"
+
+          # The makefile places the snap in ${{BUILD_DIR}}/snap, honouring
+          # the BUILD_DIR env var when set (Jenkins) and defaulting to the
+          # source tree's _build directory otherwise. Search both.
+          snap_file=
+          for _candidate in \
+            "${{BUILD_DIR}}"/snap/jujud_*.snap \
+            "${{JUJU_SRC_PATH}}"/_build/snap/jujud_*.snap; do
+            if [ -f "${{_candidate}}" ]; then
+              snap_file="${{_candidate}}"
+            fi
+          done
+
+          if [ -z "${{snap_file}}" ]; then
+            echo "controller snap not found after jujud-snap-build"
+            exit 1
+          fi
+
+          cp "${{snap_file}}" "${{build_platform_dir}}/"
+          ls -lh "${{build_platform_dir}}"/jujud_*.snap
 
 # make-juju is responsible for making the juju binaries for a given
 # platform that is in GOOS/GOARCH format. For example "linux/amd64".
@@ -297,6 +365,16 @@
             wait_for_name=juju-wait-for.exe
           fi
 
+          # The controller snap for snap based bootstrap is optional; it is
+          # only present for linux payloads of branches that build it.
+          jujud_snap_name=
+          for snap_file in "${{build_platform_dir}}"/jujud_*.snap; do
+            if [[ -f "${{snap_file}}" ]]; then
+              jujud_snap_name=$(basename "${{snap_file}}")
+              echo "controller snap exists for platform {platform}: ${{jujud_snap_name}}"
+            fi
+          done
+
           arch=$(echo "{platform}" | cut -f 2 -d '/')
           os=$(echo "{platform}" | cut -f 1 -d '/')
 
@@ -317,7 +395,8 @@
             ${{containeragent_name}} \
             ${{pebble_name}} \
             ${{juju_installer_name}} \
-            ${{wait_for_name}}
+            ${{wait_for_name}} \
+            ${{jujud_snap_name}}
 
           if [[ -z "${{agent_binary_name}}" && -z "${{jujuc_name}}" ]]; then
             echo "no agent tarball for platform {platform}"
