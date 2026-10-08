@@ -94,16 +94,26 @@ suites:
   - test_logs
   - test_provisioning_info
   - test_reprovisioning
+  migration:
+  - test_migration_36
+  - test_migration_36_abort
+  - test_migration_36_cmr_consuming
+  - test_migration_36_cmr_offering
+  - test_migration_36_cmr_secrets_consumer
+  - test_migration_36_cmr_secrets_offerer
+  - test_migration_36_cmr_spaces
+  - test_migration_36_users_permissions
+  - test_migration_abort
+  - test_migration_basic
+  - test_migration_caas
+  - test_migration_saas_common
+  - test_migration_saas_consumer
+  - test_migration_saas_external
+  - test_migration_version
   model:
   - test_model_config
   - test_model_destroy
   - test_model_metrics
-  - test_model_migration
-  - test_model_migration_abort
-  - test_model_migration_caas
-  - test_model_migration_saas_common
-  - test_model_migration_saas_external
-  - test_model_migration_version
   - test_model_multi
   - test_model_status
   network:
@@ -124,6 +134,7 @@ suites:
   - test_basic_resources
   - test_container_resources
   - test_empty_resources
+  - test_resource_lifecycle
   - test_upgrade_resources
   secrets_iaas:
   - test_obsolete_revisions

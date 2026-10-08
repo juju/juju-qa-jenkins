@@ -10,6 +10,8 @@ suites:
   - test_migrate_authorized_keys
   - test_user_ssh_keys
   bootstrap:
+  - test_bootstrap_build_snap
+  - test_bootstrap_controller_snap_path
   - test_bootstrap_simplestream
   caasadmission:
   - test_controller_model_admission
@@ -155,6 +157,7 @@ suites:
   smoke_k8s:
   - test_deploy
   - test_destroy_controller
+  - test_restart_resilience
   smoke_k8s_psql:
   - test_deploy_postgresql
   spaces_ec2:

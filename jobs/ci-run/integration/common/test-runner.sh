@@ -69,6 +69,29 @@ while [ $attempts -lt 3 ]; do
     attempts=$((attempts + 1))
 done
 
+# The 3.6 -> 4.x model migration suites bootstrap their source
+# controllers with a juju 3.6 client. The runner image does not ship
+# a juju_36 parallel instance, so enable snapd's parallel-instances
+# option (takes effect immediately, no reboot needed) and install
+# the juju snap as juju_36 from the 3.6/stable channel. The distinct
+# instance name avoids any PATH ambiguity with the payload's built
+# juju binary; the suites consume it via JUJU_MIGRATION_36_BIN.
+if [[ ${TEST_RUNNER_NAME:-} == migration* ]]; then
+    if [[ $(sudo snap get system experimental.parallel-instances 2>/dev/null) != true ]]; then
+        sudo snap set system experimental.parallel-instances=true
+    fi
+    juju_36_attempts=0
+    while ! snap list juju_36 2>/dev/null | grep -q '3\.6'; do
+        if (( juju_36_attempts >= 3 )); then
+            echo "Failed to install the juju 3.6 snap for the migration suites" >&2
+            exit 1
+        fi
+        sudo snap install juju_36 --channel 3.6/stable || true
+        juju_36_attempts=$((juju_36_attempts + 1))
+    done
+    export JUJU_MIGRATION_36_BIN=/snap/bin/juju_36
+fi
+
 cd "$JUJU_SRC_PATH"/tests
 
 set +x
