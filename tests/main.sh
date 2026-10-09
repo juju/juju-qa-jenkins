@@ -19,7 +19,9 @@ import_subdir_files includes
 
 # If adding a test suite, then ensure to add it here to be picked up!
 TEST_NAMES="test_smoke \
-            test_static_analysis"
+            test_static_analysis \
+            test_tics \
+            test_coverage_upload_suite"
 
 show_help() {
     echo ""

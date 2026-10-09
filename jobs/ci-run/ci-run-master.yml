@@ -105,8 +105,9 @@
       - inject:
           properties-content: |-
             GITHUB_TOKEN=
-            # Repository-wide switch; publishing this job applies changes.
-            COVERAGE_ENABLED=false
+            # Collect unit coverage from unit-tests-amd64. Integration and
+            # arm64 test coverage are intentionally disabled.
+            COVERAGE_ENABLED=true
       - setup-coverage-collect-url
       - inject:
           properties-content: |-
@@ -263,7 +264,7 @@
       - string:
           name: COVERAGE_ENABLED
           default: ""
-          description: "Whether to collect unit and integration coverage. Set by ci-run-master."
+          description: "Whether to collect amd64 unit-test coverage. Set by ci-run-master."
       - string:
           name: UNIT_COVERAGE_COLLECT_URL
           default: ""
