@@ -136,6 +136,7 @@ suites:
   - test_secret_drain
   - test_secrets
   - test_secrets_cmr
+  - test_secrets_cmr_cross_controller
   - test_secrets_token_reuse
   - test_user_secret_drain
   - test_user_secrets

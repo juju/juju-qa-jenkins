@@ -95,11 +95,10 @@ suites:
   - test_migration_36_abort
   - test_migration_36_cmr_consuming
   - test_migration_36_cmr_offering
-  - test_migration_36_cmr_spaces
-  - test_migration_36_users_permissions
-  migration_k8s:
   - test_migration_36_cmr_secrets_consumer
   - test_migration_36_cmr_secrets_offerer
+  - test_migration_36_cmr_spaces
+  - test_migration_36_users_permissions
   model:
   - test_model_config
   - test_model_destroy
