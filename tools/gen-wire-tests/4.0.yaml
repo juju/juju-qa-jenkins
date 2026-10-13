@@ -40,6 +40,7 @@ suites:
   - test_root_disk_source
   - test_serviceaccount_credential
   cmr:
+  - test_cmr_integrity
   - test_offer_consume
   - test_offer_find_external_user
   - test_offer_find_non_admin
@@ -98,6 +99,8 @@ suites:
   - test_migration_36_cmr_secrets_consumer
   - test_migration_36_cmr_secrets_offerer
   - test_migration_36_cmr_spaces
+  - test_migration_36_image_metadata
+  - test_migration_36_relation_egress_override
   - test_migration_36_users_permissions
   model:
   - test_model_config
@@ -139,6 +142,7 @@ suites:
   - test_secret_drain
   - test_secrets
   - test_secrets_cmr
+  - test_secrets_cmr_cross_controller
   - test_user_secret_drain
   - test_user_secrets
   sidecar:

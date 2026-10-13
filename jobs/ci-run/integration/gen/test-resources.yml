@@ -711,25 +711,13 @@
       - select-oci-registry
       - prepare-integration-test
       - conditional-step:
-          condition-kind: and
-          condition-operands:
-            # Do not run on regexp version match.
-            # Accounts for tests which do not exist
-            # in later Juju versions.
-            - condition-kind: not
-              condition-operand:
-                condition-kind: regex-match
-                # Matches Juju >= 4.2; negated above to skip
-                # versions from 4.2 onward (task removed in that version).
-                regex: "^[5-9].*|^4\\.([2-9]|\\d{{2,}})(\\.|-).*"
-                label: "${{JUJU_VERSION}}"
-            # Only run on regexp version match.
-            # Accounts for tests which do not exist
-            # until a given Juju version.
-            - condition-kind: regex-match
-              # Matches Juju >= 4.1; task introduced in that version.
-              regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
-              label: "${{JUJU_VERSION}}"
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 4.1; task introduced in that version.
+          regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
           on-evaluation-failure: "dont-run"
           steps:
             - run-integration-test:
@@ -798,25 +786,13 @@
       - select-oci-registry
       - prepare-integration-test
       - conditional-step:
-          condition-kind: and
-          condition-operands:
-            # Do not run on regexp version match.
-            # Accounts for tests which do not exist
-            # in later Juju versions.
-            - condition-kind: not
-              condition-operand:
-                condition-kind: regex-match
-                # Matches Juju >= 4.2; negated above to skip
-                # versions from 4.2 onward (task removed in that version).
-                regex: "^[5-9].*|^4\\.([2-9]|\\d{{2,}})(\\.|-).*"
-                label: "${{JUJU_VERSION}}"
-            # Only run on regexp version match.
-            # Accounts for tests which do not exist
-            # until a given Juju version.
-            - condition-kind: regex-match
-              # Matches Juju >= 4.1; task introduced in that version.
-              regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
-              label: "${{JUJU_VERSION}}"
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 4.1; task introduced in that version.
+          regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
           on-evaluation-failure: "dont-run"
           steps:
             - run-integration-test:
