@@ -124,9 +124,9 @@
             - condition-kind: not
               condition-operand:
                 condition-kind: regex-match
-                # Matches Juju >= 4.0; negated above to skip
-                # versions from 4.0 onward (task removed in that version).
-                regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+                # Matches Juju >= 4.2; negated above to skip
+                # versions from 4.2 onward (task removed in that version).
+                regex: "^[5-9].*|^4\\.([2-9]|\\d{{2,}})(\\.|-).*"
                 label: "${{JUJU_VERSION}}"
             # Only run on regexp version match.
             # Accounts for tests which do not exist
@@ -212,9 +212,9 @@
             - condition-kind: not
               condition-operand:
                 condition-kind: regex-match
-                # Matches Juju >= 4.0; negated above to skip
-                # versions from 4.0 onward (task removed in that version).
-                regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+                # Matches Juju >= 4.2; negated above to skip
+                # versions from 4.2 onward (task removed in that version).
+                regex: "^[5-9].*|^4\\.([2-9]|\\d{{2,}})(\\.|-).*"
                 label: "${{JUJU_VERSION}}"
             # Only run on regexp version match.
             # Accounts for tests which do not exist
