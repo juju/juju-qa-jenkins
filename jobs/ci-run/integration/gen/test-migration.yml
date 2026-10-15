@@ -37,37 +37,71 @@
               projects:
               - name: 'test-migration-test-migration-36-abort-aws'
                 current-parameters: true
+              - name: 'test-migration-test-migration-36-abort-microk8s'
+                current-parameters: true
               - name: 'test-migration-test-migration-36-aws'
                 current-parameters: true
               - name: 'test-migration-test-migration-36-cmr-consuming-aws'
                 current-parameters: true
+              - name: 'test-migration-test-migration-36-cmr-consuming-microk8s'
+                current-parameters: true
               - name: 'test-migration-test-migration-36-cmr-offering-aws'
+                current-parameters: true
+              - name: 'test-migration-test-migration-36-cmr-offering-microk8s'
                 current-parameters: true
               - name: 'test-migration-test-migration-36-cmr-secrets-consumer-aws'
                 current-parameters: true
+              - name: 'test-migration-test-migration-36-cmr-secrets-consumer-microk8s'
+                current-parameters: true
               - name: 'test-migration-test-migration-36-cmr-secrets-offerer-aws'
+                current-parameters: true
+              - name: 'test-migration-test-migration-36-cmr-secrets-offerer-microk8s'
                 current-parameters: true
               - name: 'test-migration-test-migration-36-cmr-spaces-aws'
                 current-parameters: true
+              - name: 'test-migration-test-migration-36-cmr-spaces-microk8s'
+                current-parameters: true
               - name: 'test-migration-test-migration-36-image-metadata-aws'
+                current-parameters: true
+              - name: 'test-migration-test-migration-36-image-metadata-microk8s'
+                current-parameters: true
+              - name: 'test-migration-test-migration-36-microk8s'
                 current-parameters: true
               - name: 'test-migration-test-migration-36-relation-egress-override-aws'
                 current-parameters: true
+              - name: 'test-migration-test-migration-36-relation-egress-override-microk8s'
+                current-parameters: true
               - name: 'test-migration-test-migration-36-users-permissions-aws'
+                current-parameters: true
+              - name: 'test-migration-test-migration-36-users-permissions-microk8s'
                 current-parameters: true
               - name: 'test-migration-test-migration-abort-aws'
                 current-parameters: true
+              - name: 'test-migration-test-migration-abort-microk8s'
+                current-parameters: true
               - name: 'test-migration-test-migration-basic-aws'
+                current-parameters: true
+              - name: 'test-migration-test-migration-basic-microk8s'
                 current-parameters: true
               - name: 'test-migration-test-migration-caas-aws'
                 current-parameters: true
+              - name: 'test-migration-test-migration-caas-microk8s'
+                current-parameters: true
               - name: 'test-migration-test-migration-saas-common-aws'
+                current-parameters: true
+              - name: 'test-migration-test-migration-saas-common-microk8s'
                 current-parameters: true
               - name: 'test-migration-test-migration-saas-consumer-aws'
                 current-parameters: true
+              - name: 'test-migration-test-migration-saas-consumer-microk8s'
+                current-parameters: true
               - name: 'test-migration-test-migration-saas-external-aws'
                 current-parameters: true
+              - name: 'test-migration-test-migration-saas-external-microk8s'
+                current-parameters: true
               - name: 'test-migration-test-migration-version-aws'
+                current-parameters: true
+              - name: 'test-migration-test-migration-version-microk8s'
                 current-parameters: true
 
 - job:
@@ -132,6 +166,71 @@
       - select-oci-registry
       - prepare-integration-test
       - run-integration-test:
+            test_name: 'migration'
+            setup_steps: ''
+            task_name: 'test_migration_36'
+            skip_tasks: 'test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-migration-test-migration-36-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_36 in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test-microk8s:
             test_name: 'migration'
             setup_steps: ''
             task_name: 'test_migration_36'
@@ -209,6 +308,71 @@
       - integration-artifacts
 
 - job:
+    name: test-migration-test-migration-36-abort-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_36_abort in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test-microk8s:
+            test_name: 'migration'
+            setup_steps: ''
+            task_name: 'test_migration_36_abort'
+            skip_tasks: 'test_migration_36,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
     name: test-migration-test-migration-36-cmr-consuming-aws
     node: ephemeral-noble-small-amd64
     concurrent: true
@@ -270,6 +434,71 @@
       - select-oci-registry
       - prepare-integration-test
       - run-integration-test:
+            test_name: 'migration'
+            setup_steps: ''
+            task_name: 'test_migration_36_cmr_consuming'
+            skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-migration-test-migration-36-cmr-consuming-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_36_cmr_consuming in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test-microk8s:
             test_name: 'migration'
             setup_steps: ''
             task_name: 'test_migration_36_cmr_consuming'
@@ -347,6 +576,71 @@
       - integration-artifacts
 
 - job:
+    name: test-migration-test-migration-36-cmr-offering-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_36_cmr_offering in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test-microk8s:
+            test_name: 'migration'
+            setup_steps: ''
+            task_name: 'test_migration_36_cmr_offering'
+            skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
     name: test-migration-test-migration-36-cmr-secrets-consumer-aws
     node: ephemeral-noble-small-amd64
     concurrent: true
@@ -408,6 +702,71 @@
       - select-oci-registry
       - prepare-integration-test
       - run-integration-test:
+            test_name: 'migration'
+            setup_steps: ''
+            task_name: 'test_migration_36_cmr_secrets_consumer'
+            skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-migration-test-migration-36-cmr-secrets-consumer-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_36_cmr_secrets_consumer in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test-microk8s:
             test_name: 'migration'
             setup_steps: ''
             task_name: 'test_migration_36_cmr_secrets_consumer'
@@ -485,6 +844,71 @@
       - integration-artifacts
 
 - job:
+    name: test-migration-test-migration-36-cmr-secrets-offerer-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_36_cmr_secrets_offerer in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test-microk8s:
+            test_name: 'migration'
+            setup_steps: ''
+            task_name: 'test_migration_36_cmr_secrets_offerer'
+            skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
     name: test-migration-test-migration-36-cmr-spaces-aws
     node: ephemeral-noble-small-amd64
     concurrent: true
@@ -546,6 +970,71 @@
       - select-oci-registry
       - prepare-integration-test
       - run-integration-test:
+            test_name: 'migration'
+            setup_steps: ''
+            task_name: 'test_migration_36_cmr_spaces'
+            skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-migration-test-migration-36-cmr-spaces-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_36_cmr_spaces in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test-microk8s:
             test_name: 'migration'
             setup_steps: ''
             task_name: 'test_migration_36_cmr_spaces'
@@ -636,6 +1125,84 @@
       - integration-artifacts
 
 - job:
+    name: test-migration-test-migration-36-image-metadata-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_36_image_metadata in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Do not run on regexp version match.
+          # Accounts for tests which do not exist
+          # in later Juju versions.
+          condition-kind: not
+          condition-operand:
+            condition-kind: regex-match
+            # Matches Juju >= 4.1; negated above to skip
+            # versions from 4.1 onward (task removed in that version).
+            regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+            label: "${{JUJU_VERSION}}"
+            on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                test_name: 'migration'
+                setup_steps: ''
+                task_name: 'test_migration_36_image_metadata'
+                skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
     name: test-migration-test-migration-36-relation-egress-override-aws
     node: ephemeral-noble-small-amd64
     concurrent: true
@@ -705,6 +1272,71 @@
       - integration-artifacts
 
 - job:
+    name: test-migration-test-migration-36-relation-egress-override-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_36_relation_egress_override in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test-microk8s:
+            test_name: 'migration'
+            setup_steps: ''
+            task_name: 'test_migration_36_relation_egress_override'
+            skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
     name: test-migration-test-migration-36-users-permissions-aws
     node: ephemeral-noble-small-amd64
     concurrent: true
@@ -766,6 +1398,71 @@
       - select-oci-registry
       - prepare-integration-test
       - run-integration-test:
+            test_name: 'migration'
+            setup_steps: ''
+            task_name: 'test_migration_36_users_permissions'
+            skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-migration-test-migration-36-users-permissions-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_36_users_permissions in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - run-integration-test-microk8s:
             test_name: 'migration'
             setup_steps: ''
             task_name: 'test_migration_36_users_permissions'
@@ -853,6 +1550,81 @@
       - integration-artifacts
 
 - job:
+    name: test-migration-test-migration-abort-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_abort in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 4.1; task introduced in that version.
+          regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                  test_name: 'migration'
+                  setup_steps: ''
+                  task_name: 'test_migration_abort'
+                  skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
     name: test-migration-test-migration-basic-aws
     node: ephemeral-noble-small-amd64
     concurrent: true
@@ -924,6 +1696,81 @@
           on-evaluation-failure: "dont-run"
           steps:
             - run-integration-test:
+                  test_name: 'migration'
+                  setup_steps: ''
+                  task_name: 'test_migration_basic'
+                  skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-migration-test-migration-basic-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_basic in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 4.1; task introduced in that version.
+          regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
                   test_name: 'migration'
                   setup_steps: ''
                   task_name: 'test_migration_basic'
@@ -1011,6 +1858,81 @@
       - integration-artifacts
 
 - job:
+    name: test-migration-test-migration-caas-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_caas in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 4.1; task introduced in that version.
+          regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                  test_name: 'migration'
+                  setup_steps: ''
+                  task_name: 'test_migration_caas'
+                  skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
     name: test-migration-test-migration-saas-common-aws
     node: ephemeral-noble-small-amd64
     concurrent: true
@@ -1082,6 +2004,81 @@
           on-evaluation-failure: "dont-run"
           steps:
             - run-integration-test:
+                  test_name: 'migration'
+                  setup_steps: ''
+                  task_name: 'test_migration_saas_common'
+                  skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-migration-test-migration-saas-common-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_saas_common in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 4.1; task introduced in that version.
+          regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
                   test_name: 'migration'
                   setup_steps: ''
                   task_name: 'test_migration_saas_common'
@@ -1169,6 +2166,81 @@
       - integration-artifacts
 
 - job:
+    name: test-migration-test-migration-saas-consumer-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_saas_consumer in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 4.1; task introduced in that version.
+          regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                  test_name: 'migration'
+                  setup_steps: ''
+                  task_name: 'test_migration_saas_consumer'
+                  skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_external,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
     name: test-migration-test-migration-saas-external-aws
     node: ephemeral-noble-small-amd64
     concurrent: true
@@ -1248,6 +2320,81 @@
       - integration-artifacts
 
 - job:
+    name: test-migration-test-migration-saas-external-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_saas_external in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 4.1; task introduced in that version.
+          regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
+                  test_name: 'migration'
+                  setup_steps: ''
+                  task_name: 'test_migration_saas_external'
+                  skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_version'
+    publishers:
+      - integration-artifacts
+
+- job:
     name: test-migration-test-migration-version-aws
     node: ephemeral-noble-small-amd64
     concurrent: true
@@ -1319,6 +2466,81 @@
           on-evaluation-failure: "dont-run"
           steps:
             - run-integration-test:
+                  test_name: 'migration'
+                  setup_steps: ''
+                  task_name: 'test_migration_version'
+                  skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_image_metadata,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-migration-test-migration-version-microk8s
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_migration_version in migration suite on microk8s
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'microk8s'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'k8s'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - conditional-step:
+          # Only run on regexp version match.
+          # Accounts for tests which do not exist
+          # until a given Juju version.
+          condition-kind: regex-match
+          # Matches Juju >= 4.1; task introduced in that version.
+          regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+          label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test-microk8s:
                   test_name: 'migration'
                   setup_steps: ''
                   task_name: 'test_migration_version'
