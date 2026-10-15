@@ -35,47 +35,47 @@
           - multijob:
               name: 'IntegrationTests-migration'
               projects:
-              - name: 'test-migration-test-migration-36-abort-lxd'
+              - name: 'test-migration-test-migration-36-abort-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-36-cmr-consuming-lxd'
+              - name: 'test-migration-test-migration-36-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-36-cmr-offering-lxd'
+              - name: 'test-migration-test-migration-36-cmr-consuming-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-36-cmr-secrets-consumer-lxd'
+              - name: 'test-migration-test-migration-36-cmr-offering-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-36-cmr-secrets-offerer-lxd'
+              - name: 'test-migration-test-migration-36-cmr-secrets-consumer-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-36-cmr-spaces-lxd'
+              - name: 'test-migration-test-migration-36-cmr-secrets-offerer-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-36-image-metadata-lxd'
+              - name: 'test-migration-test-migration-36-cmr-spaces-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-36-lxd'
+              - name: 'test-migration-test-migration-36-image-metadata-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-36-relation-egress-override-lxd'
+              - name: 'test-migration-test-migration-36-relation-egress-override-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-36-users-permissions-lxd'
+              - name: 'test-migration-test-migration-36-users-permissions-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-abort-lxd'
+              - name: 'test-migration-test-migration-abort-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-basic-lxd'
+              - name: 'test-migration-test-migration-basic-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-caas-lxd'
+              - name: 'test-migration-test-migration-caas-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-saas-common-lxd'
+              - name: 'test-migration-test-migration-saas-common-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-saas-consumer-lxd'
+              - name: 'test-migration-test-migration-saas-consumer-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-saas-external-lxd'
+              - name: 'test-migration-test-migration-saas-external-aws'
                 current-parameters: true
-              - name: 'test-migration-test-migration-version-lxd'
+              - name: 'test-migration-test-migration-version-aws'
                 current-parameters: true
 
 - job:
-    name: test-migration-test-migration-36-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-36-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_36 in migration suite on lxd
+      Test test_migration_36 in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -110,13 +110,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -136,11 +140,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-36-abort-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-36-abort-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_36_abort in migration suite on lxd
+      Test test_migration_36_abort in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -175,13 +179,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -201,11 +209,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-36-cmr-consuming-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-36-cmr-consuming-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_36_cmr_consuming in migration suite on lxd
+      Test test_migration_36_cmr_consuming in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -240,13 +248,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -266,11 +278,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-36-cmr-offering-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-36-cmr-offering-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_36_cmr_offering in migration suite on lxd
+      Test test_migration_36_cmr_offering in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -305,13 +317,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -331,11 +347,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-36-cmr-secrets-consumer-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-36-cmr-secrets-consumer-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_36_cmr_secrets_consumer in migration suite on lxd
+      Test test_migration_36_cmr_secrets_consumer in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -370,13 +386,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -396,11 +416,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-36-cmr-secrets-offerer-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-36-cmr-secrets-offerer-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_36_cmr_secrets_offerer in migration suite on lxd
+      Test test_migration_36_cmr_secrets_offerer in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -435,13 +455,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -461,11 +485,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-36-cmr-spaces-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-36-cmr-spaces-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_36_cmr_spaces in migration suite on lxd
+      Test test_migration_36_cmr_spaces in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -500,13 +524,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -526,11 +554,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-36-image-metadata-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-36-image-metadata-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_36_image_metadata in migration suite on lxd
+      Test test_migration_36_image_metadata in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -565,13 +593,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -604,11 +636,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-36-relation-egress-override-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-36-relation-egress-override-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_36_relation_egress_override in migration suite on lxd
+      Test test_migration_36_relation_egress_override in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -643,13 +675,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -669,11 +705,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-36-users-permissions-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-36-users-permissions-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_36_users_permissions in migration suite on lxd
+      Test test_migration_36_users_permissions in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -708,13 +744,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -734,11 +774,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-abort-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-abort-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_abort in migration suite on lxd
+      Test test_migration_abort in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -773,13 +813,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -809,11 +853,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-basic-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-basic-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_basic in migration suite on lxd
+      Test test_migration_basic in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -848,13 +892,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -884,11 +932,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-caas-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-caas-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_caas in migration suite on lxd
+      Test test_migration_caas in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -923,13 +971,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -959,11 +1011,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-saas-common-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-saas-common-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_saas_common in migration suite on lxd
+      Test test_migration_saas_common in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -998,13 +1050,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -1034,11 +1090,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-saas-consumer-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-saas-consumer-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_saas_consumer in migration suite on lxd
+      Test test_migration_saas_consumer in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -1073,13 +1129,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -1109,11 +1169,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-saas-external-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-saas-external-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_saas_external in migration suite on lxd
+      Test test_migration_saas_external in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -1148,13 +1208,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -1184,11 +1248,11 @@
       - integration-artifacts
 
 - job:
-    name: test-migration-test-migration-version-lxd
-    node: ephemeral-noble-8c-32g-amd64
+    name: test-migration-test-migration-version-aws
+    node: ephemeral-noble-small-amd64
     concurrent: true
     description: |-
-      Test test_migration_version in migration suite on lxd
+      Test test_migration_version in migration suite on aws
     parameters:
     - validating-string:
         name: SHORT_GIT_COMMIT
@@ -1223,13 +1287,17 @@
         - s390x
         - ppc64el
     - string:
-        default: 'localhost'
+        default: 'aws'
         description: 'Cloud to use when bootstrapping Juju'
         name: BOOTSTRAP_CLOUD
     - string:
-        default: 'lxd'
+        default: 'ec2'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
     wrappers:
       - default-integration-test-wrapper
       - timeout:
