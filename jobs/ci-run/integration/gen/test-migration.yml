@@ -606,24 +606,11 @@
       - common
       - select-oci-registry
       - prepare-integration-test
-      - conditional-step:
-          # Do not run on regexp version match.
-          # Accounts for tests which do not exist
-          # in later Juju versions.
-          condition-kind: not
-          condition-operand:
-            condition-kind: regex-match
-            # Matches Juju >= 4.2; negated above to skip
-            # versions from 4.2 onward (task removed in that version).
-            regex: "^[5-9].*|^4\\.([2-9]|\\d{{2,}})(\\.|-).*"
-            label: "${{JUJU_VERSION}}"
-            on-evaluation-failure: "dont-run"
-          steps:
-            - run-integration-test:
-                test_name: 'migration'
-                setup_steps: ''
-                task_name: 'test_migration_36_image_metadata'
-                skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
+      - run-integration-test:
+            test_name: 'migration'
+            setup_steps: ''
+            task_name: 'test_migration_36_image_metadata'
+            skip_tasks: 'test_migration_36,test_migration_36_abort,test_migration_36_cmr_consuming,test_migration_36_cmr_offering,test_migration_36_cmr_secrets_consumer,test_migration_36_cmr_secrets_offerer,test_migration_36_cmr_spaces,test_migration_36_relation_egress_override,test_migration_36_users_permissions,test_migration_abort,test_migration_basic,test_migration_caas,test_migration_saas_common,test_migration_saas_consumer,test_migration_saas_external,test_migration_version'
     publishers:
       - integration-artifacts
 
