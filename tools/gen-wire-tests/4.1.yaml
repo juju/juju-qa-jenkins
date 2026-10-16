@@ -103,6 +103,7 @@ suites:
   - test_migration_36_cmr_secrets_consumer
   - test_migration_36_cmr_secrets_offerer
   - test_migration_36_cmr_spaces
+  - test_migration_36_image_metadata
   - test_migration_36_relation_egress_override
   - test_migration_36_users_permissions
   - test_migration_abort
