@@ -7,11 +7,9 @@ echo JUJU_GOMOD_MODE=${JUJU_GOMOD_MODE}
 echo CLIENT_PACKAGE_PLATFORMS=${CLIENT_PACKAGE_PLATFORMS}
 echo AGENT_PACKAGE_PLATFORMS=${AGENT_PACKAGE_PLATFORMS}
 echo BUILD_TAGS=${BUILD_TAGS:-}
-if [[ "${COVERAGE_ENABLED:-false}" == "true" ]]; then
-    export COVERAGE_COLLECT_URL=${INTEGRATION_COVERAGE_COLLECT_URL:-}
-else
-    export COVERAGE_COLLECT_URL=
-fi
+# Coverage is collected by the amd64 unit-test job only. Keep release
+# binaries uninstrumented so integration and arm64 runs cannot contribute.
+export COVERAGE_COLLECT_URL=
 echo COVERAGE_COLLECT_URL=${COVERAGE_COLLECT_URL}
 
 cd ${JUJU_SRC_PATH}
