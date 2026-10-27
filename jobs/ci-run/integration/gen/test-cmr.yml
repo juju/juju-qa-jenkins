@@ -32,6 +32,10 @@
           current-parameters: true
         - name: 'test-cmr-test-cmr-integrity-lxd'
           current-parameters: true
+        - name: 'test-cmr-test-cmr-integrity-relation-removal-aws'
+          current-parameters: true
+        - name: 'test-cmr-test-cmr-integrity-relation-removal-lxd'
+          current-parameters: true
         - name: 'test-cmr-test-offer-consume-aws'
           current-parameters: true
         - name: 'test-cmr-test-offer-consume-lxd'
@@ -129,7 +133,7 @@
                   test_name: 'cmr'
                   setup_steps: ''
                   task_name: 'test_cmr_integrity'
-                  skip_tasks: 'test_offer_consume,test_offer_consume_migrate,test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
+                  skip_tasks: 'test_cmr_integrity_relation_removal,test_offer_consume,test_offer_consume_migrate,test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -205,7 +209,187 @@
                   test_name: 'cmr'
                   setup_steps: ''
                   task_name: 'test_cmr_integrity'
-                  skip_tasks: 'test_offer_consume,test_offer_consume_migrate,test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
+                  skip_tasks: 'test_cmr_integrity_relation_removal,test_offer_consume,test_offer_consume_migrate,test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-cmr-test-cmr-integrity-relation-removal-aws
+    node: ephemeral-noble-small-amd64
+    concurrent: true
+    description: |-
+      Test test_cmr_integrity_relation_removal in cmr suite on aws
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'aws'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'ec2'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    - string:
+        default: 'us-east-1'
+        description: 'Cloud Region to use when bootstrapping Juju'
+        name: BOOTSTRAP_REGION
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - install-go
+      - conditional-step:
+          condition-kind: and
+          condition-operands:
+            # Do not run on regexp version match.
+            # Accounts for tests which do not exist
+            # in later Juju versions.
+            - condition-kind: not
+              condition-operand:
+                condition-kind: regex-match
+                # Matches Juju >= 4.1; negated above to skip
+                # versions from 4.1 onward (task removed in that version).
+                regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+                label: "${{JUJU_VERSION}}"
+            # Only run on regexp version match.
+            # Accounts for tests which do not exist
+            # until a given Juju version.
+            - condition-kind: regex-match
+              # Matches Juju >= 4.0; task introduced in that version.
+              regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+              label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'cmr'
+                  setup_steps: ''
+                  task_name: 'test_cmr_integrity_relation_removal'
+                  skip_tasks: 'test_cmr_integrity,test_offer_consume,test_offer_consume_migrate,test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
+    publishers:
+      - integration-artifacts
+
+- job:
+    name: test-cmr-test-cmr-integrity-relation-removal-lxd
+    node: ephemeral-noble-8c-32g-amd64
+    concurrent: true
+    description: |-
+      Test test_cmr_integrity_relation_removal in cmr suite on lxd
+    parameters:
+    - validating-string:
+        name: SHORT_GIT_COMMIT
+        description: 'Enable sub job to be run individually.'
+        regex: ^\S{{7}}$
+        msg: Enter a valid 7 char git sha
+    - choice:
+        default: 'amd64'
+        description: 'Build arch used to download the build tar.gz.'
+        name: BUILD_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used to boostrap controller.'
+        name: BOOTSTRAP_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - choice:
+        default: ''
+        description: 'Arch used for hosted models.'
+        name: MODEL_ARCH
+        choices:
+        - amd64
+        - arm64
+        - s390x
+        - ppc64el
+    - string:
+        default: 'localhost'
+        description: 'Cloud to use when bootstrapping Juju'
+        name: BOOTSTRAP_CLOUD
+    - string:
+        default: 'lxd'
+        description: 'Provider to use when bootstrapping Juju'
+        name: BOOTSTRAP_PROVIDER
+    wrappers:
+      - default-integration-test-wrapper
+      - timeout:
+          timeout: 30
+          fail: true
+          type: absolute
+    builders:
+      - common
+      - select-oci-registry
+      - prepare-integration-test
+      - install-go
+      - conditional-step:
+          condition-kind: and
+          condition-operands:
+            # Do not run on regexp version match.
+            # Accounts for tests which do not exist
+            # in later Juju versions.
+            - condition-kind: not
+              condition-operand:
+                condition-kind: regex-match
+                # Matches Juju >= 4.1; negated above to skip
+                # versions from 4.1 onward (task removed in that version).
+                regex: "^[5-9].*|^4\\.([1-9]|\\d{{2,}})(\\.|-).*"
+                label: "${{JUJU_VERSION}}"
+            # Only run on regexp version match.
+            # Accounts for tests which do not exist
+            # until a given Juju version.
+            - condition-kind: regex-match
+              # Matches Juju >= 4.0; task introduced in that version.
+              regex: "^[5-9].*|^4\\.([0-9]|\\d{{2,}})(\\.|-).*"
+              label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: "dont-run"
+          steps:
+            - run-integration-test:
+                  test_name: 'cmr'
+                  setup_steps: ''
+                  task_name: 'test_cmr_integrity_relation_removal'
+                  skip_tasks: 'test_cmr_integrity,test_offer_consume,test_offer_consume_migrate,test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -275,7 +459,7 @@
             test_name: 'cmr'
             setup_steps: ''
             task_name: 'test_offer_consume'
-            skip_tasks: 'test_cmr_integrity,test_offer_consume_migrate,test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
+            skip_tasks: 'test_cmr_integrity,test_cmr_integrity_relation_removal,test_offer_consume_migrate,test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -341,7 +525,7 @@
             test_name: 'cmr'
             setup_steps: ''
             task_name: 'test_offer_consume'
-            skip_tasks: 'test_cmr_integrity,test_offer_consume_migrate,test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
+            skip_tasks: 'test_cmr_integrity,test_cmr_integrity_relation_removal,test_offer_consume_migrate,test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -433,7 +617,7 @@
                   test_name: 'cmr'
                   setup_steps: ''
                   task_name: 'test_offer_consume_migrate'
-                  skip_tasks: 'test_cmr_integrity,test_offer_consume,test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
+                  skip_tasks: 'test_cmr_integrity,test_cmr_integrity_relation_removal,test_offer_consume,test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -521,7 +705,7 @@
                   test_name: 'cmr'
                   setup_steps: ''
                   task_name: 'test_offer_consume_migrate'
-                  skip_tasks: 'test_cmr_integrity,test_offer_consume,test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
+                  skip_tasks: 'test_cmr_integrity,test_cmr_integrity_relation_removal,test_offer_consume,test_offer_find_external_user,test_offer_find_non_admin,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -601,7 +785,7 @@
                   test_name: 'cmr'
                   setup_steps: ''
                   task_name: 'test_offer_find_external_user'
-                  skip_tasks: 'test_cmr_integrity,test_offer_consume,test_offer_consume_migrate,test_offer_find_non_admin,test_offer_permissions'
+                  skip_tasks: 'test_cmr_integrity,test_cmr_integrity_relation_removal,test_offer_consume,test_offer_consume_migrate,test_offer_find_non_admin,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -677,7 +861,7 @@
                   test_name: 'cmr'
                   setup_steps: ''
                   task_name: 'test_offer_find_external_user'
-                  skip_tasks: 'test_cmr_integrity,test_offer_consume,test_offer_consume_migrate,test_offer_find_non_admin,test_offer_permissions'
+                  skip_tasks: 'test_cmr_integrity,test_cmr_integrity_relation_removal,test_offer_consume,test_offer_consume_migrate,test_offer_find_non_admin,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -757,7 +941,7 @@
                   test_name: 'cmr'
                   setup_steps: ''
                   task_name: 'test_offer_find_non_admin'
-                  skip_tasks: 'test_cmr_integrity,test_offer_consume,test_offer_consume_migrate,test_offer_find_external_user,test_offer_permissions'
+                  skip_tasks: 'test_cmr_integrity,test_cmr_integrity_relation_removal,test_offer_consume,test_offer_consume_migrate,test_offer_find_external_user,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -833,7 +1017,7 @@
                   test_name: 'cmr'
                   setup_steps: ''
                   task_name: 'test_offer_find_non_admin'
-                  skip_tasks: 'test_cmr_integrity,test_offer_consume,test_offer_consume_migrate,test_offer_find_external_user,test_offer_permissions'
+                  skip_tasks: 'test_cmr_integrity,test_cmr_integrity_relation_removal,test_offer_consume,test_offer_consume_migrate,test_offer_find_external_user,test_offer_permissions'
     publishers:
       - integration-artifacts
 
@@ -913,7 +1097,7 @@
                   test_name: 'cmr'
                   setup_steps: ''
                   task_name: 'test_offer_permissions'
-                  skip_tasks: 'test_cmr_integrity,test_offer_consume,test_offer_consume_migrate,test_offer_find_external_user,test_offer_find_non_admin'
+                  skip_tasks: 'test_cmr_integrity,test_cmr_integrity_relation_removal,test_offer_consume,test_offer_consume_migrate,test_offer_find_external_user,test_offer_find_non_admin'
     publishers:
       - integration-artifacts
 
@@ -989,6 +1173,6 @@
                   test_name: 'cmr'
                   setup_steps: ''
                   task_name: 'test_offer_permissions'
-                  skip_tasks: 'test_cmr_integrity,test_offer_consume,test_offer_consume_migrate,test_offer_find_external_user,test_offer_find_non_admin'
+                  skip_tasks: 'test_cmr_integrity,test_cmr_integrity_relation_removal,test_offer_consume,test_offer_consume_migrate,test_offer_find_external_user,test_offer_find_non_admin'
     publishers:
       - integration-artifacts
