@@ -84,8 +84,9 @@
           set -ex
 
           # Install microk8s and kubectl. The kubectl snap is classic-only
-          # and has no -strict channels, so it takes its own channel.
-          sudo snap install microk8s --channel={channel}
+          # and has no -strict channels, so each snap takes its own
+          # channel parameter.
+          sudo snap install microk8s --channel={microk8s_channel}
           sudo snap install kubectl --classic --channel={kubectl_channel}
 
           sudo snap stop microk8s
