@@ -163,7 +163,7 @@
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
     - string:
-        default: 'us-east1'
+        default: 'us-central1'
         description: 'Cloud Region to use when bootstrapping Juju'
         name: BOOTSTRAP_REGION
     wrappers:

@@ -933,6 +933,11 @@ const Template = `
     {{- $test_name := (printf "%s-%s" $.SuiteName $cloud.Name) -}}
     {{- $task_name = index $node.TaskNames $k -}}
     {{- $full_task_name := (printf "test-%s-%s-%s" $.SuiteName (ensureHyphen $task_name) $cloud.Name) -}}
+    {{- $region := $cloud.Region -}}
+    {{- /* CI observed L4 stockouts in us-east1; move only the GPU job. */ -}}
+    {{- if eq $full_task_name "test-cloud_gce-test-deploy-gpu-instance-google" -}}
+      {{- $region = "us-central1" -}}
+    {{- end -}}
 
     {{- $builder := "run-integration-test" -}}
     {{- $run_on := "ephemeral-noble-small-amd64" -}}
@@ -999,9 +1004,9 @@ const Template = `
         default: '{{$cloud.ProviderName}}'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
-{{- if $cloud.Region }}
+{{- if $region }}
     - string:
-        default: '{{$cloud.Region}}'
+        default: '{{$region}}'
         description: 'Cloud Region to use when bootstrapping Juju'
         name: BOOTSTRAP_REGION
 {{- end }}
