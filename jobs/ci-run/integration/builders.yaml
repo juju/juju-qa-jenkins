@@ -4,8 +4,13 @@
     name: "prepare-integration-test"
     builders:
       - set-common-environment
-      # TODO - the test itself should install the az cli if needed.
-      - install-azure-cli
+      # Use the job parameter so manually selected Azure providers also get az.
+      - conditional-step:
+          condition-kind: strings-match
+          condition-string1: "$BOOTSTRAP_PROVIDER"
+          condition-string2: "azure"
+          steps:
+            - install-azure-cli
       - get-s3-source-payload
       - set-test-description
 
