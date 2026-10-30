@@ -29,6 +29,13 @@
       - set-common-environment
       - install-common-tools
       - get-s3-build-details
+      - shell: |-
+          #!/bin/bash
+          set -eu
+          if [[ ! "$JUJU_VERSION" =~ ^4[.][0-9]+([.-]|$) ]]; then
+            echo "TIOBE only runs for Juju 4.x (got $JUJU_VERSION)"
+            exit 1
+          fi
       - setup-go-environment
       - set-build-description:
           GOVERSION: "$GOVERSION"
@@ -88,17 +95,6 @@
           #!/bin/bash
           set -eux
           PATH=$GOPATH/bin:$PATH
-
-          if git -C "$WORKSPACE/juju" merge-base --is-ancestor HEAD origin/3.6; then
-            echo "commit $GIT_COMMIT is in the 3.6 branch"
-            TICS_PROJECT=juju_3.6
-          elif git -C "$WORKSPACE/juju" merge-base --is-ancestor HEAD origin/main; then
-            echo "commit $GIT_COMMIT is in the main branch"
-            TICS_PROJECT=juju
-          else
-            echo "commit $GIT_COMMIT is not in the 3.6 or main branch... skipping run"
-            exit 1
-          fi
 
           echo "installing TICS..."
           wget -O install-tics.sh 'https://canonical.tiobe.com/tiobeweb/TICS/api/public/v1/fapi/installtics/Script?cfg=default&platform=linux&url=https://canonical.tiobe.com/tiobeweb/TICS/'

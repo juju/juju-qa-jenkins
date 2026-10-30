@@ -218,13 +218,24 @@
               current-parameters: true
               predefined-parameters: |-
                 SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
-    publishers:
-      - trigger-parameterized-builds:
-          - project: "analyse-juju-tics"
-            condition: SUCCESS
-            current-parameters: true
-            predefined-parameters: |-
-              SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
+      # Only analyse successful 4.x runs; avoid provisioning a TIOBE agent
+      # for every other branch. JUJU_VERSION comes from get-s3-build-details.
+      - conditional-step:
+          condition-kind: and
+          condition-operands:
+            - condition-kind: current-status
+              condition-worst: SUCCESS
+              condition-best: SUCCESS
+            - condition-kind: regex-match
+              regex: "^4[.][0-9]+([.-]|$)"
+              label: "${{JUJU_VERSION}}"
+          on-evaluation-failure: dont-run
+          steps:
+            - trigger-builds:
+                - project: "analyse-juju-tics"
+                  current-parameters: true
+                  predefined-parameters: |-
+                    SHORT_GIT_COMMIT=${{SHORT_GIT_COMMIT}}
 
 - job:
     name: package-juju-source
