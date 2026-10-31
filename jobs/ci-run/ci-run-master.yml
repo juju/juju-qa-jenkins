@@ -10,10 +10,11 @@
     triggers:
       # There isn't any jjb wrappers for the Github Branch Trigger part. Use
       # raw xml extracted from a job I created for this purpose.
+      # Scan every four hours; only build branches whose hash changed.
       - raw:
           xml: |
             <com.github.kostyasha.github.integration.branch.GitHubBranchTrigger plugin="github-pullrequest@0.1.0-rc26">
-              <spec>H/5 * * * *</spec>
+              <spec>H H/4 * * *</spec>
               <triggerMode>CRON</triggerMode>
               <cancelQueued>false</cancelQueued>
               <abortRunning>false</abortRunning>
