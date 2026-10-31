@@ -83,9 +83,11 @@
           #!/bin/bash
           set -ex
 
-          # Install microk8s and kubectl
-          sudo snap install microk8s --classic --channel={channel}
-          sudo snap install kubectl --classic --channel={channel}
+          # Install microk8s and kubectl. The kubectl snap is classic-only
+          # and has no -strict channels, so each snap takes its own
+          # channel parameter.
+          sudo snap install microk8s --channel={microk8s_channel}
+          sudo snap install kubectl --classic --channel={kubectl_channel}
 
           sudo snap stop microk8s
 
@@ -121,8 +123,9 @@
               sleep $(( NEXT_WAIT_TIME++ ))
           done
 
-          sudo getent group microk8s || sudo addgroup microk8s
-          sudo usermod -a -G microk8s $USER
+          # Strict-confined microk8s grants access through the snap_microk8s
+          # group, auto-created by snapd when the snap is installed above.
+          sudo usermod -a -G snap_microk8s $USER
 
 # setup-go-environment is responsible for setting up the basic GO environment
 # needed to build and run go applications related to juju.

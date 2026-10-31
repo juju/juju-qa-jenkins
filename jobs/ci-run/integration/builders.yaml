@@ -30,7 +30,8 @@
     name: run-integration-test-microk8s
     builders:
       - install-microk8s:
-          channel: "1.35/stable"
+          microk8s_channel: "1.35-strict/stable"
+          kubectl_channel: "1.35/stable"
       - select-oci-registry
       - get-s3-build-payload-testing:
           SHORT_GIT_COMMIT: "${{SHORT_GIT_COMMIT}}"
