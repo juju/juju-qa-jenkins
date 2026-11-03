@@ -94,11 +94,19 @@ export OPERATOR_IMAGE_ACCOUNT
 # payloads without a snap (older branches) and for local runs, where
 # bootstrap builds the snap from source itself.
 CONTROLLER_SNAP_PATH=
-for _snap in "${BIN_DIR}"/jujud_*.snap; do
-  if [ -f "${_snap}" ]; then
+# Stop after the first match and bound the directory scan so an unavailable
+# workspace filesystem cannot consume the job timeout.
+if _snap=$(timeout --kill-after=2s 10s find "${BIN_DIR}" \
+  -maxdepth 1 \
+  -type f \
+  -name 'jujud_*.snap' \
+  -print -quit 2>/dev/null); then
+  if [ -n "${_snap}" ]; then
     CONTROLLER_SNAP_PATH="${_snap}"
   fi
-done
+else
+  echo "Timed out or failed while looking for the optional controller snap"
+fi
 export CONTROLLER_SNAP_PATH
 # shellcheck source=/dev/null
 set -u
