@@ -21,7 +21,7 @@ __metaclass__ = type
 
 
 PERMANENT = 'permanent'
-OLD_MACHINE_AGE = 14
+OLD_MACHINE_AGE = 6
 
 
 # This logger strictly reports the activity of this script.
