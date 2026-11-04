@@ -368,12 +368,20 @@
           # The controller snap for snap based bootstrap is optional; it is
           # only present for linux payloads of branches that build it.
           jujud_snap_name=
-          for snap_file in "${{build_platform_dir}}"/jujud_*.snap; do
-            if [[ -f "${{snap_file}}" ]]; then
+          # Stop after the first match and bound the directory scan so an
+          # unavailable filesystem cannot block packaging indefinitely.
+          if snap_file=$(timeout --kill-after=2s 10s find "${{build_platform_dir}}" \
+            -maxdepth 1 \
+            -type f \
+            -name 'jujud_*.snap' \
+            -print -quit 2>/dev/null); then
+            if [[ -n "${{snap_file}}" ]]; then
               jujud_snap_name=$(basename "${{snap_file}}")
               echo "controller snap exists for platform {platform}: ${{jujud_snap_name}}"
             fi
-          done
+          else
+            echo "Timed out or failed while looking for the optional controller snap"
+          fi
 
           arch=$(echo "{platform}" | cut -f 2 -d '/')
           os=$(echo "{platform}" | cut -f 1 -d '/')
