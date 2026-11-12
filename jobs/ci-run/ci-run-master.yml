@@ -229,7 +229,7 @@
               condition-worst: SUCCESS
               condition-best: SUCCESS
             - condition-kind: regex-match
-              regex: "^4[.][0-9]+([.-]|$)"
+              regex: "^4[.][0-9]+([.-].*)?$"
               label: "${{JUJU_VERSION}}"
           on-evaluation-failure: dont-run
           steps:
