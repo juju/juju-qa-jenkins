@@ -411,6 +411,16 @@
             exit 0
           fi
 
+          # Agents started by Juju before 4.1 still run "jujud". Ship the
+          # compatibility shim so they can start after upgrading.
+          jujud_shim_name=
+          jujud_shim_src="${{JUJU_SRC_PATH}}/environs/tools/jujud-shim.sh"
+          if [[ "${{agent_binary_name}}" == "jujuagentd" && -f "${{jujud_shim_src}}" ]]; then
+            echo "adding jujud shim for platform {platform}"
+            install -m 0755 "${{jujud_shim_src}}" "${{build_platform_dir}}/jujud"
+            jujud_shim_name=jujud
+          fi
+
           agent_tarball_name=juju-${{JUJU_VERSION}}-${{os}}${{FILE_LABEL}}-${{arch}}.tgz
           echo "Creating agent payload for {platform} - ${{agent_tarball_name}}"
 
@@ -420,4 +430,5 @@
             --no-same-owner \
             -C ${{build_platform_dir}}/ \
             ${{agent_binary_name}} \
-            ${{jujuc_name}}
+            ${{jujuc_name}} \
+            ${{jujud_shim_name}}
