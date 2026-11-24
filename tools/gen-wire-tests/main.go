@@ -491,6 +491,14 @@ func writeJobDefinitions(
 		}
 	}
 
+	hasLXD := false
+	for _, cloud := range task.Clouds {
+		if cloud.ProviderName == "lxd" {
+			hasLXD = true
+			break
+		}
+	}
+
 	if err := t.Execute(f, struct {
 		SuiteName          string
 		Clouds             []Cloud
@@ -501,6 +509,7 @@ func writeJobDefinitions(
 		ExcludedCloudTasks map[string][]string
 		Ephemeral          map[string]bool
 		CrossCloud         map[string]bool
+		HasLXD             bool
 		Timeout            map[string]int
 		MinVersions        map[string]string
 		MaxVersions        map[string]string
@@ -521,6 +530,7 @@ func writeJobDefinitions(
 		ExcludedCloudTasks: task.ExcludedCloudTasks,
 		Ephemeral:          ephemeral,
 		CrossCloud:         crossCloud,
+		HasLXD:             hasLXD,
 		Timeout:            task.Timeout,
 		MinVersions:        minVersions,
 		MaxVersions:        maxVersions,
@@ -869,6 +879,12 @@ const Template = `
         default: ''
         description: 'Build arch used to download the build tar.gz.'
         name: BUILD_ARCH
+{{- if $.HasLXD }}
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
+{{- end }}
     builders:
     - get-s3-build-details
     - set-test-description
@@ -1004,6 +1020,12 @@ const Template = `
         default: '{{$cloud.ProviderName}}'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+{{- if eq $cloud.ProviderName "lxd" }}
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
+{{- end }}
 {{- if $region }}
     - string:
         default: '{{$region}}'
@@ -1020,6 +1042,9 @@ const Template = `
       - common
       - select-oci-registry
       - prepare-integration-test
+{{- if eq $cloud.ProviderName "lxd" }}
+      - refresh-lxd-snap
+{{- end }}
 {{- if eq $.SuiteName "cmr" }}
       - install-go
 {{- end }}

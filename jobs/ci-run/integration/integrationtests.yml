@@ -12,6 +12,10 @@
           default: ""
           description: "Enable sub job to be run individually."
           name: SHORT_GIT_COMMIT
+      - string:
+          default: "6/stable"
+          description: "Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged."
+          name: LXD_SNAP_CHANNEL
     builders:
       - get-s3-build-details
       - set-test-description

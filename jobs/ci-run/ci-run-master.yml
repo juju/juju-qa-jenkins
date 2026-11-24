@@ -205,6 +205,10 @@
           description: The git short hash for the commit you wish to test
           regex: ^\S{{7}}$
           msg: Enter a valid 7 char git sha
+      - string:
+          default: "6/stable"
+          description: "Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged."
+          name: LXD_SNAP_CHANNEL
     builders:
       - get-s3-build-details
       - set-test-description

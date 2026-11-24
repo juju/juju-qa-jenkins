@@ -22,6 +22,10 @@
         default: ''
         description: 'Build arch used to download the build tar.gz.'
         name: BUILD_ARCH
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     builders:
     - get-s3-build-details
     - set-test-description
@@ -268,6 +272,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -278,6 +286,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
@@ -471,6 +480,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -481,6 +494,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
@@ -674,6 +688,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -684,6 +702,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
@@ -903,6 +922,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -913,6 +936,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - conditional-step:
           # Do not run on regexp version match.
           # Accounts for tests which do not exist
@@ -1145,6 +1169,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -1155,6 +1183,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - conditional-step:
           # Do not run on regexp version match.
           # Accounts for tests which do not exist
@@ -1387,6 +1416,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -1397,6 +1430,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - conditional-step:
           # Do not run on regexp version match.
           # Accounts for tests which do not exist
@@ -1629,6 +1663,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -1639,6 +1677,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - conditional-step:
           # Do not run on regexp version match.
           # Accounts for tests which do not exist
@@ -1845,6 +1884,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -1855,6 +1898,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''
@@ -2048,6 +2092,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -2058,6 +2106,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - run-integration-test:
             test_name: 'model'
             setup_steps: ''

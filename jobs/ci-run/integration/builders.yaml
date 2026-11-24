@@ -15,6 +15,11 @@
       - set-test-description
 
 - builder:
+    name: refresh-lxd-snap
+    builders:
+      - shell: !include-raw-verbatim: "common/refresh-lxd-snap.sh"
+
+- builder:
     name: run-integration-test
     builders:
       - get-s3-build-payload-testing:

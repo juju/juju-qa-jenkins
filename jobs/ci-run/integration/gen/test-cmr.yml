@@ -22,6 +22,10 @@
         default: ''
         description: 'Build arch used to download the build tar.gz.'
         name: BUILD_ARCH
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     builders:
     - get-s3-build-details
     - set-test-description
@@ -184,6 +188,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -194,6 +202,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - install-go
       - conditional-step:
           # Only run on regexp version match.
@@ -352,6 +361,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -362,6 +375,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - install-go
       - conditional-step:
           condition-kind: and
@@ -510,6 +524,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -520,6 +538,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - install-go
       - run-integration-test:
             test_name: 'cmr'
@@ -668,6 +687,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -678,6 +701,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - install-go
       - conditional-step:
           condition-kind: or
@@ -836,6 +860,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -846,6 +874,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - install-go
       - conditional-step:
           # Only run on regexp version match.
@@ -992,6 +1021,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -1002,6 +1035,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - install-go
       - conditional-step:
           # Only run on regexp version match.
@@ -1148,6 +1182,10 @@
         default: 'lxd'
         description: 'Provider to use when bootstrapping Juju'
         name: BOOTSTRAP_PROVIDER
+    - string:
+        default: '6/stable'
+        description: 'Snap channel to refresh LXD to before tests. Empty or Juju 2.9.x leaves the image LXD unchanged.'
+        name: LXD_SNAP_CHANNEL
     wrappers:
       - default-integration-test-wrapper
       - timeout:
@@ -1158,6 +1196,7 @@
       - common
       - select-oci-registry
       - prepare-integration-test
+      - refresh-lxd-snap
       - install-go
       - conditional-step:
           # Only run on regexp version match.
