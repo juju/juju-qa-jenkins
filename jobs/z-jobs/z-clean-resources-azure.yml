@@ -6,8 +6,9 @@
       - get-azure-creds
       - get-juju-cloud-creds
       - shell: !include-raw-verbatim: scripts/azure-cleanup.sh
+      - shell: !include-raw-verbatim: scripts/azure-group-cleanup.py
     description: |-
-      Delete old azure resource groups.
+      Delete old matching groups in the configured Azure subscription and in Juju QA eastus.
     node: ephemeral-noble-small-amd64
     publishers:
       - email-ext:
